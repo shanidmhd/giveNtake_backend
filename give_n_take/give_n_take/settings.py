@@ -37,7 +37,30 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'user_details',
+    'news',
+    'drf_yasg',
 ]
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'DOC_EXPANSION': 'list',
+    'APIS_SORTER': 'alpha',
+    # 'JSON_EDITOR': True, 
+    'api_version': '0.1',
+    'DEFAULT_MODEL_DEPTH':-1,
+    'SECURITY_DEFINITIONS': {
+        "Jobs Channel Authentication": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+            "description": "Bearer <JWT>",
+        },
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -74,10 +97,16 @@ WSGI_APPLICATION = 'give_n_take.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'give_take',
+                'USER': 'postgres',
+                'PASSWORD':'tms@123',
+                'HOST': '127.0.0.1',
+                # 'HOST':'192.168.0.114',
+                'PORT': '5432',
+            
+            }
 }
 
 
