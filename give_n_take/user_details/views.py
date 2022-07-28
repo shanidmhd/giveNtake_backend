@@ -110,9 +110,12 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     def retrieve(self, request,*args, **kargs):
         user_id = kargs.get('pk')
         if user_id:
-            appts = UserDetails.objects.filter(id=int(user_id))
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
+            try:
+                appts = UserDetails.objects.get(id=int(user_id))
+                serializer = self.get_serializer(appts, many=False)
+                return Response({'results':serializer.data})
+            except:
+                return Response({'message': 'No data found'})
         else:
             appts = UserDetails.objects.all()
             serializer = self.get_serializer(appts, many=True)
@@ -129,9 +132,12 @@ class StateViewSet(viewsets.ModelViewSet):
     def retrieve(self, request,*args, **kargs):
         state_id = kargs.get('pk')
         if state_id:
-            appts = State.objects.filter(id=int(state_id))
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
+            try:
+                appts = State.objects.get(id=int(state_id))
+                serializer = self.get_serializer(appts, many=False)
+                return Response({'results':serializer.data})
+            except:
+                return Response({'message': 'No data found'})
         else:
             appts = State.objects.all()
             serializer = self.get_serializer(appts, many=True)
@@ -167,9 +173,13 @@ class DistrictViewSet(viewsets.ModelViewSet):
     def retrieve(self, request,*args, **kargs):
         district_id = kargs.get('pk')
         if district_id:
-            appts = District.objects.filter(id=int(district_id))
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
+            try:
+                appts = District.objects.get(id=int(district_id))
+                serializer = self.get_serializer(appts, many=False)
+                return Response({'results':serializer.data})
+            except:
+                return Response({'message': 'No data found'})
+            
         else:
             appts = District.objects.all()
             serializer = self.get_serializer(appts, many=True)
@@ -206,9 +216,13 @@ class BlockViewSet(viewsets.ModelViewSet):
     def retrieve(self, request,*args, **kargs):
         block_id = kargs.get('pk')
         if block_id:
-            appts = Block.objects.filter(id=int(block_id))
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
+            try:
+                appts = Block.objects.get(id=int(block_id))
+                serializer = self.get_serializer(appts, many=False)
+                return Response({'results':serializer.data})
+            except:
+                return Response({'message': 'No data found'})
+            
         else:
             appts = Block.objects.all()
             serializer = self.get_serializer(appts, many=True)
@@ -245,9 +259,13 @@ class PanchayathViewSet(viewsets.ModelViewSet):
     def retrieve(self, request,*args, **kargs):
         panchayath_id = kargs.get('pk')
         if panchayath_id:
-            appts = Panchayath.objects.filter(id=int(panchayath_id))
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
+            try:
+                appts = Panchayath.objects.get(id=int(panchayath_id))
+                serializer = self.get_serializer(appts, many=False)
+                return Response({'results':serializer.data})
+            except:
+                return Response({'message': 'No data found'})
+            
         else:
             appts = Panchayath.objects.all()
             serializer = self.get_serializer(appts, many=True)
@@ -283,9 +301,13 @@ class WardViewSet(viewsets.ModelViewSet):
     def retrieve(self, request,*args, **kargs):
         ward_id = kargs.get('pk')
         if ward_id:
-            appts = Ward.objects.filter(id=int(ward_id))
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
+            try:
+                appts = Ward.objects.get(id=int(ward_id))
+                serializer = self.get_serializer(appts, many=False)
+                return Response({'results':serializer.data})
+            except:
+                return Response({'message': 'No data found'})
+            
         else:
             appts = Ward.objects.all()
             serializer = self.get_serializer(appts, many=True)

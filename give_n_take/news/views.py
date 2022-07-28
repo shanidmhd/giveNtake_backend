@@ -30,9 +30,13 @@ class NewsTypeViewSet(viewsets.ModelViewSet):
     def retrieve(self, request,*args, **kargs):
         news_type_id = kargs.get('pk')
         if news_type_id:
-            appts = NewsType.objects.filter(id=int(news_type_id))
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
+            try:
+                appts = NewsType.objects.get(id=int(news_type_id))
+                serializer = self.get_serializer(appts, many=False)
+                return Response({'results':serializer.data})
+            except:
+                return Response({'message': 'No data found'})
+            
         else:
             appts = NewsType.objects.all()
             serializer = self.get_serializer(appts, many=True)
@@ -49,9 +53,12 @@ class NewsViewSet(viewsets.ModelViewSet):
     def retrieve(self, request,*args, **kargs):
         news_id = kargs.get('pk')
         if news_id:
-            appts = News.objects.filter(id=int(news_id))
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
+            try:
+                appts = News.objects.get(id=int(news_id))
+                serializer = self.get_serializer(appts, many=False)
+                return Response({'results':serializer.data})
+            except:
+                return Response({'message': 'No data found'})
         else:
             appts = News.objects.all()
             serializer = self.get_serializer(appts, many=True)
