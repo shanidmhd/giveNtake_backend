@@ -27,6 +27,17 @@ class NewsTypeViewSet(viewsets.ModelViewSet):
     queryset = NewsType.objects.all()
     http_method_names = ['get', 'post', 'put' , 'delete']
 
+    def retrieve(self, request,*args, **kargs):
+        news_type_id = kargs.get('pk')
+        if news_type_id:
+            appts = NewsType.objects.filter(id=int(news_type_id))
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+        else:
+            appts = NewsType.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+
 class NewsViewSet(viewsets.ModelViewSet):
     """
     A viewset for register and edit user instances.
@@ -34,6 +45,17 @@ class NewsViewSet(viewsets.ModelViewSet):
     serializer_class = NewsSerializer
     queryset = News.objects.all()
     http_method_names = ['get', 'post', 'put' , 'delete']
+
+    def retrieve(self, request,*args, **kargs):
+        news_id = kargs.get('pk')
+        if news_id:
+            appts = News.objects.filter(id=int(news_id))
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+        else:
+            appts = News.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
 
 
 

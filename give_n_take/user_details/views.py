@@ -2,6 +2,7 @@ import code
 import json
 from opcode import stack_effect
 from optparse import Values
+import pdb
 import sys
 import requests
 from django.shortcuts import render
@@ -106,6 +107,17 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     queryset = UserDetails.objects.all()
     http_method_names = ['get', 'post', 'put' , 'delete']
 
+    def retrieve(self, request,*args, **kargs):
+        user_id = kargs.get('pk')
+        if user_id:
+            appts = UserDetails.objects.filter(id=int(user_id))
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+        else:
+            appts = UserDetails.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+
 class StateViewSet(viewsets.ModelViewSet):
     """
     A viewset for register and edit user instances.
@@ -113,6 +125,17 @@ class StateViewSet(viewsets.ModelViewSet):
     serializer_class = StateSerializer
     queryset = State.objects.all()
     http_method_names = ['get', 'post', 'put' , 'delete']
+
+    def retrieve(self, request,*args, **kargs):
+        state_id = kargs.get('pk')
+        if state_id:
+            appts = State.objects.filter(id=int(state_id))
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+        else:
+            appts = State.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
 
 class DistrictViewSet(viewsets.ModelViewSet):
     """
@@ -140,6 +163,17 @@ class DistrictViewSet(viewsets.ModelViewSet):
             appts = District.objects.all()
             serializer = self.get_serializer(appts, many=True)
             return Response(serializer.data)
+
+    def retrieve(self, request,*args, **kargs):
+        district_id = kargs.get('pk')
+        if district_id:
+            appts = District.objects.filter(id=int(district_id))
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+        else:
+            appts = District.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
 
 
 class BlockViewSet(viewsets.ModelViewSet):
@@ -169,6 +203,18 @@ class BlockViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(appts, many=True)
             return Response(serializer.data)
 
+    def retrieve(self, request,*args, **kargs):
+        block_id = kargs.get('pk')
+        if block_id:
+            appts = Block.objects.filter(id=int(block_id))
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+        else:
+            appts = Block.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+    
+
 class PanchayathViewSet(viewsets.ModelViewSet):
     """
     A viewset for register and edit user instances.
@@ -195,6 +241,17 @@ class PanchayathViewSet(viewsets.ModelViewSet):
             appts = Panchayath.objects.all()
             serializer = self.get_serializer(appts, many=True)
             return Response(serializer.data)
+    
+    def retrieve(self, request,*args, **kargs):
+        panchayath_id = kargs.get('pk')
+        if panchayath_id:
+            appts = Panchayath.objects.filter(id=int(panchayath_id))
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+        else:
+            appts = Panchayath.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
 
 class WardViewSet(viewsets.ModelViewSet):
     """
@@ -222,13 +279,16 @@ class WardViewSet(viewsets.ModelViewSet):
             appts = Ward.objects.all()
             serializer = self.get_serializer(appts, many=True)
             return Response(serializer.data)
+    
+    def retrieve(self, request,*args, **kargs):
+        ward_id = kargs.get('pk')
+        if ward_id:
+            appts = Ward.objects.filter(id=int(ward_id))
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+        else:
+            appts = Ward.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
 
-
-# class UserSerializerViewSet(viewsets.ModelViewSet):
-#     """
-#     A viewset for register and edit company.
-#     """
-#     serializer_class = UserSerializer
-#     queryset = user_group.objects.all()
-#     http_method_names = ['post','get'] 
 
