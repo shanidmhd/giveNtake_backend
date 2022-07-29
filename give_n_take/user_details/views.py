@@ -186,47 +186,47 @@ class DistrictViewSet(viewsets.ModelViewSet):
             return Response({'results':serializer.data})
 
 
-class BlockViewSet(viewsets.ModelViewSet):
-    """
-    A viewset for register and edit user instances.
-    """
-    serializer_class = BlockSerializer
-    queryset = Block.objects.all()
-    http_method_names = ['get', 'post', 'put' , 'delete']
+# class BlockViewSet(viewsets.ModelViewSet):
+#     """
+#     A viewset for register and edit user instances.
+#     """
+#     serializer_class = BlockSerializer
+#     queryset = Block.objects.all()
+#     http_method_names = ['get', 'post', 'put' , 'delete']
 
-    @swagger_auto_schema(
-        operation_description="Block list",
-        manual_parameters=[openapi.Parameter(
-            'district_id', 
-            openapi.IN_QUERY, 
-            type=openapi.TYPE_STRING
-            )],
-    )
-    def list(self, request):
-        district_id = request.GET.get('district_id')
-        if district_id:
-            appts = Block.objects.filter(district_id=district_id)
-            serializer = self.get_serializer(appts, many=True)
-            return Response(serializer.data)
-        else:
-            appts = Block.objects.all()
-            serializer = self.get_serializer(appts, many=True)
-            return Response(serializer.data)
+#     @swagger_auto_schema(
+#         operation_description="Block list",
+#         manual_parameters=[openapi.Parameter(
+#             'district_id', 
+#             openapi.IN_QUERY, 
+#             type=openapi.TYPE_STRING
+#             )],
+#     )
+#     def list(self, request):
+#         district_id = request.GET.get('district_id')
+#         if district_id:
+#             appts = Block.objects.filter(district_id=district_id)
+#             serializer = self.get_serializer(appts, many=True)
+#             return Response(serializer.data)
+#         else:
+#             appts = Block.objects.all()
+#             serializer = self.get_serializer(appts, many=True)
+#             return Response(serializer.data)
 
-    def retrieve(self, request,*args, **kargs):
-        block_id = kargs.get('pk')
-        if block_id:
-            try:
-                appts = Block.objects.get(id=int(block_id))
-                serializer = self.get_serializer(appts, many=False)
-                return Response({'results':serializer.data})
-            except:
-                return Response({'message': 'No data found'})
+#     def retrieve(self, request,*args, **kargs):
+#         block_id = kargs.get('pk')
+#         if block_id:
+#             try:
+#                 appts = Block.objects.get(id=int(block_id))
+#                 serializer = self.get_serializer(appts, many=False)
+#                 return Response({'results':serializer.data})
+#             except:
+#                 return Response({'message': 'No data found'})
             
-        else:
-            appts = Block.objects.all()
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
+#         else:
+#             appts = Block.objects.all()
+#             serializer = self.get_serializer(appts, many=True)
+#             return Response({'results':serializer.data})
     
 
 class PanchayathViewSet(viewsets.ModelViewSet):
@@ -240,15 +240,15 @@ class PanchayathViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_description="panchayath list",
         manual_parameters=[openapi.Parameter(
-            'block_id', 
+            'district_id', 
             openapi.IN_QUERY, 
             type=openapi.TYPE_STRING
             )],
     )
     def list(self, request):
-        block_id = request.GET.get('block_id')
-        if block_id:
-            appts = Panchayath.objects.filter(block_id=block_id)
+        district_id = request.GET.get('district_id')
+        if district_id:
+            appts = Panchayath.objects.filter(district_id=district_id)
             serializer = self.get_serializer(appts, many=True)
             return Response(serializer.data)
         else:

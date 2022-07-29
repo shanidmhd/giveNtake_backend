@@ -32,7 +32,7 @@ class UserLoginSerializer(serializers.Serializer):
 class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDetails
-        fields = ['id','username','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','district','block','panchayath','ward','designation','bln_staff']
+        fields = ['id','username','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','district','panchayath','ward','designation','bln_staff']
         extra_kwargs = {'first_name': {'required': True}, 'last_name': {'required': True}, 
             'password': {'write_only': True},
         }
@@ -62,20 +62,20 @@ class DistrictSerializer(serializers.ModelSerializer):
         return district
 
 
-class BlockSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Block
-        fields = ['id','name','district']
+# class BlockSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Block
+#         fields = ['id','name','district']
         
 
-    def create(self,validated_data):
-        block = Block.objects.create(**validated_data)
-        return block
+#     def create(self,validated_data):
+#         block = Block.objects.create(**validated_data)
+#         return block
 
 class PanchayathSerializer(serializers.ModelSerializer):
     class Meta:
         model = Panchayath
-        fields = ['id','name','block']
+        fields = ['id','name','district']
         
 
     def create(self,validated_data):

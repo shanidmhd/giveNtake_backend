@@ -13,17 +13,17 @@ class District(models.Model):
       code = models.CharField(max_length=255,null=True)
       state = models.ForeignKey(State,on_delete=models.CASCADE,default=None,null=True)
 
-class Block(models.Model):
+# class Block(models.Model):
 
-      name = models.CharField(max_length=255)
-      code = models.CharField(max_length=255,null=True)
-      district = models.ForeignKey(District,on_delete=models.CASCADE,default=None,null=True)
+#       name = models.CharField(max_length=255)
+#       code = models.CharField(max_length=255,null=True)
+#       district = models.ForeignKey(District,on_delete=models.CASCADE,default=None,null=True)
 
 class Panchayath(models.Model):
 
       name = models.CharField(max_length=255)
       code = models.CharField(max_length=255,null=True)
-      block = models.ForeignKey(Block,on_delete=models.CASCADE,default=None,null=True)
+      district = models.ForeignKey(District,on_delete=models.CASCADE,default=None,null=True)
 
 class Ward(models.Model):
 
@@ -44,7 +44,6 @@ class UserDetails(User,models.Model):
       staff_role = models.ForeignKey(Panchayath,on_delete=models.CASCADE,default=None,null=True,related_name="user_staff_role")
       state = models.ForeignKey(State,on_delete=models.CASCADE,default=None,null=True,related_name="user_state")
       district = models.ForeignKey(District,on_delete=models.CASCADE,default=None,null=True,related_name="user_dist")
-      block = models.ForeignKey(Block,on_delete=models.CASCADE,default=None,null=True,related_name="user_block")
       panchayath = models.ForeignKey(Panchayath,on_delete=models.CASCADE,default=None,null=True,related_name="user_panchayath")
       ward = models.ForeignKey(Ward,on_delete=models.CASCADE,default=None,null=True)
       designation = models.CharField(max_length=255)
