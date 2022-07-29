@@ -121,6 +121,28 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(appts, many=True)
             return Response({'results':serializer.data})
 
+class StaffRoleViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for register and edit user instances.
+    """
+    serializer_class = StaffRoleSerializer
+    queryset = StaffRole.objects.all()
+    http_method_names = ['get', 'post', 'put' , 'delete']
+
+    def retrieve(self, request,*args, **kargs):
+        staff_role_id = kargs.get('pk')
+        if staff_role_id:
+            try:
+                appts = StaffRole.objects.get(id=int(staff_role_id))
+                serializer = self.get_serializer(appts, many=False)
+                return Response({'results':serializer.data})
+            except:
+                return Response({'message': 'No data found'})
+        else:
+            appts = StaffRole.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+
 class StateViewSet(viewsets.ModelViewSet):
     """
     A viewset for register and edit user instances.

@@ -41,6 +41,16 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user = UserDetails.objects.create_user(**validated_data)
         return user
 
+class StaffRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaffRole
+        fields = ['id','name','code']
+        
+
+    def create(self,validated_data):
+        staff_role = StaffRole.objects.create(**validated_data)
+        return staff_role
+
 class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
