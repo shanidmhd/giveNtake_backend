@@ -34,7 +34,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = UserDetails
         fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','district','panchayath','ward','designation','bln_staff']
         extra_kwargs = { 
-            'password': {'write_only': True},
+            'password': {'write_only': True,'required':False},
         }
 
     def create(self,validated_data):
