@@ -4,7 +4,7 @@ from .models import *
 class NewsTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsType
-        fields = ['id','name']
+        fields = ['id','name','created_by','modified_by','date_added','date_modified']
         
 
     def create(self,validated_data):
@@ -15,7 +15,7 @@ class NewsTypeSerializer(serializers.ModelSerializer):
 class NewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = News
-        fields = ['id','title','description','meeting_link','news_type','news_image','date_added','date_expired','status']
+        fields = ['id','title','description','meeting_link','news_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified']
         
 
     def create(self,validated_data):

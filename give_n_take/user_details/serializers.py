@@ -32,7 +32,7 @@ class UserLoginSerializer(serializers.Serializer):
 class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDetails
-        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','district','panchayath','ward','designation','bln_staff']
+        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','district','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified']
         extra_kwargs = { 
             'password': {'write_only': True,'required':False},
         }
@@ -44,7 +44,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class StaffRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffRole
-        fields = ['id','name','code']
+        fields = ['id','name','code','created_by','modified_by','date_added','date_modified']
         
 
     def create(self,validated_data):
@@ -54,7 +54,7 @@ class StaffRoleSerializer(serializers.ModelSerializer):
 class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
-        fields = ['id','name','code']
+        fields = ['id','name','code','created_by','modified_by','date_added','date_modified']
         
 
     def create(self,validated_data):
@@ -64,7 +64,7 @@ class StateSerializer(serializers.ModelSerializer):
 class DistrictSerializer(serializers.ModelSerializer):
     class Meta:
         model = District
-        fields = ['id','name','state']
+        fields = ['id','name','state','created_by','modified_by','date_added','date_modified']
         
 
     def create(self,validated_data):
@@ -85,7 +85,7 @@ class DistrictSerializer(serializers.ModelSerializer):
 class PanchayathSerializer(serializers.ModelSerializer):
     class Meta:
         model = Panchayath
-        fields = ['id','name','district']
+        fields = ['id','name','district','created_by','modified_by','date_added','date_modified']
         
 
     def create(self,validated_data):
@@ -95,7 +95,7 @@ class PanchayathSerializer(serializers.ModelSerializer):
 class WardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ward
-        fields = ['id','name','panchayath']
+        fields = ['id','name','panchayath','created_by','modified_by','date_added','date_modified']
         
 
     def create(self,validated_data):

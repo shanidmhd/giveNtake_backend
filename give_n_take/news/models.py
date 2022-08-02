@@ -1,12 +1,12 @@
 from django.db import models
-
+from user_details.models import DatedModel,CreatedModel
 
 # Create your models here.
-class NewsType(models.Model):
+class NewsType(DatedModel,CreatedModel):
 
       name = models.CharField(max_length=255)
 
-class News(models.Model):
+class News(DatedModel,CreatedModel):
 
       title = models.CharField(max_length=255)
       description = models.TextField()

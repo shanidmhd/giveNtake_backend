@@ -2,41 +2,66 @@ from unicodedata import name
 from django.db import models
 from django.contrib.auth.models import User
 
-class State(models.Model):
+class DatedModel(models.Model):
+
+     class Meta:
+         abstract = True
+ 
+     date_added = models.DateTimeField(auto_now_add=True)
+     date_modified = models.DateTimeField(auto_now=True) 
+ 
+class CreatedModel(models.Model):
+
+     """
+     Models that inherit this model should explicitly write functionality to
+     update the created and modified since you do not have access to the
+     request context inside models
+     """
+ 
+     class Meta:
+         abstract = True
+ 
+     created_by = models.ForeignKey(
+         User,null=True, on_delete=models.SET_NULL, related_name="%(app_label)s_%(class)s_created")
+     modified_by = models.ForeignKey(
+         User, on_delete=models.SET_NULL, blank=True, null=True,
+         related_name="%(app_label)s_%(class)s_modified")
+
+class State(DatedModel,CreatedModel):
 
       name = models.CharField(max_length=255)
       code = models.CharField(max_length=255)
 
-class District(models.Model):
+class District(DatedModel,CreatedModel):
 
       name = models.CharField(max_length=255)
       code = models.CharField(max_length=255,null=True)
       state = models.ForeignKey(State,on_delete=models.CASCADE,default=None,null=True)
 
-# class Block(models.Model):
+# class Block(DatedModel,CreatedModel):
 
 #       name = models.CharField(max_length=255)
 #       code = models.CharField(max_length=255,null=True)
 #       district = models.ForeignKey(District,on_delete=models.CASCADE,default=None,null=True)
 
-class Panchayath(models.Model):
+class Panchayath(DatedModel,CreatedModel):
 
       name = models.CharField(max_length=255)
       code = models.CharField(max_length=255,null=True)
       district = models.ForeignKey(District,on_delete=models.CASCADE,default=None,null=True)
 
-class Ward(models.Model):
+class Ward(DatedModel,CreatedModel):
 
       name = models.CharField(max_length=255)
       code = models.CharField(max_length=255,null=True)
       panchayath = models.ForeignKey(Panchayath,on_delete=models.CASCADE,default=None,null=True)
 
-class StaffRole(models.Model):
+class StaffRole(DatedModel,CreatedModel):
 
       name = models.CharField(max_length=255)
       code = models.CharField(max_length=255,null=True)
 
-class UserDetails(User,models.Model):
+class UserDetails(User,DatedModel,CreatedModel):
     
       name = models.CharField(max_length=266)
       phone_number = models.CharField(max_length=20, blank=True, null=True)
