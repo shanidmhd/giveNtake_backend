@@ -96,7 +96,13 @@ class UserLoginView(APIView):
             serializer.is_valid(raise_exception=True)
             return Response({'message': 'User Login Successfully', 'data':serializer.data}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'User Login Failed'}, status=401)
+            user = authenticate(username=request.data['username'], password=request.data['password'])
+            if user:
+                serializer = self.serializer_class(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                return Response({'message': 'User Login Successfully', 'data':serializer.data}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'User Login Failed'}, status=401)
 
 
 class UserRegistrationViewSet(viewsets.ModelViewSet):
