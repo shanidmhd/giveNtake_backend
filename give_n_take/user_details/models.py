@@ -39,14 +39,14 @@ class StaffRole(models.Model):
 class UserDetails(User,models.Model):
     
       name = models.CharField(max_length=266)
-      phone_number = models.CharField(max_length=20, unique=True, blank=True, null=True)
+      phone_number = models.CharField(max_length=20, blank=True, null=True)
       joined_date =  models.DateTimeField(blank=True, null=True)
       staff_role = models.ForeignKey(StaffRole,on_delete=models.CASCADE,default=None,null=True,related_name="user_staff_role")
       state = models.ForeignKey(State,on_delete=models.CASCADE,default=None,null=True,related_name="user_state")
       district = models.ForeignKey(District,on_delete=models.CASCADE,default=None,null=True,related_name="user_dist")
       panchayath = models.ForeignKey(Panchayath,on_delete=models.CASCADE,default=None,null=True,related_name="user_panchayath")
       ward = models.ForeignKey(Ward,on_delete=models.CASCADE,default=None,null=True)
-      designation = models.CharField(max_length=255)
+      designation = models.CharField(max_length=255,null=True)
       bln_staff = models.BooleanField(null=True)
 
 
