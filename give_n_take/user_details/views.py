@@ -109,6 +109,7 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     """
     A viewset for register and edit user instances.
     """
+    parser_classes = [MultiPartParser, FormParser]
     serializer_class = RegistrationSerializer
     queryset = UserDetails.objects.all()
     http_method_names = ['get', 'post', 'put' , 'delete']
