@@ -151,6 +151,51 @@ class StaffRoleViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(appts, many=True)
             return Response({'results':serializer.data})
 
+class CommitteeTypeViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for register and edit user instances.
+    """
+    serializer_class = CommitteeTypeSerializer
+    queryset = CommitteeType.objects.all()
+    http_method_names = ['get', 'post', 'put' , 'delete']
+
+    def retrieve(self, request,*args, **kargs):
+        committee_type_id = kargs.get('pk')
+        if committee_type_id:
+            try:
+                appts = CommitteeType.objects.get(id=int(committee_type_id))
+                serializer = self.get_serializer(appts, many=False)
+                return Response({'results':serializer.data})
+            except:
+                return Response({'message': 'No data found'})
+        else:
+            appts = CommitteeType.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+
+class CommitteeViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for register and edit user instances.
+    """
+    serializer_class = CommitteeSerializer
+    queryset = Committee.objects.all()
+    http_method_names = ['get', 'post', 'put' , 'delete']
+
+    def retrieve(self, request,*args, **kargs):
+        committee_id = kargs.get('pk')
+        if committee_id:
+            try:
+                appts = Committee.objects.get(id=int(committee_id))
+                serializer = self.get_serializer(appts, many=False)
+                return Response({'results':serializer.data})
+            except:
+                return Response({'message': 'No data found'})
+        else:
+            appts = Committee.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response({'results':serializer.data})
+
+
 class StateViewSet(viewsets.ModelViewSet):
     """
     A viewset for register and edit user instances.

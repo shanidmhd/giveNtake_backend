@@ -61,6 +61,18 @@ class StaffRole(DatedModel,CreatedModel):
       name = models.CharField(max_length=255)
       code = models.CharField(max_length=255,null=True)
 
+class CommitteeType(DatedModel,CreatedModel):
+
+      name = models.CharField(max_length=255)
+      code = models.CharField(max_length=255,null=True)
+
+class Committee(DatedModel,CreatedModel):
+
+      name = models.CharField(max_length=266)
+      phone_number = models.CharField(max_length=20, blank=True, null=True)
+      staff_role = models.ForeignKey(StaffRole,on_delete=models.CASCADE,default=None,null=True,related_name="committee_staff_role")
+      committee_type = models.ForeignKey(CommitteeType,on_delete=models.CASCADE,default=None,null=True,related_name="committee_type")
+
 class UserDetails(User,DatedModel,CreatedModel):
     
       name = models.CharField(max_length=266)

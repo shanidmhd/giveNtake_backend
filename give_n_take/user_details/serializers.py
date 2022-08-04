@@ -51,6 +51,26 @@ class StaffRoleSerializer(serializers.ModelSerializer):
         staff_role = StaffRole.objects.create(**validated_data)
         return staff_role
 
+class CommitteeTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommitteeType
+        fields = ['id','name','code','created_by','modified_by','date_added','date_modified']
+        
+
+    def create(self,validated_data):
+        committee_type = CommitteeType.objects.create(**validated_data)
+        return committee_type
+
+class CommitteeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Committee
+        fields = ['id','name','phone_number','staff_role','committee_type','created_by','modified_by','date_added','date_modified']
+        
+
+    def create(self,validated_data):
+        committee = Committee.objects.create(**validated_data)
+        return committee
+
 class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State

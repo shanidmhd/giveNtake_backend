@@ -7,6 +7,8 @@ router.register(r'register', UserRegistrationViewSet)
 router.register(r'state', StateViewSet)
 router.register(r'district', DistrictViewSet)
 router.register(r'staff_role', StaffRoleViewSet)
+router.register(r'committee', CommitteeViewSet)
+router.register(r'committee_type', CommitteeTypeViewSet)
 router.register(r'panchayath', PanchayathViewSet)
 router.register(r'ward', WardViewSet)
 urlpatterns = [
