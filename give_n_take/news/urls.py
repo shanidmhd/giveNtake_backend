@@ -6,6 +6,7 @@ router = DefaultRouter()
 
 router.register(r'news_type', NewsTypeViewSet)
 router.register(r'news', NewsViewSet)
+router.register(r'meeting', MeetingHighligthsViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

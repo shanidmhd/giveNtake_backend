@@ -22,3 +22,22 @@ class NewsSerializer(serializers.ModelSerializer):
         news = News.objects.create(**validated_data)
         return news
 
+class MeetingHighligthsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MeetingHighligths
+        fields = '__all__'
+
+    def create(self, validated_data):
+        attendances = self.context['attendance']
+        photos = self.context['photo']
+        meeting_highligths = MeetingHighligths.objects.create(**validated_data)
+        for attendance in attendances:
+            MeetingAttendance.objects.create(meeting_highligths=meeting_highligths,
+                                         attendance=attendance)
+        for photo in photos:
+            MeetingPhoto.objects.create(meeting_highligths=meeting_highligths,
+                                         photo=photo)
+        return meeting_highligths
+
+    

@@ -16,6 +16,7 @@ from rest_framework import status
 from .models import *
 from datetime import datetime
 from .serializers import *
+from django.conf import settings
 
 
 
@@ -64,6 +65,90 @@ class NewsViewSet(viewsets.ModelViewSet):
             appts = News.objects.all()
             serializer = self.get_serializer(appts, many=True)
             return Response({'results':serializer.data})
+
+class MeetingHighligthsViewSet(viewsets.ModelViewSet):
+    queryset = MeetingHighligths.objects.all()
+    serializer_class = MeetingHighligthsSerializer
+    http_method_names = ['post','get','delete']
+
+    def create(self, request, *args, **kwargs):
+        attendance = request.FILES.getlist('attendance', None)
+        photo = request.FILES.getlist('photo', None)
+        data = {
+            "meeting_minutes": request.POST.get('meeting_minutes', None),
+            "description": request.POST.get('description', None),
+            }
+        _serializer = self.serializer_class(data=data, context={'attendance': attendance,'photo':photo})
+        if _serializer.is_valid():
+            _serializer.save()
+            return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # @swagger_auto_schema(
+    #     operation_description="meeting minutes list",
+    #     manual_parameters=[openapi.Parameter(
+    #         'district_id', 
+    #         openapi.IN_QUERY, 
+    #         type=openapi.TYPE_STRING
+    #         )],
+    # )
+
+    def list(self, request):
+        appts = MeetingHighligths.objects.values()
+        for meeting_highligths in appts:
+            lst_attendance = []
+            lst_photo = []
+            attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
+            for att in attendance:
+                att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                lst_attendance.append(att)
+            photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
+            for att in photo:
+                att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                lst_photo.append(att)
+            meeting_highligths['attendance']=lst_attendance
+            meeting_highligths['photo']=lst_photo
+        return Response({'results':appts})
+    
+    def retrieve(self, request,*args, **kargs):
+        meeting_highligths_id = kargs.get('pk')
+        if meeting_highligths_id:
+            try:
+                lst_attendance = []
+                lst_photo = []
+                meeting_highligths = MeetingHighligths.objects.filter(id=int(meeting_highligths_id)).values().first()
+                attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
+                for att in attendance:
+                    att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                    lst_attendance.append(att)
+                photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
+                for att in photo:
+                    att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                    lst_photo.append(att)
+                meeting_highligths['attendance']=lst_attendance
+                meeting_highligths['photo']=lst_photo
+                return Response({'results':meeting_highligths})
+            except:
+                return Response({'message': 'No data found'})
+            
+        else:
+            appts = MeetingHighligths.objects.values()
+            for meeting_highligths in appts:
+                lst_attendance = []
+                lst_photo = []
+                attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
+                for att in attendance:
+                    att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                    lst_attendance.append(att)
+                photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
+                for att in photo:
+                    att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                    lst_photo.append(att)
+                meeting_highligths['attendance']=lst_attendance
+                meeting_highligths['photo']=lst_photo
+            return Response({'results':appts})
+
 
 
 
