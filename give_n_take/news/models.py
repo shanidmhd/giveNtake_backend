@@ -23,10 +23,11 @@ class MeetingHighligths(DatedModel,CreatedModel):
 
       meeting_minutes = models.TextField(null=True)
       description = models.TextField(null=True)
+      meeting_attendance = models.IntegerField(blank=True, null=True)
       
 class MeetingAttendance(models.Model):
     meeting_highligths = models.ForeignKey(MeetingHighligths,
-                             related_name="meeting_attendance", on_delete=models.CASCADE)  
+                             related_name="meeting_atendance", on_delete=models.CASCADE)  
     attendance = models.ImageField(upload_to='media/attendance/%Y/%m/%d/',
                                 null=True, blank=True)
 

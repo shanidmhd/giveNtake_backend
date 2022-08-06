@@ -77,6 +77,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
         data = {
             "meeting_minutes": request.POST.get('meeting_minutes', None),
             "description": request.POST.get('description', None),
+            "meeting_attendance": request.POST.get('meeting_attendance', None),
             }
         _serializer = self.serializer_class(data=data, context={'attendance': attendance,'photo':photo})
         if _serializer.is_valid():

@@ -38,6 +38,7 @@ class MeetingHighligthsSerializer(serializers.ModelSerializer):
         for photo in photos:
             MeetingPhoto.objects.create(meeting_highligths=meeting_highligths,
                                          photo=photo)
+        
         return meeting_highligths
 
     
