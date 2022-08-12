@@ -137,17 +137,43 @@ class StaffRoleViewSet(viewsets.ModelViewSet):
     queryset = StaffRole.objects.all()
     http_method_names = ['get', 'post', 'put' , 'delete']
 
+    def list(self, request):
+       
+        appts = StaffRole.objects.values()
+        for ins in appts:
+            lst_sidebar = []
+            if ins['json_sidebar']:
+                sidebar = ins['json_sidebar'][1:-1].split(',')
+                for side in sidebar:
+                    lst_sidebar.append(side[1:-1])
+            ins['json_sidebar'] = lst_sidebar
+        serializer = self.get_serializer(appts, many=True)
+        return Response({'results':serializer.data})
+
     def retrieve(self, request,*args, **kargs):
         staff_role_id = kargs.get('pk')
         if staff_role_id:
             try:
-                appts = StaffRole.objects.get(id=int(staff_role_id))
+                appts = StaffRole.objects.filter(id=int(staff_role_id)).values().first()
+                lst_sidebar = []
+                if appts['json_sidebar']:
+                    sidebar = appts['json_sidebar'][1:-1].split(',')
+                    for side in sidebar:
+                        lst_sidebar.append(side[1:-1])
+                appts['json_sidebar'] = lst_sidebar
                 serializer = self.get_serializer(appts, many=False)
                 return Response({'results':serializer.data})
             except:
                 return Response({'message': 'No data found'})
         else:
-            appts = StaffRole.objects.all()
+            appts = StaffRole.objects.values()
+            for ins in appts:
+                lst_sidebar = []
+                if ins['json_sidebar']:
+                    sidebar = ins['json_sidebar'][1:-1].split(',')
+                    for side in sidebar:
+                        lst_sidebar.append(side[1:-1])
+                ins['json_sidebar'] = lst_sidebar
             serializer = self.get_serializer(appts, many=True)
             return Response({'results':serializer.data})
 
@@ -388,4 +414,28 @@ class WardViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(appts, many=True)
             return Response({'results':serializer.data})
 
+
+class get_user_by_name(APIView):
+    queryset = UserDetails.objects.all()
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'username', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            if request.GET.get('username'):
+                user = UserDetails.objects.filter(username=request.GET.get('username')).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name")
+                if user:
+                    return Response({'results':user})
+                else:
+                    return Response({'results':'No data found'})
+            else:
+                return Response({'results':'No data found'})
+        except Exception as e:
+            return Response({'results':"Failed to get user"})
 

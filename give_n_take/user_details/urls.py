@@ -14,5 +14,5 @@ router.register(r'ward', WardViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('login/', UserLoginView.as_view(), name="user_login"),
-    
+    path('get_user/',get_user_by_name.as_view())
     ]

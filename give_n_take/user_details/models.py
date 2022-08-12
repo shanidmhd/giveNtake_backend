@@ -60,6 +60,7 @@ class StaffRole(DatedModel,CreatedModel):
 
       name = models.CharField(max_length=255)
       code = models.CharField(max_length=255,null=True)
+      json_sidebar = models.JSONField(blank=True, null=True)
 
 class CommitteeType(DatedModel,CreatedModel):
 

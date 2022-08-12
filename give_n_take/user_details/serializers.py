@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import *
+from django.conf import settings
 
 
 class UserLoginSerializer(serializers.Serializer):
@@ -23,9 +24,39 @@ class UserLoginSerializer(serializers.Serializer):
     def to_representation(self, instance):
         response_data = super().to_representation(instance)
         refresh = RefreshToken.for_user(instance)
+        user_details = UserDetails.objects.get(id=instance.id)
         response_data['access_token'] = str(refresh.access_token)
         response_data['refresh_token'] = str(refresh)
-        response_data['id'] = instance.id
+        response_data['id'] = user_details.id
+        response_data['first_name'] = user_details.first_name
+        response_data['last_name'] = user_details.last_name
+        response_data['email'] = user_details.email
+        response_data['phone_number'] = user_details.phone_number
+        response_data['date_joined'] = user_details.date_joined
+        if user_details.staff_role:
+            response_data['staff_role_id'] = user_details.staff_role.id
+            response_data['staff_role_name'] = user_details.staff_role.name
+            lst_sidebar = []
+            if user_details.staff_role.json_sidebar:
+                sidebar = user_details.staff_role.json_sidebar[1:-1].split(',')
+                for side in sidebar:
+                    lst_sidebar.append(side[1:-1])
+            response_data['json_sidebar'] = lst_sidebar
+        if user_details.state:
+            response_data['state_id'] = user_details.state.id
+            response_data['state_name'] = user_details.state.name
+        if user_details.district:
+            response_data['district_id'] = user_details.district.id
+            response_data['district_name'] = user_details.district.name
+        if user_details.panchayath:
+            response_data['panchayath_id'] = user_details.panchayath.id
+            response_data['panchayath_name'] = user_details.panchayath.name
+        if user_details.ward:
+            response_data['ward_id'] = user_details.ward.id
+            response_data['ward_name'] = user_details.ward.name
+        response_data['bln_staff'] = user_details.bln_staff
+        if user_details.user_image:
+            response_data['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user_details.user_image.name
         return response_data
       
 
@@ -41,11 +72,15 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def create(self,validated_data):
         user = UserDetails.objects.create_user(**validated_data)
         return user
+    
+    def get_user_by_username(self, obj):
+        user = UserDetails.objects.get(username = obj)
+        return user
 
 class StaffRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffRole
-        fields = ['id','name','code','created_by','modified_by','date_added','date_modified']
+        fields = ['id','name','code','json_sidebar','created_by','modified_by','date_added','date_modified']
         
 
     def create(self,validated_data):
@@ -93,16 +128,6 @@ class DistrictSerializer(serializers.ModelSerializer):
         return district
 
 
-# class BlockSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Block
-#         fields = ['id','name','district']
-        
-
-#     def create(self,validated_data):
-#         block = Block.objects.create(**validated_data)
-#         return block
-
 class PanchayathSerializer(serializers.ModelSerializer):
     class Meta:
         model = Panchayath
@@ -124,10 +149,3 @@ class WardSerializer(serializers.ModelSerializer):
         return ward
 
 
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = user_group
-#         fields = ['name', 'code']
-#         extra_kwargs = {'name': {'required': True}, 'code': {'required': True}, 
-            
-#         }
