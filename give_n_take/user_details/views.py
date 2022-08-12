@@ -138,15 +138,17 @@ class StaffRoleViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'put' , 'delete']
 
     def list(self, request):
-       
         appts = StaffRole.objects.values()
         for ins in appts:
-            lst_sidebar = []
-            if ins['json_sidebar']:
-                sidebar = ins['json_sidebar'][1:-1].split(',')
-                for side in sidebar:
-                    lst_sidebar.append(side[1:-1])
-            ins['json_sidebar'] = lst_sidebar
+            try:
+                lst_sidebar = []
+                if ins['json_sidebar']:
+                    sidebar = ins['json_sidebar'][1:-1].split(',')
+                    for side in sidebar:
+                        lst_sidebar.append(side[1:-1])
+                ins['json_sidebar'] = lst_sidebar
+            except:
+                pass
         serializer = self.get_serializer(appts, many=True)
         return Response({'results':serializer.data})
 
@@ -155,12 +157,15 @@ class StaffRoleViewSet(viewsets.ModelViewSet):
         if staff_role_id:
             try:
                 appts = StaffRole.objects.filter(id=int(staff_role_id)).values().first()
-                lst_sidebar = []
-                if appts['json_sidebar']:
-                    sidebar = appts['json_sidebar'][1:-1].split(',')
-                    for side in sidebar:
-                        lst_sidebar.append(side[1:-1])
-                appts['json_sidebar'] = lst_sidebar
+                try:
+                    lst_sidebar = []
+                    if appts['json_sidebar']:
+                        sidebar = appts['json_sidebar'][1:-1].split(',')
+                        for side in sidebar:
+                            lst_sidebar.append(side[1:-1])
+                    appts['json_sidebar'] = lst_sidebar
+                except:
+                    pass
                 serializer = self.get_serializer(appts, many=False)
                 return Response({'results':serializer.data})
             except:
@@ -168,12 +173,15 @@ class StaffRoleViewSet(viewsets.ModelViewSet):
         else:
             appts = StaffRole.objects.values()
             for ins in appts:
-                lst_sidebar = []
-                if ins['json_sidebar']:
-                    sidebar = ins['json_sidebar'][1:-1].split(',')
-                    for side in sidebar:
-                        lst_sidebar.append(side[1:-1])
-                ins['json_sidebar'] = lst_sidebar
+                try:
+                    lst_sidebar = []
+                    if ins['json_sidebar']:
+                        sidebar = ins['json_sidebar'][1:-1].split(',')
+                        for side in sidebar:
+                            lst_sidebar.append(side[1:-1])
+                    ins['json_sidebar'] = lst_sidebar
+                except:
+                    pass
             serializer = self.get_serializer(appts, many=True)
             return Response({'results':serializer.data})
 

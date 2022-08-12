@@ -37,11 +37,14 @@ class UserLoginSerializer(serializers.Serializer):
             response_data['staff_role_id'] = user_details.staff_role.id
             response_data['staff_role_name'] = user_details.staff_role.name
             lst_sidebar = []
-            if user_details.staff_role.json_sidebar:
-                sidebar = user_details.staff_role.json_sidebar[1:-1].split(',')
-                for side in sidebar:
-                    lst_sidebar.append(side[1:-1])
-            response_data['json_sidebar'] = lst_sidebar
+            try:
+                if user_details.staff_role.json_sidebar:
+                    sidebar = user_details.staff_role.json_sidebar[1:-1].split(',')
+                    for side in sidebar:
+                        lst_sidebar.append(side[1:-1])
+                response_data['json_sidebar'] = lst_sidebar
+            except:
+                response_data['json_sidebar'] = user_details.staff_role.json_sidebar
         if user_details.state:
             response_data['state_id'] = user_details.state.id
             response_data['state_name'] = user_details.state.name
