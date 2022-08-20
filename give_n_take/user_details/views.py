@@ -18,6 +18,7 @@ from rest_framework import status
 from .models import *
 from datetime import datetime
 from .serializers import *
+from django.conf import settings
 
 
 class UserLoginView(APIView):
@@ -437,8 +438,9 @@ class get_user_by_name(APIView):
     def get(self,request):
         try:
             if request.GET.get('username'):
-                user = UserDetails.objects.filter(username=request.GET.get('username')).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name")
+                user = UserDetails.objects.filter(username=request.GET.get('username')).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image")
                 if user:
+                    user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
                     return Response({'results':user})
                 else:
                     return Response({'results':'No data found'})
