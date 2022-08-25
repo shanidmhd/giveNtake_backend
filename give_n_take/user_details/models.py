@@ -86,6 +86,7 @@ class UserDetails(User,DatedModel,CreatedModel):
       ward = models.ForeignKey(Ward,on_delete=models.CASCADE,default=None,null=True)
       designation = models.CharField(max_length=255,null=True)
       bln_staff = models.BooleanField(null=True,default=False)
+      committee = models.ForeignKey(Committee,on_delete=models.CASCADE,default=None,null=True)
       user_image = models.ImageField(upload_to='media/user_images/', max_length=240, blank=True, null=True)
 
 

@@ -57,6 +57,9 @@ class UserLoginSerializer(serializers.Serializer):
         if user_details.ward:
             response_data['ward_id'] = user_details.ward.id
             response_data['ward_name'] = user_details.ward.name
+        if user_details.committee:
+            response_data['committee_id'] = user_details.committee.id
+            response_data['committee_name'] = user_details.committee.name
         response_data['bln_staff'] = user_details.bln_staff
         if user_details.user_image:
             response_data['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user_details.user_image.name
@@ -66,7 +69,7 @@ class UserLoginSerializer(serializers.Serializer):
 class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDetails
-        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','district','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image']
+        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','district','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee']
         extra_kwargs = { 
             'password': {'write_only': True,'required':False},
             'username': {'required':False}, 
