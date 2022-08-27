@@ -78,15 +78,22 @@ class UserLoginView(APIView):
     def post(self, request, *args, **kwargs):
         str_username= request.data['username']
         str_password=request.data['password']
+        try:
+            is_admin = request.data['is_admin']
+        except:
+            is_admin = False
         user = authenticate(username=request.data['username'], password=request.data['password'])
         if user:
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
-            try:
-                if serializer.data['committee_type_id']:
-                    return Response({'message': 'User Login Successfully', 'data':serializer.data}, status=status.HTTP_200_OK)
-            except:
-                 return Response({'message': 'Access Denied'})
+            if is_admin:
+                try:
+                    if serializer.data['committee_type_id']:
+                        return Response({'message': 'User Login Successfully', 'data':serializer.data}, status=status.HTTP_200_OK)
+                except:
+                    return Response({'message': 'Access Denied'})
+            else:
+                return Response({'message': 'User Login Successfully', 'data':serializer.data}, status=status.HTTP_200_OK)
         else:
             url = "https://new.giventake.world/api/v1/auth/login/"
             res =  requests.post(url,json={"userId":str_username,"password":str_password})
