@@ -74,6 +74,10 @@ class Committee(DatedModel,CreatedModel):
       staff_role = models.ForeignKey(StaffRole,on_delete=models.CASCADE,default=None,null=True,related_name="committee_staff_role")
       committee_type = models.ForeignKey(CommitteeType,on_delete=models.CASCADE,default=None,null=True,related_name="committee_type")
 
+class BloodGroup(DatedModel,CreatedModel):
+
+      name = models.CharField(max_length=266)
+
 class UserDetails(User,DatedModel,CreatedModel):
     
       name = models.CharField(max_length=266)
@@ -86,7 +90,13 @@ class UserDetails(User,DatedModel,CreatedModel):
       ward = models.ForeignKey(Ward,on_delete=models.CASCADE,default=None,null=True)
       designation = models.CharField(max_length=255,null=True)
       bln_staff = models.BooleanField(null=True,default=False)
-      committee = models.ForeignKey(Committee,on_delete=models.CASCADE,default=None,null=True)
+      committee_type = models.ForeignKey(CommitteeType,on_delete=models.CASCADE,default=None,null=True)
+      pin_code = models.CharField(max_length=255,null=True)
+      address = models.TextField(null=True)
+      blood_group = models.CharField(max_length=50,null=True)
+      str_panchayath = models.CharField(max_length=255,null=True) 
+      str_ward = models.CharField(max_length=255,null=True) 
+      is_details = models.BooleanField(null=True,default=False)
       user_image = models.ImageField(upload_to='media/user_images/', max_length=240, blank=True, null=True)
 
 

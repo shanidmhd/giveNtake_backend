@@ -208,29 +208,6 @@ class CommitteeTypeViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(appts, many=True)
             return Response({'results':serializer.data})
 
-class CommitteeViewSet(viewsets.ModelViewSet):
-    """
-    A viewset for register and edit user instances.
-    """
-    serializer_class = CommitteeSerializer
-    queryset = Committee.objects.all()
-    http_method_names = ['get', 'post', 'put' , 'delete']
-
-    def retrieve(self, request,*args, **kargs):
-        committee_id = kargs.get('pk')
-        if committee_id:
-            try:
-                appts = Committee.objects.get(id=int(committee_id))
-                serializer = self.get_serializer(appts, many=False)
-                return Response({'results':serializer.data})
-            except:
-                return Response({'message': 'No data found'})
-        else:
-            appts = Committee.objects.all()
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
-
-
 class StateViewSet(viewsets.ModelViewSet):
     """
     A viewset for register and edit user instances.
@@ -438,7 +415,8 @@ class get_user_by_name(APIView):
     def get(self,request):
         try:
             if request.GET.get('username'):
-                user = UserDetails.objects.filter(username=request.GET.get('username')).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_id","committee_id__name")
+                user = UserDetails.objects.filter(username=request.GET.get('username')).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
+                "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name")
                 if user:
                     user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
                     return Response({'results':user})
@@ -449,3 +427,28 @@ class get_user_by_name(APIView):
         except Exception as e:
             return Response({'results':"Failed to get user"})
 
+class get_user_by_committe(APIView):
+    queryset = UserDetails.objects.all()
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'committee_type', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            if request.GET.get('committee_type'):
+                user = UserDetails.objects.filter(committee_type_id=int(request.GET.get('committee_type'))).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
+                "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name")
+                if user:
+                    user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
+                    return Response({'results':user})
+                else:
+                    return Response({'results':'No data found'})
+            else:
+                return Response({'results':'No data found'})
+        except Exception as e:
+            return Response({'results':"Failed to get user"})

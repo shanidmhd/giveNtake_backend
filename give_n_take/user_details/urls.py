@@ -7,12 +7,12 @@ router.register(r'register', UserRegistrationViewSet)
 router.register(r'state', StateViewSet)
 router.register(r'district', DistrictViewSet)
 router.register(r'staff_role', StaffRoleViewSet)
-router.register(r'committee', CommitteeViewSet)
 router.register(r'committee_type', CommitteeTypeViewSet)
 router.register(r'panchayath', PanchayathViewSet)
 router.register(r'ward', WardViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('login/', UserLoginView.as_view(), name="user_login"),
-    path('get_user/',get_user_by_name.as_view())
+    path('get_user/',get_user_by_name.as_view()),
+    path('get_user_committee/',get_user_by_committe.as_view()),
     ]

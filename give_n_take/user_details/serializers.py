@@ -28,11 +28,18 @@ class UserLoginSerializer(serializers.Serializer):
         response_data['access_token'] = str(refresh.access_token)
         response_data['refresh_token'] = str(refresh)
         response_data['id'] = user_details.id
+        response_data['username'] = user_details.username
         response_data['first_name'] = user_details.first_name
         response_data['last_name'] = user_details.last_name
         response_data['email'] = user_details.email
         response_data['phone_number'] = user_details.phone_number
         response_data['date_joined'] = user_details.date_joined
+        response_data['pin_code'] = user_details.pin_code
+        response_data['address'] = user_details.address
+        response_data['blood_group'] = user_details.blood_group
+        response_data['str_panchayath'] = user_details.str_panchayath
+        response_data['str_ward'] = user_details.str_ward
+        response_data['is_details'] = user_details.is_details
         if user_details.staff_role:
             response_data['staff_role_id'] = user_details.staff_role.id
             response_data['staff_role_name'] = user_details.staff_role.name
@@ -57,9 +64,9 @@ class UserLoginSerializer(serializers.Serializer):
         if user_details.ward:
             response_data['ward_id'] = user_details.ward.id
             response_data['ward_name'] = user_details.ward.name
-        if user_details.committee:
-            response_data['committee_id'] = user_details.committee.id
-            response_data['committee_name'] = user_details.committee.name
+        if user_details.committee_type:
+            response_data['committee_type_id'] = user_details.committee_type.id
+            response_data['committee_type_name'] = user_details.committee_type.name
         response_data['bln_staff'] = user_details.bln_staff
         if user_details.user_image:
             response_data['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user_details.user_image.name
@@ -69,7 +76,7 @@ class UserLoginSerializer(serializers.Serializer):
 class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDetails
-        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','district','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee']
+        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','district','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details']
         extra_kwargs = { 
             'password': {'write_only': True,'required':False},
             'username': {'required':False}, 
@@ -103,15 +110,6 @@ class CommitteeTypeSerializer(serializers.ModelSerializer):
         committee_type = CommitteeType.objects.create(**validated_data)
         return committee_type
 
-class CommitteeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Committee
-        fields = ['id','name','phone_number','staff_role','committee_type','created_by','modified_by','date_added','date_modified']
-        
-
-    def create(self,validated_data):
-        committee = Committee.objects.create(**validated_data)
-        return committee
 
 class StateSerializer(serializers.ModelSerializer):
     class Meta:

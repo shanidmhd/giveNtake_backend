@@ -1,5 +1,6 @@
 from django.db import models
 from user_details.models import DatedModel,CreatedModel,CommitteeType
+from user_details.models import *
 
 
 # Create your models here.
@@ -17,7 +18,8 @@ class News(DatedModel,CreatedModel):
       news_image = models.ImageField(upload_to='media/news_images/', max_length=240, blank=True, null=True)
       date_added =  models.DateTimeField(blank=True, null=True)
       date_expired =  models.DateTimeField(blank=True, null=True)
-      status = models.CharField(max_length=255)
+      region = models.ForeignKey(District,on_delete=models.CASCADE,default=None,null=True,related_name="news_region")
+      status = models.CharField(max_length=255,null=True)
 
 class MeetingHighligths(DatedModel,CreatedModel):
 
