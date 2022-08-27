@@ -52,26 +52,18 @@ class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
     http_method_names = ['get', 'post', 'put' , 'delete']
 
-    def list(self, request):
-        try:
-            appts = News.objects.filter(region_id = request.user.district.id)
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
-        except:
-            return Response({'message': 'No data found'})
-
     def retrieve(self, request,*args, **kargs):
         news_id = kargs.get('pk')
         if news_id:
             try:
-                appts = News.objects.get(id=int(news_id),region_id = request.user.district.id)
+                appts = News.objects.get(id=int(news_id))
                 serializer = self.get_serializer(appts, many=False)
                 return Response({'results':serializer.data})
             except:
                 return Response({'message': 'No data found'})
         else:
             try:
-                appts = News.objects.filter(region_id = request.user.district.id)
+                appts = News.objects.all()
                 serializer = self.get_serializer(appts, many=True)
                 return Response({'results':serializer.data})
             except:
