@@ -74,12 +74,16 @@ class UserLoginSerializer(serializers.Serializer):
       
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    state_name = serializers.CharField(source='state.name', read_only=True)
+    distict_name = serializers.CharField(source='district.name', read_only=True)
     class Meta:
         model = UserDetails
-        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','district','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details']
+        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state_name','district','distict_name','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details']
         extra_kwargs = { 
             'password': {'write_only': True,'required':False},
             'username': {'required':False}, 
+            'state_name':{'required':False},
+            'distict_name':{'required':False},
         }
 
     def create(self,validated_data):
