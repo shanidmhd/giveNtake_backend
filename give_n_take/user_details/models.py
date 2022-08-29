@@ -7,8 +7,8 @@ class DatedModel(models.Model):
      class Meta:
          abstract = True
  
-     date_added = models.DateTimeField(auto_now_add=True)
-     date_modified = models.DateTimeField(auto_now=True) 
+     date_added = models.DateTimeField(auto_now_add=True,null=True)
+     date_modified = models.DateTimeField(auto_now=True,null=True) 
  
 class CreatedModel(models.Model):
 
@@ -96,7 +96,7 @@ class UserDetails(User,DatedModel,CreatedModel):
       blood_group = models.CharField(max_length=50,null=True)
       str_panchayath = models.CharField(max_length=255,null=True) 
       str_ward = models.CharField(max_length=255,null=True) 
-      is_details = models.BooleanField(null=True,default=False)
+      is_details = models.BooleanField(null=True)
       user_image = models.ImageField(upload_to='media/user_images/', max_length=240, blank=True, null=True)
 
 

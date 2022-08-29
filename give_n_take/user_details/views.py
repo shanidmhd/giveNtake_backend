@@ -95,26 +95,29 @@ class UserLoginView(APIView):
             else:
                 return Response({'message': 'User Login Successfully', 'data':serializer.data}, status=status.HTTP_200_OK)
         else:
-            url = "https://new.giventake.world/api/v1/auth/login/"
-            res =  requests.post(url,json={"userId":str_username,"password":str_password})
-            data = json.loads(res.text)
-            if data['status']:
-                res_user = UserDetails.objects.filter(username = str_username)
-                if res_user:
-                    pass
+            try:
+                url = "https://new.giventake.world/api/v1/auth/login/"
+                res =  requests.post(url,json={"userId":str_username,"password":str_password})
+                data = json.loads(res.text)
+                if data['status']:
+                    res_user = UserDetails.objects.filter(username = str_username)
+                    if res_user:
+                        pass
+                    else:
+                        ins_user = UserDetails(
+                                            username = str_username,
+                                            date_joined = datetime.now(),
+                                            is_active = True,
+                                            is_superuser = False)
+                        ins_user.set_password(str_password)
+                        ins_user.save()
+                    serializer = self.serializer_class(data=request.data)
+                    serializer.is_valid(raise_exception=True)
+                    return Response({'message': 'User Login Successfully', 'data':serializer.data}, status=status.HTTP_200_OK)
                 else:
-                    ins_user = UserDetails(
-                                        username = str_username,
-                                        date_joined = datetime.now(),
-                                        is_active = True,
-                                        is_superuser = False)
-                    ins_user.set_password(str_password)
-                    ins_user.save()
-                serializer = self.serializer_class(data=request.data)
-                serializer.is_valid(raise_exception=True)
-                return Response({'message': 'User Login Successfully', 'data':serializer.data}, status=status.HTTP_200_OK)
-            else:
-                return Response({'message': 'User Login Failed'}, status=401)
+                    return Response({'message': 'User Login Failed'}, status=401)
+            except:
+                return Response({'message': 'User Login Failed (Connection Refused)'}, status=401)
 
     
 
