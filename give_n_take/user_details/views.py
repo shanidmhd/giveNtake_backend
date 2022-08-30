@@ -96,7 +96,7 @@ class UserLoginView(APIView):
                 return Response({'message': 'User Login Successfully', 'data':serializer.data}, status=status.HTTP_200_OK)
         else:
             try:
-                url = "https://new.giventake.world/api/v1/auth/login/"
+                url = "https://giventake.world/api/v1/auth/login/"
                 res =  requests.post(url,json={"userId":str_username,"password":str_password})
                 data = json.loads(res.text)
                 if data['status']:
