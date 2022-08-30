@@ -26,9 +26,9 @@ class UserLoginSerializer(serializers.Serializer):
         refresh = RefreshToken.for_user(instance)
         response_data['access_token'] = str(refresh.access_token)
         response_data['refresh_token'] = str(refresh)
+        response_data['id'] = instance.id
         try:
             user_details = UserDetails.objects.get(id=instance.id)
-            response_data['id'] = user_details.id
             response_data['username'] = user_details.username
             response_data['first_name'] = user_details.first_name
             response_data['last_name'] = user_details.last_name
