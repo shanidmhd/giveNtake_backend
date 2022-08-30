@@ -24,52 +24,55 @@ class UserLoginSerializer(serializers.Serializer):
     def to_representation(self, instance):
         response_data = super().to_representation(instance)
         refresh = RefreshToken.for_user(instance)
-        user_details = UserDetails.objects.get(id=instance.id)
         response_data['access_token'] = str(refresh.access_token)
         response_data['refresh_token'] = str(refresh)
-        response_data['id'] = user_details.id
-        response_data['username'] = user_details.username
-        response_data['first_name'] = user_details.first_name
-        response_data['last_name'] = user_details.last_name
-        response_data['email'] = user_details.email
-        response_data['phone_number'] = user_details.phone_number
-        response_data['date_joined'] = user_details.date_joined
-        response_data['pin_code'] = user_details.pin_code
-        response_data['address'] = user_details.address
-        response_data['blood_group'] = user_details.blood_group
-        response_data['str_panchayath'] = user_details.str_panchayath
-        response_data['str_ward'] = user_details.str_ward
-        response_data['is_details'] = user_details.is_details
-        if user_details.staff_role:
-            response_data['staff_role_id'] = user_details.staff_role.id
-            response_data['staff_role_name'] = user_details.staff_role.name
-            lst_sidebar = []
-            try:
-                if user_details.staff_role.json_sidebar:
-                    sidebar = user_details.staff_role.json_sidebar[1:-1].split(',')
-                    for side in sidebar:
-                        lst_sidebar.append(side[1:-1])
-                response_data['json_sidebar'] = lst_sidebar
-            except:
-                response_data['json_sidebar'] = user_details.staff_role.json_sidebar
-        if user_details.state:
-            response_data['state_id'] = user_details.state.id
-            response_data['state_name'] = user_details.state.name
-        if user_details.district:
-            response_data['district_id'] = user_details.district.id
-            response_data['district_name'] = user_details.district.name
-        if user_details.panchayath:
-            response_data['panchayath_id'] = user_details.panchayath.id
-            response_data['panchayath_name'] = user_details.panchayath.name
-        if user_details.ward:
-            response_data['ward_id'] = user_details.ward.id
-            response_data['ward_name'] = user_details.ward.name
-        if user_details.committee_type:
-            response_data['committee_type_id'] = user_details.committee_type.id
-            response_data['committee_type_name'] = user_details.committee_type.name
-        response_data['bln_staff'] = user_details.bln_staff
-        if user_details.user_image:
-            response_data['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user_details.user_image.name
+        try:
+            user_details = UserDetails.objects.get(id=instance.id)
+            response_data['id'] = user_details.id
+            response_data['username'] = user_details.username
+            response_data['first_name'] = user_details.first_name
+            response_data['last_name'] = user_details.last_name
+            response_data['email'] = user_details.email
+            response_data['phone_number'] = user_details.phone_number
+            response_data['date_joined'] = user_details.date_joined
+            response_data['pin_code'] = user_details.pin_code
+            response_data['address'] = user_details.address
+            response_data['blood_group'] = user_details.blood_group
+            response_data['str_panchayath'] = user_details.str_panchayath
+            response_data['str_ward'] = user_details.str_ward
+            response_data['is_details'] = user_details.is_details
+            if user_details.staff_role:
+                response_data['staff_role_id'] = user_details.staff_role.id
+                response_data['staff_role_name'] = user_details.staff_role.name
+                lst_sidebar = []
+                try:
+                    if user_details.staff_role.json_sidebar:
+                        sidebar = user_details.staff_role.json_sidebar[1:-1].split(',')
+                        for side in sidebar:
+                            lst_sidebar.append(side[1:-1])
+                    response_data['json_sidebar'] = lst_sidebar
+                except:
+                    response_data['json_sidebar'] = user_details.staff_role.json_sidebar
+            if user_details.state:
+                response_data['state_id'] = user_details.state.id
+                response_data['state_name'] = user_details.state.name
+            if user_details.district:
+                response_data['district_id'] = user_details.district.id
+                response_data['district_name'] = user_details.district.name
+            if user_details.panchayath:
+                response_data['panchayath_id'] = user_details.panchayath.id
+                response_data['panchayath_name'] = user_details.panchayath.name
+            if user_details.ward:
+                response_data['ward_id'] = user_details.ward.id
+                response_data['ward_name'] = user_details.ward.name
+            if user_details.committee_type:
+                response_data['committee_type_id'] = user_details.committee_type.id
+                response_data['committee_type_name'] = user_details.committee_type.name
+            response_data['bln_staff'] = user_details.bln_staff
+            if user_details.user_image:
+                response_data['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user_details.user_image.name
+        except:
+            pass
         return response_data
       
 
