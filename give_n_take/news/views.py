@@ -72,16 +72,16 @@ class NewsViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs): 
         user_details=UserDetails.objects.get(id=request.user.id)
         data={
-       "title" : request.POST.get('title',None),   
-       "description": request.POST.get('description',None), 
-       "meeting_link" : request.POST.get('meeting_link',None), 
-       "news_type": request.POST.get('news_type',None), 
-       "committe_type"  : request.POST.get('committe_type ',None), 
-       "news_image": request.POST.get('news_image',None), 
-       "date_added": request.POST.get('date_added',None), 
-       "date_expired": request.POST.get(' date_expired',None), 
+       "title" : request.data.get('title',None),   
+       "description": request.data.get('description',None), 
+       "meeting_link" : request.data.get('meeting_link',None), 
+       "news_type": request.data.get('news_type',None), 
+       "committe_type"  : request.data.get('committe_type ',None), 
+       "news_image": request.FILES.get('news_image', None), 
+       "date_added": request.data.get('date_added',None), 
+       "date_expired": request.data.get('date_expired',None), 
        "region": user_details.district.id, 
-       "status": request.POST.get('status',None), 
+       "status": request.data.get('status',None), 
        "created_by": request.user.id
         }
         _serializer = self.serializer_class(data=data)
