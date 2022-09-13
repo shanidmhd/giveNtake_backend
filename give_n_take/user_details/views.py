@@ -243,6 +243,19 @@ class StateViewSet(viewsets.ModelViewSet):
             appts = State.objects.all()
             serializer = self.get_serializer(appts, many=True)
             return Response({'results':serializer.data})
+    
+    def create(self, request, *args, **kwargs): 
+        data={
+       "name" : request.POST.get('name',None),
+       "code" : request.POST.get('code',None),
+       "created_by": request.user.id
+        }
+        _serializer = self.serializer_class(data=data)
+        if _serializer.is_valid():
+            _serializer.save()
+            return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class DistrictViewSet(viewsets.ModelViewSet):
     """
@@ -250,7 +263,7 @@ class DistrictViewSet(viewsets.ModelViewSet):
     """
     serializer_class = DistrictSerializer
     queryset = District.objects.all()
-    http_method_names = ['get', 'post', 'put' , 'delete']
+    http_method_states = ['get', 'post', 'put' , 'delete']
 
     @swagger_auto_schema(
         operation_description="District list",
@@ -260,6 +273,19 @@ class DistrictViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_STRING
             )],
     )
+    def create(self, request, *args, **kwargs): 
+        data={
+       "name" : request.POST.get('name',None),
+       "code" : request.POST.get('code',None),
+       "state" : request.POST.get('state',None),
+       "created_by": request.user.id
+        }
+        _serializer = self.serializer_class(data=data)
+        if _serializer.is_valid():
+            _serializer.save()
+            return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def list(self, request):
         state_id = request.GET.get('state_id')
         if state_id:
@@ -466,3 +492,39 @@ class get_user_by_committe(APIView):
                 return Response({'results':'No data found'})
         except Exception as e:
             return Response({'results':"Failed to get user"})
+
+class get_state_by_user(APIView): 
+    queryset = State.objects.all()
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'username', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            state =State.objects.filter(created_by_id=request.user.id).values('id','created_by','name','code')
+            return Response({'results':state})
+        except Exception as e:
+            return Response({'results':"Failed to get user news"})
+
+class get_district_by_user(APIView): 
+    queryset = District.objects.all()
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'username', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            district =District.objects.filter(created_by_id=request.user.id).values('id','created_by','name','code','state','state_id__name')
+            return Response({'results':district})
+        except Exception as e:
+            return Response({'results':"Failed to get user news"})

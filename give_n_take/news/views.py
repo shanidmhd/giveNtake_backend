@@ -69,6 +69,65 @@ class NewsViewSet(viewsets.ModelViewSet):
             except:
                 return Response({'message': 'No data found'})
 
+    def create(self, request, *args, **kwargs): 
+        user_details=UserDetails.objects.get(id=request.user.id)
+        data={
+       "title" : request.POST.get('title',None),   
+       "description": request.POST.get('description',None), 
+       "meeting_link" : request.POST.get('meeting_link',None), 
+       "news_type": request.POST.get('news_type',None), 
+       "committe_type"  : request.POST.get('committe_type ',None), 
+       "news_image": request.POST.get('news_image',None), 
+       "date_added": request.POST.get('date_added',None), 
+       "date_expired": request.POST.get(' date_expired',None), 
+       "region": user_details.district, 
+       "status": request.POST.get('status',None), 
+       "created_by": request.user.id
+        }
+        _serializer = self.serializer_class(data=data)
+        if _serializer.is_valid():
+            _serializer.save()
+            return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      
+class get_news_by_user(APIView): 
+    queryset = News.objects.all()
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'username', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            news =News.objects.filter(created_by_id=request.user.id).values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','region','region_id__name')
+            return Response({'results':news})
+        except Exception as e:
+            return Response({'results':"Failed to get user news"})
+
+class get_news_by_user_region(APIView): 
+    queryset = News.objects.all()
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'username', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            user_details=UserDetails.objects.get(id=request.user.id)
+            news =News.objects.filter(region_id=user_details.district.id).values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','region_id__name')
+            return Response({'results':news})
+        except Exception as e:
+            return Response({'results':"Failed to get user region"})
+
 class MeetingHighligthsViewSet(viewsets.ModelViewSet):
     queryset = MeetingHighligths.objects.all()
     serializer_class = MeetingHighligthsSerializer
@@ -81,6 +140,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
             "meeting_minutes": request.POST.get('meeting_minutes', None),
             "description": request.POST.get('description', None),
             "meeting_attendance": request.POST.get('meeting_attendance', None),
+            "created_by": request.user.id
             }
         _serializer = self.serializer_class(data=data, context={'attendance': attendance,'photo':photo})
         if _serializer.is_valid():
@@ -88,6 +148,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
             return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     # @swagger_auto_schema(
     #     operation_description="meeting minutes list",
@@ -196,5 +257,34 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 return Response({'message': 'No data found'})
 
 
-
+class get_meeting_by_user(APIView): 
+    queryset = News.objects.all()
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'username', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            appts = MeetingHighligths.objects.filter(created_by_id=request.user.id).values()
+            for meeting_highligths in appts:
+                lst_attendance = []
+                lst_photo = []
+                attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
+                for att in attendance:
+                    att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                    lst_attendance.append(att)
+                photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
+                for att in photo:
+                    att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                    lst_photo.append(att)
+                meeting_highligths['attendance']=lst_attendance
+                meeting_highligths['photo']=lst_photo
+            return Response({'results':appts})
+        except Exception as e:
+            return Response({'results':"Failed to get user meetings"})
 

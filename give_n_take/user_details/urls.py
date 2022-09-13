@@ -15,4 +15,6 @@ urlpatterns = [
     path('login/', UserLoginView.as_view(), name="user_login"),
     path('get_user/',get_user_by_name.as_view()),
     path('get_user_committee/',get_user_by_committe.as_view()),
+    path('get_state_user/',get_state_by_user.as_view()),
+    path('get_district_user/',get_district_by_user.as_view()),
     ]
