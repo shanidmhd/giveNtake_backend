@@ -12,4 +12,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('get_news_by_user/',get_news_by_user.as_view()),
     path('get_news_by_user_region/',get_news_by_user_region.as_view()),
+    path('get_meeting_by_user/',get_meeting_by_user.as_view())
     ]

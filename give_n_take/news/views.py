@@ -80,7 +80,7 @@ class NewsViewSet(viewsets.ModelViewSet):
        "news_image": request.POST.get('news_image',None), 
        "date_added": request.POST.get('date_added',None), 
        "date_expired": request.POST.get(' date_expired',None), 
-       "region": user_details.district, 
+       "region": user_details.district.id, 
        "status": request.POST.get('status',None), 
        "created_by": request.user.id
         }
