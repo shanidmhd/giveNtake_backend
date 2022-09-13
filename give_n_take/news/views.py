@@ -76,7 +76,7 @@ class NewsViewSet(viewsets.ModelViewSet):
        "description": request.data.get('description',None), 
        "meeting_link" : request.data.get('meeting_link',None), 
        "news_type": request.data.get('news_type',None), 
-       "committe_type"  : request.data.get('committe_type ',None), 
+       "committe_type"  : request.data.get('committe_type',None), 
        "news_image": request.FILES.get('news_image', None), 
        "date_added": request.data.get('date_added',None), 
        "date_expired": request.data.get('date_expired',None), 
@@ -104,7 +104,9 @@ class get_news_by_user(APIView):
     )
     def get(self,request):
         try:
-            news =News.objects.filter(created_by_id=request.user.id).values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','region','region_id__name')
+            news =News.objects.filter(created_by_id=request.user.id).values()
+            for item in news:
+                item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
             return Response({'results':"Failed to get user news"})
@@ -123,7 +125,9 @@ class get_news_by_user_region(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(region_id=user_details.district.id).values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','region_id__name')
+            news =News.objects.filter(region_id=user_details.district.id).values()
+            for item in news:
+                item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
             return Response({'results':"Failed to get user region"})

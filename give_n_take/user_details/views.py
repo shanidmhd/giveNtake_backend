@@ -246,8 +246,8 @@ class StateViewSet(viewsets.ModelViewSet):
     
     def create(self, request, *args, **kwargs): 
         data={
-       "name" : request.POST.get('name',None),
-       "code" : request.POST.get('code',None),
+       "name" : request.data.get('name',None),
+       "code" : request.data.get('code',None),
        "created_by": request.user.id
         }
         _serializer = self.serializer_class(data=data)
@@ -275,9 +275,9 @@ class DistrictViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs): 
         data={
-       "name" : request.POST.get('name',None),
-       "code" : request.POST.get('code',None),
-       "state" : request.POST.get('state',None),
+       "name" : request.data.get('name',None),
+       "code" : request.data.get('code',None),
+       "state" : request.data.get('state',None),
        "created_by": request.user.id
         }
         _serializer = self.serializer_class(data=data)
