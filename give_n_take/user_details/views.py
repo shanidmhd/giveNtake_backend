@@ -563,16 +563,24 @@ class get_area_by_usercommitte(APIView):
     permission_classes = [AllowAny]
     def get(self,request):
         try:
-            user_details=UserDetails.objects.filter(id=request.user.id).values('committee_type__name','state_id','district_id','panchayath_id','ward_id').first()
-            if user_details['committee_type__name']=='State Committee':
-                user = District.objects.filter(state_id= user_details['state_id']).values()
-                return Response({'results':user})
+            user_details=UserDetails.objects.filter(id=request.user.id).values('committee_type__name').first()
+            if user_details['committee_type__name']=='state committee':
+                users = District.objects.filter(created_by_id=request.user.id).values('id','name','state_id','state__name','created_by','modified_by','date_added','date_modified')
+                for user in users:
+                    user['parent_name'] = user['state__name']
+                return Response({'results':users})
             elif user_details['committee_type__name'] =='District Committee' :
-                user = Panchayath.objects.filter(district_id=user_details['distrcit_id']).values()  
-                return Response({'results':user})
+                users = Panchayath.objects.filter(created_by_id=request.user.id).values('id','name','district_id','district__name','created_by','modified_by','date_added','date_modified')
+                for user in users:
+                    user['parent_name'] = user['district__name']  
+                return Response({'results':users})
             elif  user_details['committee_type__name']=='Panchayath Committee':
-                user = Panchayath.objects.filter(panchayath_id=user_details['panchayath_id']).values()
-                return Response({'results':user})
+                users = Panchayath.objects.filter(created_by_id=request.user.id).values('id','name','panchayath_id','panchayath__name','created_by','modified_by','date_added','date_modified')
+                for user in users:
+                    user['parent_name'] = user['panchayath__name']  
+                return Response({'results':users})
+            else:
+                return Response({'results':"Failed to get details"})
         except Exception as e:
             return Response({'results':"Failed to get details"})
                     
