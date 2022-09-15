@@ -17,4 +17,6 @@ urlpatterns = [
     path('get_user_committee/',get_user_by_committe.as_view()),
     path('get_state_user/',get_state_by_user.as_view()),
     path('get_district_user/',get_district_by_user.as_view()),
+    path('get_area_by_usercommitte/',get_area_by_usercommitte.as_view()),
+
     ]

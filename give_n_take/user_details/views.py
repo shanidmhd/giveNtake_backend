@@ -1,5 +1,6 @@
 import code
 import json
+from mimetypes import common_types
 from opcode import stack_effect
 from optparse import Values
 import pdb
@@ -476,20 +477,48 @@ class get_user_by_committe(APIView):
             'committee_type', 
             openapi.IN_QUERY, 
             type=openapi.TYPE_STRING
+            ),openapi.Parameter(
+            'id', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
             )],
     )
     def get(self,request):
         try:
-            if request.GET.get('committee_type'):
-                user = UserDetails.objects.filter(committee_type_id=int(request.GET.get('committee_type'))).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
+            commitee_type=request.GET.get('committee_type')
+            id=request.GET.get('id')
+            if commitee_type=='State Committee':
+                user = UserDetails.objects.filter(committee_type_id__name=commitee_type,state_id=id).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
                 "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name","str_panchayath","str_ward")
                 if user:
                     user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
                     return Response({'results':user})
-                else:
-                    return Response({'results':'No data found'})
+            elif commitee_type=='District Committee':
+
+              
+                user = UserDetails.objects.filter(committee_type_id__name=commitee_type,district_id=id).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
+            "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name","str_panchayath","str_ward")   
+                if user:
+                    user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
+                    return Response({'results':user})
+            elif commitee_type=='Panchayath Committee':
+                user = UserDetails.objects.filter(committee_type_id__name=commitee_type,panchayath_id=id).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
+                "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name","str_panchayath","str_ward")   
+                if user:
+                    user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
+                    return Response({'results':user})    
+            elif commitee_type=='Ward Committee':
+                user = UserDetails.objects.filter(committee_type_id__name=commitee_type,ward_id=id).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
+                "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name","str_panchayath","str_ward")   
+                if user:
+                    user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
+                    return Response({'results':user})    
             else:
-                return Response({'results':'No data found'})
+                user = UserDetails.objects.filter(committee_type_id__name=commitee_type).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
+            "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name","str_panchayath","str_ward")
+                if user:
+                    user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
+                    return Response({'results':user})   
         except Exception as e:
             return Response({'results':"Failed to get user"})
 
@@ -528,3 +557,22 @@ class get_district_by_user(APIView):
             return Response({'results':district})
         except Exception as e:
             return Response({'results':"Failed to get user news"})
+
+class get_area_by_usercommitte(APIView):
+    queryset = Committee.objects.all()
+    permission_classes = [AllowAny]
+    def get(self,request):
+        try:
+            user_details=UserDetails.objects.filter(id=request.user.id).values('committee_type__name','state_id','district_id','panchayath_id','ward_id').first()
+            if user_details['committee_type__name']=='State Committee':
+                user = District.objects.filter(state_id= user_details['state_id']).values()
+                return Response({'results':user})
+            elif user_details['committee_type__name'] =='District Committee' :
+                user = Panchayath.objects.filter(district_id=user_details['distrcit_id']).values()  
+                return Response({'results':user})
+            elif  user_details['committee_type__name']=='Panchayath Committee':
+                user = Panchayath.objects.filter(panchayath_id=user_details['panchayath_id']).values()
+                return Response({'results':user})
+        except Exception as e:
+            return Response({'results':"Failed to get details"})
+                    
