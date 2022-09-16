@@ -486,21 +486,21 @@ class get_user_by_committe(APIView):
     )
     def get(self,request):
         try:
-            commitee_type=int(request.GET.get('committee_type'))
-            id=int(request.GET.get('id'))
+            commitee_type=int(request.GET.get('committee_type')) if request.GET.get('committee_type') else ''
+            id=int(request.GET.get('id')) if request.GET.get('id') else ''
             state_committee_id = CommitteeType.objects.filter(name='State Committee').values('id').first()['id']
             district_committee_id = CommitteeType.objects.filter(name='District Committee').values('id').first()['id']
             panchayath_committee_id = CommitteeType.objects.filter(name='Panchayath Committee').values('id').first()['id']
             ward_committee_id = CommitteeType.objects.filter(name='Ward Committee').values('id').first()['id']
 
-            if commitee_type==state_committee_id:
+            if commitee_type==state_committee_id and id:
                 user = UserDetails.objects.filter(committee_type_id=commitee_type,state_id=id).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
                 "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name","str_panchayath","str_ward")
                 if user:
                     user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
                 return Response({'results':user})
                 
-            elif commitee_type==district_committee_id:
+            elif commitee_type==district_committee_id and id:
 
                 user = UserDetails.objects.filter(committee_type_id=commitee_type,district_id=id).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
             "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name","str_panchayath","str_ward")   
@@ -508,14 +508,14 @@ class get_user_by_committe(APIView):
                     user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
                 return Response({'results':user})
                 
-            elif commitee_type==panchayath_committee_id:
+            elif commitee_type==panchayath_committee_id and id:
                 user = UserDetails.objects.filter(committee_type_id=commitee_type,panchayath_id=id).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
                 "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name","str_panchayath","str_ward")   
                 if user:
                     user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
                 return Response({'results':user}) 
                   
-            elif commitee_type==ward_committee_id:
+            elif commitee_type==ward_committee_id and id:
                 user = UserDetails.objects.filter(committee_type_id=commitee_type,ward_id=id).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
                 "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name","str_panchayath","str_ward")   
                 if user:
