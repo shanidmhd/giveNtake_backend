@@ -588,7 +588,7 @@ class get_area_by_usercommitte(APIView):
                     user['parent_name'] = user['panchayath__name']  
                 return Response({'results':users})
             else:
-                return Response({'results':"Failed to get details"})
+                return Response({'results':[]})
         except Exception as e:
-            return Response({'results':"Failed to get details"})
+            return Response({'results':[]})
                     
