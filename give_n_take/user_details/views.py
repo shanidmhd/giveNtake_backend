@@ -6,8 +6,9 @@ from optparse import Values
 import pdb
 import sys
 from turtle import pd
+from django.http import Http404
 import requests
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -21,7 +22,7 @@ from .models import *
 from datetime import datetime
 from .serializers import *
 from django.conf import settings
-
+from rest_framework import generics
 
 class UserLoginView(APIView):
     """
@@ -591,4 +592,15 @@ class get_area_by_usercommitte(APIView):
                 return Response({'results':[]})
         except Exception as e:
             return Response({'results':[]})
-                    
+
+
+class district_based_state(generics.GenericAPIView):
+    serializer_class = DistrictSerializer
+    def get(self,request,sid):
+        try :
+            dis=District.objects.filter(state__id=sid)
+            serializer=DistrictSerializer(dis,many=True)
+            return Response(serializer.data)
+        
+        except :
+            Http404

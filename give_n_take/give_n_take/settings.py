@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'user_details',
     'news',
+    'register',
     'drf_yasg',
 ]
 
@@ -126,9 +127,9 @@ DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
                 'NAME': 'give_take',
-                'USER': 'admin',
-                'PASSWORD':'et46OLfvg@h2144sf',
-                'HOST': '127.0.0.1',
+                'USER': 'postgres',
+                'PASSWORD':'password',
+                'HOST': 'localhost',
                 # 'HOST':'192.168.0.114',
                 'PORT': '5432',
             

@@ -1,0 +1,43 @@
+[
+  {
+    "_id": "88bab38b-082f-4d2f-84b1-1820d9a49777",
+    "colId": "history",
+    "containerId": "",
+    "name": "http://127.0.0.1:8000/register/news/",
+    "url": "http://127.0.0.1:8000/register/news/",
+    "method": "POST",
+    "sortNum": 0,
+    "created": "2022-10-20T05:56:27.802Z",
+    "modified": "2022-10-20T08:18:12.397Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "formdata",
+      "raw": "",
+      "form": [
+        {
+          "name": "title",
+          "value": "annual meeting"
+        },
+        {
+          "name": "description",
+          "value": "meetiing"
+        },
+        {
+          "name": "news_type",
+          "value": "1"
+        },
+        {
+          "name": "news_image",
+          "value": "",
+          "isDisabled": true
+        }
+      ]
+    },
+    "auth": {
+      "type": "bearer",
+      "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjY2ODUwNjE2LCJpYXQiOjE2NjYyNDU4MTYsImp0aSI6ImQ5OGEzNDJhODc0MjRjZDY5NDgzMjlmNjI0ODgzZjhiIiwidXNlcl9pZCI6MTV9.y7qta4tM7ND-zctjNZ3lP-NitfI3lS1UlUaK1iAVB4A"
+    },
+    "tests": []
+  }
+]

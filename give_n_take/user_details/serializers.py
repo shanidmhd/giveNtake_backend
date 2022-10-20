@@ -160,3 +160,47 @@ class WardSerializer(serializers.ModelSerializer):
         return ward
 
 
+class Ward_staff_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ward
+        fields = ['id','name']
+
+
+class Panchayath_staff_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Panchayath
+        fields = ['id','name']
+        
+
+class District_staff_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = District
+        fields = ['id','name']
+        
+        
+
+class State_staff_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = State
+        fields = ['id','name']
+        
+        
+class Committee_type_TypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommitteeType
+        fields = ['id','name']
+        
+        
+        
+class StaffRole_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaffRole
+        fields = ['id','name','json_sidebar']
+
+
+class register_admin_serializer(serializers.ModelSerializer):
+    class Meta :
+        model = UserDetails
+        fields = ['name','user_image','phone_number','staff_role','committee_type','state','district','panchayath','ward','username','password']
+        
+      
