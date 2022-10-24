@@ -41,6 +41,7 @@ class UserLoginSerializer(serializers.Serializer):
             response_data['str_panchayath'] = user_details.str_panchayath
             response_data['str_ward'] = user_details.str_ward
             response_data['is_details'] = user_details.is_details
+            response_data['is_superuser'] = user_details.is_superuser
             if user_details.staff_role:
                 response_data['staff_role_id'] = user_details.staff_role.id
                 response_data['staff_role_name'] = user_details.staff_role.name
@@ -81,7 +82,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     district_name = serializers.CharField(source='district.name', read_only=True)
     class Meta:
         model = UserDetails
-        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state_name','district','district_name','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details']
+        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state_name','district','district_name','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details','is_superuser']
         extra_kwargs = { 
             'password': {'write_only': True,'required':False},
             'username': {'required':False}, 

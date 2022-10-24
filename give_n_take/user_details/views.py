@@ -66,6 +66,7 @@ class UserLoginView(APIView):
                         type=openapi.TYPE_STRING,
                         description="Login Successfull",
                     ),
+                    
                 },
             ),
             status.HTTP_404_NOT_FOUND: openapi.Schema(

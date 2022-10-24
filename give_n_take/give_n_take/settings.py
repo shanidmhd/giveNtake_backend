@@ -22,9 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-HOST_ADDRESS = 'http://64.227.175.184:9001'
+HOST_ADDRESS = 'http://192.168.1.45:8000'
 SECRET_KEY = 'django-insecure-dz2e@1sr%8jna_(uusr867mq9!d@81lun1cqja(k4igcwn58=q'
-
+print(HOST_ADDRESS,'hoo')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -43,10 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'drf_yasg',
     'user_details',
     'news',
-    'register',
-    'drf_yasg',
+    'register'
 ]
 
 REST_FRAMEWORK = {
@@ -87,6 +87,8 @@ SWAGGER_SETTINGS = {
         },
     },
 }
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -135,8 +137,9 @@ DATABASES = {
             
             }
 }
-
-
+# IMAGE_PATH = "/media"
+PORT = "8000"
+IMAGE_URL = '192.168.1.45' + ":" + PORT
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -173,7 +176,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 MEDIA_URL = 'media/'
-
+print(MEDIA_URL,'mmmmm')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -181,3 +184,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "key")

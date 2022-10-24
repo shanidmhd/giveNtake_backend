@@ -4,7 +4,7 @@ from news.models import MeetingAttendance, MeetingHighligths, MeetingPhoto, News
 from news.serializers import MeetingHighligthsSerializer, NewsSerializer
 from register.models import admin_model
 from rest_framework.parsers import MultiPartParser, FormParser
-from register.serializers import login_serializers, register_ser, register_serializers
+from register.serializers import Registration_Serializer, login_serializers, register_ser, register_serializers
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -19,7 +19,7 @@ from rest_framework import generics
 from user_details.models import StaffRole, UserDetails
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from user_details.serializers import RegistrationSerializer, StaffRoleSerializer, register_admin_serializer
-from .permission import IsMeeting, IsNews, Iscommittee_admin, Isstaffrole, Isusers, roles_users
+from .permission import IsMeeting, IsNews, IsSuperUser, Iscommittee_admin, Isstaffrole, Isusers, roles_users
 from rest_framework import viewsets
 # Create your views here.
 
@@ -135,11 +135,18 @@ class NewsViewSet(viewsets.ModelViewSet):
     """
     A viewset for register and edit user instances.
     """
+    
     # parser_classes = [MultiPartParser, FormParser]
-    serializer_class = NewsSerializer
+   
     queryset = News.objects.all()
-    http_method_names = ['get', 'post', 'put' , 'delete']
-    permission_classes = [IsAuthenticated,IsNews]
+    serializer_class = NewsSerializer
+    permission_classes =[IsAuthenticated,IsNews]
+    http_method_names = ['post','get','delete','put']
+
+    
+
+        
+    
 
     def retrieve(self, request,*args, **kargs):
         news_id = kargs.get('pk')
@@ -154,7 +161,7 @@ class NewsViewSet(viewsets.ModelViewSet):
             try:
                 appts = News.objects.all()
                 serializer = self.get_serializer(appts, many=True)
-                return Response({'results':serializer.data})
+                return Response(serializer.data)
             except:
                 return Response({'message': 'No data found'})
 
@@ -182,7 +189,7 @@ class NewsViewSet(viewsets.ModelViewSet):
         
 class roles_type_api(generics.GenericAPIView):
     serializer_class = NewsSerializer
-    permission_classes = [IsAuthenticated,IsNews]
+    permission_classes = [IsAuthenticated,Isstaffrole]
     def post(self,request):
         roles_users(request)
         serializer=NewsSerializer(data=request.data)
@@ -203,11 +210,13 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
             "meeting_minutes": request.POST.get('meeting_minutes', None),
             "description": request.POST.get('description', None),
             "meeting_attendance": request.POST.get('meeting_attendance', None),
+            'photo' : request.FILES.getlist('photo', None),
             "created_by": request.user.id
             }
         _serializer = self.serializer_class(data=data, context={'attendance': attendance,'photo':photo})
         if _serializer.is_valid():
             _serializer.save()
+           
             return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -223,6 +232,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
     # )
 
     def list(self, request):
+        print(request.user.is_superuser)
         appts = MeetingHighligths.objects.values()
         for meeting_highligths in appts:
             lst_attendance = []
@@ -329,18 +339,33 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'put' , 'delete']
     permission_classes = [IsAuthenticated,Iscommittee_admin]
     def retrieve(self, request,*args, **kargs):
+        print('**')
         user_id = kargs.get('pk')
         if user_id:
             try:
                 appts = admin_model.objects.get(id=int(user_id))
-                serializer = self.get_serializer(appts, many=False)
-                return Response({'results':serializer.data})
+                serializer = register_ser(appts, many=False)
+                sdata=serializer.data
+                sdata['user_image'] =settings.HOST_ADDRESS + settings.MEDIA_URL + sdata['user_image']
+                return Response({'results':sdata})
             except:
                 return Response({'message': 'No data found'})
-        else:
-            appts = admin_model.objects.all()
-            serializer = self.get_serializer(appts, many=True)
-            return Response({'results':serializer.data})
+            
+    def list(self,request):
+        appts = admin_model.objects.all()
+        serializer = register_ser(appts, many=True)
+        for s in serializer.data :
+        #     print(s['user_image'],'uss')
+            s['user_image']=      ( "http"
+                    + ":"
+                    + "//" 
+                    + settings.IMAGE_URL
+                    # + settings.IMAGE_PATH
+                
+                    + s["user_image"]
+                )
+        #     s['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + s['user_image']
+        return Response({'results':serializer.data})
 
 class UserRegistrationViewSet(viewsets.ModelViewSet):
     """
@@ -356,13 +381,13 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
         if user_id:
             try:
                 appts = UserDetails.objects.get(id=int(user_id))
-                serializer = self.get_serializer(appts, many=False)
+                serializer = Registration_Serializer(appts, many=False)
                 return Response({'results':serializer.data})
             except:
                 return Response({'message': 'No data found'})
-        else:
+    def list (self,request):
             appts = UserDetails.objects.all()
-            serializer = self.get_serializer(appts, many=True)
+            serializer = Registration_Serializer(appts, many=True)
             return Response({'results':serializer.data})
         
 class StaffRoleViewSet(viewsets.ModelViewSet):
@@ -474,3 +499,11 @@ class get_meeting_by_user(APIView):
             return Response({'results':appts})
         except Exception as e:
             return Response({'results':"Failed to get user meetings"})
+        
+
+# class UserViewSet(viewsets.ModelViewSet):
+#     """
+#     A viewset for viewing and editing user instances.
+#     """
+#     serializer_class = UserSerializer
+#     queryset = User.objects.all()

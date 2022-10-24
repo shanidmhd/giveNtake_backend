@@ -4,7 +4,7 @@ from user_details.models import StaffRole,State,District,Panchayath, UserDetails
 
 # Create your models here.
 class admin_model(models.Model):
-    user_image = models.ImageField(upload_to='staff/')
+    user_image = models.ImageField(upload_to='staff/',null=True)
     name=models.CharField(max_length=1024)
     phone_number = models.CharField(max_length=12)
     staff_role=models.ForeignKey(StaffRole,on_delete=models.CASCADE)
