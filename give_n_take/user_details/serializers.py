@@ -204,4 +204,7 @@ class register_admin_serializer(serializers.ModelSerializer):
         model = UserDetails
         fields = ['name','user_image','phone_number','staff_role','committee_type','state','district','panchayath','ward','username','password']
         
-      
+class register_admins_serializer(serializers.ModelSerializer):
+    class Meta :
+        model = UserDetails
+        fields = '__all__'

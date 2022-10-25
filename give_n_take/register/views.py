@@ -1,5 +1,6 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.http import Http404
+from django.shortcuts import get_object_or_404, render
 from news.models import MeetingAttendance, MeetingHighligths, MeetingPhoto, News
 from news.serializers import MeetingHighligthsSerializer, NewsSerializer
 from register.models import admin_model
@@ -19,8 +20,9 @@ from rest_framework import generics
 from user_details.models import StaffRole, UserDetails
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from user_details.serializers import RegistrationSerializer, StaffRoleSerializer, register_admin_serializer
-from .permission import IsMeeting, IsNews, IsSuperUser, Iscommittee_admin, Isstaffrole, Isusers, roles_users
+from .permission import IsMeeting, IsNews, IsSuperUser, Iscommittee_admin, Iscommitteeadmin, Isstaffrole, Isusers, roles_users
 from rest_framework import viewsets
+from user_details.serializers import register_admins_serializer
 # Create your views here.
 
 
@@ -112,6 +114,7 @@ class login_api(APIView):
 class admin_register(generics.GenericAPIView):
     
     serializer_class = register_admin_serializer
+    permission_classes = [IsAuthenticated]
     def post(self,request):
             serializer= register_admin_serializer(data=request.data)
             if serializer.is_valid ():
@@ -121,7 +124,7 @@ class admin_register(generics.GenericAPIView):
                     reg=serializer.save(is_admin=True)        
                     reg.set_password(request.data['password'])
                     reg.save()
-                    reg_ser.save(user_id=UserDetails.objects.get(id=reg.id))
+                    reg_ser.save(user_id=UserDetails.objects.get(id=reg.id),created_by=request.user.id)
                     
                 else :
                     return Response(reg_ser.errors)
@@ -188,11 +191,11 @@ class NewsViewSet(viewsets.ModelViewSet):
             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class roles_type_api(generics.GenericAPIView):
-    serializer_class = NewsSerializer
+    serializer_class = StaffRoleSerializer
     permission_classes = [IsAuthenticated,Isstaffrole]
     def post(self,request):
         roles_users(request)
-        serializer=NewsSerializer(data=request.data)
+        serializer=StaffRoleSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({'success':'success'})
@@ -336,7 +339,7 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     # parser_classes = [MultiPartParser, FormParser]
     serializer_class = register_serializers
     queryset = admin_model.objects.all()
-    http_method_names = ['get', 'post', 'put' , 'delete']
+    http_method_names = ['get', 'post', 'delete']
     permission_classes = [IsAuthenticated,Iscommittee_admin]
     def retrieve(self, request,*args, **kargs):
         print('**')
@@ -353,7 +356,7 @@ class AdminUserViewSet(viewsets.ModelViewSet):
             
     def list(self,request):
         appts = admin_model.objects.all()
-        serializer = register_ser(appts, many=True)
+        serializer = Registration_Serializer(appts, many=True)
         for s in serializer.data :
         #     print(s['user_image'],'uss')
             s['user_image']=      ( "http"
@@ -366,6 +369,75 @@ class AdminUserViewSet(viewsets.ModelViewSet):
                 )
         #     s['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + s['user_image']
         return Response({'results':serializer.data})
+    
+    
+class update_admin(APIView):
+        def get_object(self, id):
+            admin_id = admin_model.objects.get(id=id)
+            return admin_id
+        def get(self, request, id, format=None):
+            snippet = self.get_object(id)
+            serializer = Registration_Serializer(snippet)
+            return Response(serializer.data)
+        def put(self, request, id, format=None):
+            snippet = self.get_object(id)
+            serializer = register_serializers(snippet, data=request.data)
+          
+        
+            if serializer.is_valid():
+                serializer.save()
+                user_id_r=int(serializer.data['user_id'])
+                us=UserDetails.objects.filter(id=user_id_r).first()
+                reg_ser=register_admins_serializer(us, data=request.data)#
+                if reg_ser.is_valid():
+                    reg_ser.save()
+                    
+                else :
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.data)
+            else :
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def update(self, request,*args, **kargs):
+    #     meeting_minutes = request.data.get('meeting_minutes')
+    #     description = request.data.get('description')
+    #     meeting_attendance = request.data.get('meeting_attendance')
+    #     attendances = request.data.get('attendance')
+    #     photos = request.data.get('photo')
+    #     meeting_highligths_id = kargs.get('pk')
+    #     if meeting_highligths_id:
+    #         try:
+    #             meeting_highligths = MeetingHighligths.objects.filter(id=int(meeting_highligths_id)).values().first()
+    #             if not meeting_minutes:
+    #                 meeting_minutes =  meeting_highligths['meeting_minutes']
+    #             if not description:
+    #                 description = meeting_highligths['description']
+    #             if not meeting_attendance:
+    #                 meeting_attendance = meeting_attendance['meeting_attendance']
+    #             MeetingHighligths.objects.filter(id=int(meeting_highligths_id)).update(meeting_minutes=meeting_minutes,description=description,meeting_attendance=meeting_attendance)
+    #             if attendances:
+    #                 MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).delete()
+    #                 for attendance in attendances:
+    #                     MeetingAttendance.objects.create(meeting_highligths_id=meeting_highligths['id'],attendance=attendance)
+    #             if photos:
+    #                 MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).delete()
+    #                 for photo in photos:
+    #                     MeetingPhoto.objects.create(meeting_highligths_id=meeting_highligths['id'],photo=photo)
+    #             meeting_highligths = MeetingHighligths.objects.filter(id=int(meeting_highligths_id)).values().first()
+    #             lst_attendance = []
+    #             lst_photo = []
+    #             attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
+    #             for att in attendance:
+    #                 att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+    #                 lst_attendance.append(att)
+    #             photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
+    #             for att in photo:
+    #                 att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+    #                 lst_photo.append(att)
+    #             meeting_highligths['attendance']=lst_attendance
+    #             meeting_highligths['photo']=lst_photo
+    #             return Response({'results':meeting_highligths})
+    #         except:
+    #             return Response({'message': 'No data found'})
 
 class UserRegistrationViewSet(viewsets.ModelViewSet):
     """
@@ -501,6 +573,27 @@ class get_meeting_by_user(APIView):
             return Response({'results':"Failed to get user meetings"})
         
 
+class get_committee_admin_created(APIView): 
+    queryset = admin_model.objects.all()
+    serializer_class=Registration_Serializer
+    permission_classes = [IsAuthenticated,Iscommitteeadmin]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'username', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            admin_ =admin_model.objects.filter(created_by=request.user.id)
+            admin_list=Registration_Serializer(admin_,many=True)
+            for item in admin_list.data:
+                item['user_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['user_image']
+            return Response({'results':admin_list.data},status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'results':"Failed to get admin  list"},status=status.HTTP_400_BAD_REQUEST)
 # class UserViewSet(viewsets.ModelViewSet):
 #     """
 #     A viewset for viewing and editing user instances.

@@ -8,7 +8,7 @@ from user_details.serializers import Committee_type_TypeSerializer, District_sta
 class register_serializers(serializers.ModelSerializer):
     class Meta :
         model = admin_model
-        exclude = ['login_token']
+        fields ='__all__'
 
 class login_serializers(serializers.ModelSerializer):
     class Meta :
@@ -38,4 +38,4 @@ class Registration_Serializer(WritableNestedModelSerializer):
     class Meta :
         
         model = UserDetails
-        fields = ['id','username','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state','district','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details']
+        fields = ['id','name','username','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state','district','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details']

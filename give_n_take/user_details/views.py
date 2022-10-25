@@ -277,6 +277,17 @@ class DistrictViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_STRING
             )],
     )
+ 
+    def list(self, request):
+        state_id = request.GET.get('state_id')
+        if state_id:
+            appts = District.objects.filter(state_id=state_id)
+            serializer = self.get_serializer(appts, many=True)
+            return Response(serializer.data)
+        else:
+            appts = District.objects.all()
+            serializer = self.get_serializer(appts, many=True)
+            return Response(serializer.data)
     def create(self, request, *args, **kwargs): 
         data={
        "name" : request.data.get('name',None),
@@ -290,16 +301,7 @@ class DistrictViewSet(viewsets.ModelViewSet):
             return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    def list(self, request):
-        state_id = request.GET.get('state_id')
-        if state_id:
-            appts = District.objects.filter(state_id=state_id)
-            serializer = self.get_serializer(appts, many=True)
-            return Response(serializer.data)
-        else:
-            appts = District.objects.all()
-            serializer = self.get_serializer(appts, many=True)
-            return Response(serializer.data)
+  
 
     def retrieve(self, request,*args, **kargs):
         district_id = kargs.get('pk')
@@ -378,10 +380,12 @@ class PanchayathViewSet(viewsets.ModelViewSet):
     )
     def list(self, request):
         district_id = request.GET.get('district_id')
+       
         if district_id:
             appts = Panchayath.objects.filter(district_id=district_id)
             serializer = self.get_serializer(appts, many=True)
             return Response(serializer.data)
+        
         else:
             appts = Panchayath.objects.all()
             serializer = self.get_serializer(appts, many=True)
