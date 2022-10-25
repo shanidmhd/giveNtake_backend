@@ -389,11 +389,14 @@ class update_admin(APIView):
                 user_id_r=int(serializer.data['user_id'])
                 us=UserDetails.objects.filter(id=user_id_r).first()
                 reg_ser=register_admins_serializer(us, data=request.data)#
+                print(request.data,'rewqqqqq')
                 if reg_ser.is_valid():
+                    print(request.data,'rrrr')
+                    print(reg_ser.errors)
                     reg_ser.save()
                     
                 else :
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    print(reg_ser.errors,'kkkk')
                 return Response(serializer.data)
             else :
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
