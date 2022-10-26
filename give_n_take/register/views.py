@@ -593,7 +593,15 @@ class get_committee_admin_created(APIView):
             admin_ =admin_model.objects.filter(created_by=request.user.id)
             admin_list=Registration_Serializer(admin_,many=True)
             for item in admin_list.data:
-                item['user_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['user_image']
+                item['user_image']=      ( "http"
+                    + ":"
+                    + "//" 
+                    + settings.IMAGE_URL
+                    # + settings.IMAGE_PATH
+                
+                    + item["user_image"]
+                )
+                # item['user_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['user_image']
             return Response({'results':admin_list.data},status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'results':"Failed to get admin  list"},status=status.HTTP_400_BAD_REQUEST)

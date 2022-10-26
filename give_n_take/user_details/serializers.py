@@ -42,6 +42,7 @@ class UserLoginSerializer(serializers.Serializer):
             response_data['str_ward'] = user_details.str_ward
             response_data['is_details'] = user_details.is_details
             response_data['is_superuser'] = user_details.is_superuser
+            response_data['is_admin'] = user_details.is_admin
             if user_details.staff_role:
                 response_data['staff_role_id'] = user_details.staff_role.id
                 response_data['staff_role_name'] = user_details.staff_role.name
