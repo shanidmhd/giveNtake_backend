@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-HOST_ADDRESS = 'http://192.168.1.45:8000'
+HOST_ADDRESS = 'http://64.227.175.184:9001'
 SECRET_KEY = 'django-insecure-dz2e@1sr%8jna_(uusr867mq9!d@81lun1cqja(k4igcwn58=q'
 print(HOST_ADDRESS,'hoo')
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -129,9 +129,9 @@ DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
                 'NAME': 'give_take',
-                'USER': 'postgres',
-                'PASSWORD':'password',
-                'HOST': 'localhost',
+                'USER': 'admin',
+                'PASSWORD':'et46OLfvg@h2144sf',
+                'HOST': '127.0.0.1',
                 # 'HOST':'192.168.0.114',
                 'PORT': '5432',
             
@@ -139,7 +139,7 @@ DATABASES = {
 }
 # IMAGE_PATH = "/media"
 PORT = "8000"
-IMAGE_URL = '192.168.1.45' + ":" + PORT
+IMAGE_URL = '64.227.175.184' + ":" + PORT
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
