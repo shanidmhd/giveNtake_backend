@@ -41,6 +41,8 @@ class UserLoginSerializer(serializers.Serializer):
             response_data['str_panchayath'] = user_details.str_panchayath
             response_data['str_ward'] = user_details.str_ward
             response_data['is_details'] = user_details.is_details
+            response_data['is_superuser'] = user_details.is_superuser
+            response_data['is_admin'] = user_details.is_admin
             if user_details.staff_role:
                 response_data['staff_role_id'] = user_details.staff_role.id
                 response_data['staff_role_name'] = user_details.staff_role.name
@@ -81,7 +83,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     district_name = serializers.CharField(source='district.name', read_only=True)
     class Meta:
         model = UserDetails
-        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state_name','district','district_name','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details']
+        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state_name','district','district_name','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details','is_superuser']
         extra_kwargs = { 
             'password': {'write_only': True,'required':False},
             'username': {'required':False}, 
@@ -160,3 +162,50 @@ class WardSerializer(serializers.ModelSerializer):
         return ward
 
 
+class Ward_staff_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ward
+        fields = ['id','name']
+
+
+class Panchayath_staff_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Panchayath
+        fields = ['id','name']
+        
+
+class District_staff_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = District
+        fields = ['id','name']
+        
+        
+
+class State_staff_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = State
+        fields = ['id','name']
+        
+        
+class Committee_type_TypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommitteeType
+        fields = ['id','name']
+        
+        
+        
+class StaffRole_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaffRole
+        fields = ['id','name','json_sidebar']
+
+
+class register_admin_serializer(serializers.ModelSerializer):
+    class Meta :
+        model = UserDetails
+        fields = ['name','user_image','phone_number','staff_role','committee_type','state','district','panchayath','ward','username','password']
+        
+class register_admins_serializer(serializers.ModelSerializer):
+    class Meta :
+        model = UserDetails
+        fields = '__all__'
