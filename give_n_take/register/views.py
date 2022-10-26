@@ -30,7 +30,7 @@ class register_api(generics.GenericAPIView):
     serializer_class = register_serializers
  
     def post(self, request):
-        print(request.data)
+        #(request.data)
         serializer = register_serializers(data=request.data)
         if serializer.is_valid():
             encryptedpassword = make_password(request.data['password'])
@@ -235,7 +235,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
     # )
 
     def list(self, request):
-        print(request.user.is_superuser)
+        #(request.user.is_superuser)
         appts = MeetingHighligths.objects.values()
         for meeting_highligths in appts:
             lst_attendance = []
@@ -342,7 +342,6 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'delete']
     permission_classes = [IsAuthenticated,Iscommittee_admin]
     def retrieve(self, request,*args, **kargs):
-        print('**')
         user_id = kargs.get('pk')
         if user_id:
             try:
@@ -358,7 +357,6 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         appts = admin_model.objects.all()
         serializer = Registration_Serializer(appts, many=True)
         for s in serializer.data :
-        #     print(s['user_image'],'uss')
             s['user_image']=      ( "http"
                     + ":"
                     + "//" 
@@ -367,7 +365,7 @@ class AdminUserViewSet(viewsets.ModelViewSet):
                 
                     + s["user_image"]
                 )
-        #     s['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + s['user_image']
+            # s['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + s['user_image']
         return Response({'results':serializer.data})
     
     
@@ -379,24 +377,24 @@ class update_admin(APIView):
             snippet = self.get_object(id)
             serializer = Registration_Serializer(snippet)
             return Response(serializer.data)
-        def put(self, request, id, format=None):
+        def patch(self, request, id, format=None):
             snippet = self.get_object(id)
-            serializer = register_serializers(snippet, data=request.data)
+            serializer = register_serializers(snippet, data=request.data,partial=True)
           
         
             if serializer.is_valid():
                 serializer.save()
                 user_id_r=int(serializer.data['user_id'])
                 us=UserDetails.objects.filter(id=user_id_r).first()
-                reg_ser=register_admins_serializer(us, data=request.data)#
-                print(request.data,'rewqqqqq')
+                reg_ser=register_admins_serializer(us, data=request.data,partial=True)#
+                #(request.data,'rewqqqqq')
                 if reg_ser.is_valid():
-                    print(request.data,'rrrr')
-                    print(reg_ser.errors)
+                    #(request.data,'rrrr')
+                    #(reg_ser.errors)
                     reg_ser.save()
                     
                 else :
-                    print(reg_ser.errors,'kkkk')
+                    #(reg_ser.errors,'kkkk')
                 return Response(serializer.data)
             else :
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
