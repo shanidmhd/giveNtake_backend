@@ -348,7 +348,14 @@ class AdminUserViewSet(viewsets.ModelViewSet):
                 appts = admin_model.objects.get(id=int(user_id))
                 serializer = register_ser(appts, many=False)
                 sdata=serializer.data
-                sdata['user_image'] =settings.HOST_ADDRESS + settings.MEDIA_URL + sdata['user_image']
+                sdata['user_image'] =   ( "http"
+                    + ":"
+                    + "//" 
+                    + settings.IMAGE_URL
+                    # + settings.IMAGE_PATH
+                
+                    + sdata["user_image"]
+                )
                 return Response({'results':sdata})
             except:
                 return Response({'message': 'No data found'})
@@ -392,7 +399,7 @@ class update_admin(APIView):
                     #(request.data,'rrrr')
                     #(reg_ser.errors)
                     reg_ser.save()
-                    
+                    return Response("success")
                 else :
                     #(reg_ser.errors,'kkkk')
                     return Response(serializer.data)
@@ -461,7 +468,20 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     def list (self,request):
             appts = UserDetails.objects.all()
             serializer = Registration_Serializer(appts, many=True)
+            data=serializer.data
+            for simage in data :
+                
+                simage['user_image']=      ( "http"
+                    + ":"
+                    + "//" 
+                    + settings.IMAGE_URL
+                    # + settings.IMAGE_PATH
+                
+                    + simage["user_image"]
+                )
             return Response({'results':serializer.data})
+            # else :
+           
         
 class StaffRoleViewSet(viewsets.ModelViewSet):
     """

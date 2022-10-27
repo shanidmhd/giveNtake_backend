@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-HOST_ADDRESS = 'http://64.227.175.184:9001'
+HOST_ADDRESS = 'http://64.227.175.184:8000'
 SECRET_KEY = 'django-insecure-dz2e@1sr%8jna_(uusr867mq9!d@81lun1cqja(k4igcwn58=q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -51,7 +51,7 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 15,
+    'PAGE_SIZE': 30,
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     ),
@@ -135,6 +135,7 @@ DATABASES = {
             
             }
 }
+
 
 
 # Password validation

@@ -98,7 +98,7 @@ class UserDetails(User,DatedModel,CreatedModel):
       str_panchayath = models.CharField(max_length=255,null=True) 
       str_ward = models.CharField(max_length=255,null=True) 
       is_details = models.BooleanField(null=True)
-      user_image = models.ImageField(upload_to='media/user_images/', max_length=240, blank=True, null=True)
+      user_image = models.ImageField(upload_to='media/user_images/', max_length=240, blank=True, null=True,default='default.jpeg')
       is_admin = models.BooleanField(null=True,default=False)
 
 
