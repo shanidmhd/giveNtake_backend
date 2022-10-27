@@ -130,7 +130,6 @@ DATABASES = {
                 'USER': 'admin',
                 'PASSWORD':'et46OLfvg@h2144sf',
                 'HOST': '127.0.0.1',
-                # 'HOST':'192.168.0.114',
                 'PORT': '5432',
             
             }
