@@ -1,6 +1,7 @@
 from unicodedata import name
 from django.db import models
 from django.contrib.auth.models import User
+from django.forms import BooleanField
 
 class DatedModel(models.Model):
 
@@ -98,8 +99,7 @@ class UserDetails(User,DatedModel,CreatedModel):
       str_ward = models.CharField(max_length=255,null=True) 
       is_details = models.BooleanField(null=True)
       user_image = models.ImageField(upload_to='media/user_images/', max_length=240, blank=True, null=True)
-
-
+      is_admin = models.BooleanField(null=True,default=False)
 
 
 
