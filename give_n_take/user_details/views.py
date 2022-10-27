@@ -86,7 +86,7 @@ class UserLoginView(APIView):
             is_admin = False
         user = authenticate(username=request.data['username'], password=request.data['password'])
         if user:
-            serializer = Registration_Serializer(data=request.data)
+            serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             if is_admin:
                 try:

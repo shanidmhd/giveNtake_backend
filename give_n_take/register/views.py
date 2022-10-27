@@ -391,6 +391,7 @@ class update_admin(APIView):
         
             if serializer.is_valid():
                 serializer.save()
+                print(serializer.data,'ser')
                 user_id_r=int(serializer.data['user_id'])
                 us=UserDetails.objects.filter(id=user_id_r).first()
                 reg_ser=register_admins_serializer(us, data=request.data,partial=True)#
@@ -454,32 +455,32 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     # parser_classes = [MultiPartParser, FormParser]
     serializer_class = RegistrationSerializer
     queryset = UserDetails.objects.all()
-    http_method_names = ['get', 'post', 'put' , 'delete']
+    http_method_names = [ 'post','get','delete']
     permission_classes = [IsAuthenticated,Isusers]
-    def retrieve(self, request,*args, **kargs):
-        user_id = kargs.get('pk')
-        if user_id:
-            try:
-                appts = UserDetails.objects.get(id=int(user_id))
-                serializer = Registration_Serializer(appts, many=False)
-                return Response({'results':serializer.data})
-            except:
-                return Response({'message': 'No data found'})
-    def list (self,request):
-            appts = UserDetails.objects.all()
-            serializer = Registration_Serializer(appts, many=True)
-            data=serializer.data
-            for simage in data :
+    # def retrieve(self, request,*args, **kargs):
+    #     user_id = kargs.get('pk')
+    #     if user_id:
+    #         try:
+    #             appts = UserDetails.objects.get(id=int(user_id))
+    #             serializer = Registration_Serializer(appts, many=False)
+    #             return Response({'results':serializer.data})
+    #         except:
+    #             return Response({'message': 'No data found'})
+    # def list (self,request):
+    #         appts = UserDetails.objects.all()
+    #         serializer = Registration_Serializer(appts, many=True)
+    #         data=serializer.data
+    #         for simage in data :
                 
-                simage['user_image']=      ( "http"
-                    + ":"
-                    + "//" 
-                    + settings.IMAGE_URL
-                    # + settings.IMAGE_PATH
+    #             simage['user_image']=      ( "http"
+    #                 + ":"
+    #                 + "//" 
+    #                 + settings.IMAGE_URL
+    #                 # + settings.IMAGE_PATH
                 
-                    + simage["user_image"]
-                )
-            return Response({'results':serializer.data})
+    #                 + simage["user_image"]
+    #             )
+    #         return Response({'results':serializer.data})
             # else :
            
         
