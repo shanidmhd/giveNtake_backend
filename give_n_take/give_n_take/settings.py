@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'user_details',
     'news',
+    'register',
     'drf_yasg',
 ]
 
@@ -166,7 +167,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+PORT = "8000"
+IMAGE_URL = '64.227.175.184' + ":" + PORT
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
