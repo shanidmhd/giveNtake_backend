@@ -21,7 +21,7 @@ from .models import *
 from datetime import datetime
 from .serializers import *
 from django.conf import settings
-
+from register.serializers import Registration_Serializer
 
 class UserLoginView(APIView):
     """
@@ -86,7 +86,7 @@ class UserLoginView(APIView):
             is_admin = False
         user = authenticate(username=request.data['username'], password=request.data['password'])
         if user:
-            serializer = self.serializer_class(data=request.data)
+            serializer = Registration_Serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             if is_admin:
                 try:
