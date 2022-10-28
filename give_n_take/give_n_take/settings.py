@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'drf_yasg',
 ]
 
+
+
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 30,
@@ -130,12 +132,10 @@ DATABASES = {
                 'USER': 'admin',
                 'PASSWORD':'et46OLfvg@h2144sf',
                 'HOST': '127.0.0.1',
-                # 'HOST':'192.168.0.114',
                 'PORT': '5432',
             
             }
 }
-
 
 
 # Password validation

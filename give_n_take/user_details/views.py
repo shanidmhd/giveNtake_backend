@@ -21,7 +21,7 @@ from .models import *
 from datetime import datetime
 from .serializers import *
 from django.conf import settings
-
+from register.serializers import Registration_Serializer
 
 class UserLoginView(APIView):
     """
@@ -591,4 +591,18 @@ class get_area_by_usercommitte(APIView):
                 return Response({'results':[]})
         except Exception as e:
             return Response({'results':[]})
-                    
+    
+    
+class district_ward_panchayath_created_by(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request):
+        district_details = District.objects.filter(created_by_id=request.user.id).values('id','name','state_id','state__name','created_by','modified_by','date_added','date_modified')
+        panchayath_details=Panchayath.objects.filter(created_by_id=request.user.id).values('id','name','district_id','district__name','created_by','modified_by','date_added','date_modified')
+        ward_details=Ward.objects.filter(created_by_id=request.user.id).values('id','name','panchayath_id','panchayath__name','created_by','modified_by','date_added','date_modified')
+        
+        response={
+            'district' : district_details,
+            'panchayath' : panchayath_details,
+            'Ward' : ward_details
+        }
+        return Response({'results':response}) 
