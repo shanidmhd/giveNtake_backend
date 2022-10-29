@@ -237,12 +237,12 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 MeetingHighligths.objects.filter(id=int(meeting_highligths_id)).update(meeting_minutes=meeting_minutes,description=description,meeting_attendance=meeting_attendance)
                 if attendances:
                     MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).delete()
-                    for attendance in attendances:
-                        MeetingAttendance.objects.create(meeting_highligths_id=meeting_highligths['id'],attendance=attendance)
+                    # for attendance in attendances:
+                    MeetingAttendance.objects.create(meeting_highligths_id=meeting_highligths['id'],attendance=attendances)
                 if photos:
                     MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).delete()
-                    for photo in photos:
-                        MeetingPhoto.objects.create(meeting_highligths_id=meeting_highligths['id'],photo=photo)
+                    # for photo in photos:
+                    MeetingPhoto.objects.create(meeting_highligths_id=meeting_highligths['id'],photo=photos)
                 meeting_highligths = MeetingHighligths.objects.filter(id=int(meeting_highligths_id)).values().first()
                 lst_attendance = []
                 lst_photo = []
