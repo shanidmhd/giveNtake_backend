@@ -591,4 +591,32 @@ class get_area_by_usercommitte(APIView):
                 return Response({'results':[]})
         except Exception as e:
             return Response({'results':[]})
-                    
+            
+            
+class district_ward_panchayath_created_by(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request):
+        ward_list=[]
+        district_details = District.objects.filter(created_by_id=request.user.id).values('id','name','state_id','state__name','created_by','modified_by','date_added','date_modified')
+        panchayath_details=Panchayath.objects.filter(created_by_id=request.user.id).values('id','name','district_id','district__name','created_by','modified_by','date_added','date_modified')
+        ward_details=Ward.objects.filter(created_by_id=request.user.id).values('id','name','panchayath_id','panchayath__name','created_by','modified_by','date_added','date_modified')
+        for dist in  district_details :
+            dist['parent_name']=dist['state__name']
+            dist['parent_id']=dist['state_id']
+        for pan in panchayath_details :
+            pan['parent_name'] = pan['district__name']
+            pan['parent_id'] = pan['district_id']  
+        for ward in ward_details:
+                ward['parent_name'] = ward['panchayath__name']  
+                ward['parent_id'] = ward['panchayath_id']  
+    
+
+        #     ward_list.append(ward)
+       
+        response={
+            'district' : district_details,
+            'panchayath' : panchayath_details,
+            'ward' : ward_details
+        }
+    
+        return Response({'results':response}) 
