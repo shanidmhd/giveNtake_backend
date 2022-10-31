@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from news.models import MeetingAttendance, MeetingHighligths, MeetingPhoto, News
 from news.serializers import MeetingHighligthsSerializer, NewsSerializer
@@ -23,6 +23,8 @@ from user_details.serializers import RegistrationSerializer, StaffRoleSerializer
 from .permission import IsMeeting, IsNews, IsSuperUser, Iscommittee_admin, Iscommitteeadmin, Isstaffrole, Isusers, roles_users
 from rest_framework import viewsets
 from user_details.serializers import register_admins_serializer
+from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
 # Create your views here.
 
 
@@ -630,3 +632,9 @@ class get_committee_admin_created(APIView):
 #     """
 #     serializer_class = UserSerializer
 #     queryset = User.objects.all()
+                
+class admin_filter_list(generics.ListAPIView):
+    queryset = admin_model.objects.all()
+    serializer_class = Registration_Serializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['state', 'district','committee_type']
