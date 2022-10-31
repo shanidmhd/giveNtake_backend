@@ -592,8 +592,7 @@ class get_area_by_usercommitte(APIView):
         except Exception as e:
             return Response({'results':[]})
 
-            
-            
+
 class district_ward_panchayath_created_by(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request):
