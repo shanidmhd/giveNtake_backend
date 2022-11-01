@@ -20,6 +20,7 @@ urlpatterns = [
  path('get_news_user_id/',views.get_news_by_user.as_view()),
  path('get_committee_admin_created/',views.get_committee_admin_created.as_view()),
  path('get_meeting_by_user_id/',views.get_meeting_by_user.as_view()),
- path('admin/update/<int:id>/',views.update_admin.as_view())
+ path('admin/update/<int:id>/',views.update_admin.as_view()),
+ path('admin/filter/',views.admin_filter_list.as_view())
 
 ]

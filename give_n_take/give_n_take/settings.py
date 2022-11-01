@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'news',
     'register',
     'drf_yasg',
+    'django_filters'
 ]
 
 
