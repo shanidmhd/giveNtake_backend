@@ -637,4 +637,4 @@ class admin_filter_list(generics.ListAPIView):
     queryset = admin_model.objects.all()
     serializer_class = Registration_Serializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['state', 'district','committee_type']
+    filterset_fields = ['state', 'district','committee_type','ward','panchayath']
