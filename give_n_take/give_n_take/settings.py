@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'news',
     'register',
     'drf_yasg',
-    'django_filters'
+    'django_filters',
+    'booking'
 ]
 
 
@@ -125,6 +126,7 @@ WSGI_APPLICATION = 'give_n_take.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+
 
 DATABASES = {
             'default': {
