@@ -1,16 +1,21 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from . serializers import Program_Serializer,Ticket_Booking_serializer,Program_get_Serializer
+from . serializers import Program_Serializer,Ticket_Booking_serializer,Program_get_Serializer,ticket_get_serializer
 from . models import Program_model,TicketBooking
 from rest_framework.response import Response
 from rest_framework import status
 from register.models import admin_model
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
-from user_details.models import UserDetails
+from user_details.models import UserDetails,District,State
+from register.permission import Iscommitteeadmin
+import pyqrcode
+import png 
+from pyqrcode import QRCode 
+import qrcode
 
 # Create your views here.
-
+from django.core.files import File
 
 class ProgramAPI(viewsets.ModelViewSet):
     """
@@ -23,9 +28,10 @@ class ProgramAPI(viewsets.ModelViewSet):
     permission_classes=[IsAuthenticated]
     def create(self,request):
         serializer=self.serializer_class(data=request.data)
+        admin=admin_model.objects.filter(user_id__id=request.user.id).values('committee_type__name','state','district').first()
         if serializer.is_valid():
             fk_admin_id=admin_model.objects.get(user_id__id=request.user.id)
-            serializer.save(fk_admin_id=fk_admin_id,available_seats=request.data['total_seats'])
+            serializer.save(fk_admin_id=fk_admin_id,available_seats=request.data['total_seats'],fk_district=District.objects.get(id=admin['district']),fk_state=State.objects.get(id=admin['state']))
             return Response({'success':'Program succesfully added'},status=status.HTTP_201_CREATED)
         return Response({'error':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
     
@@ -58,9 +64,18 @@ class TicketBooking_API(viewsets.ModelViewSet):
     
     serializer_class = Ticket_Booking_serializer
     queryset = TicketBooking.objects.all()
-    http_method_names = ['get', 'post' , 'delete']
+    http_method_names = ['get', 'post' ,'patch','delete']
     permission_classes=[IsAuthenticated]
 
+    def list(self,request):
+        
+        appts = TicketBooking.objects.all()
+        serializer = ticket_get_serializer(appts, many=True)
+        for res in serializer.data :
+            res['fk_user_id']=UserDetails.objects.filter(id=res['fk_user_id']).values('id','username')
+            res['fk_program']=Program_model.objects.filter(id=res['fk_program']).values('id','program_name','venue','available_seats')
+        return Response({'results':serializer.data})
+    
     def retrieve(self, request,*args, **kargs):
         news_id = kargs.get('pk')
         if news_id:
@@ -77,6 +92,8 @@ class TicketBooking_API(viewsets.ModelViewSet):
                 return Response({'results':serializer.data})
             except:
                 return Response({'message': 'No data found'})
+            
+ 
 
     def create(self, request, *args, **kwargs): 
         """
@@ -95,10 +112,11 @@ class TicketBooking_API(viewsets.ModelViewSet):
             program_id=request.data['fk_program']
             no_of_seat_r=int(request.data['no_of_seats'])
             
-            program=Program_model.objects.filter(id=program_id).values('available_seats').first()
+            program=Program_model.objects.filter(id=program_id).values('available_seats','price').first()
             if no_of_seat_r < int(program['available_seats']) :
                 remaining_seats= program['available_seats'] - no_of_seat_r
-                _serializer.save(fk_user_id=UserDetails.objects.get(id=request.user.id))
+                total_price =no_of_seat_r * int(program['price'])
+                _serializer.save(fk_user_id=UserDetails.objects.get(id=request.user.id),total_amount=total_price)
                 Program_model.objects.filter(id=program_id).update(available_seats=remaining_seats)
                 return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
             else :
@@ -106,3 +124,40 @@ class TicketBooking_API(viewsets.ModelViewSet):
         
         else:
             return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def partial_update(self, request, pk):
+         
+        testmodel_object =  TicketBooking.objects.get(id=int(pk))
+        serializer = Ticket_Booking_serializer(testmodel_object, data=request.data, partial=True) # set partial=True to update a data partially
+        if serializer.is_valid():
+            if request.data['payment_status'] == 'completed':
+                ser = TicketBooking.objects.get(id=int(pk))
+                ser_data=Ticket_Booking_serializer(ser,many=False)
+                user={}
+                program={}
+                for ser in ser_data.data['fk_user_id']:
+                    user['id']=ser['id']
+                    user['username']=ser['username']
+                for pro in ser_data.data['fk_program']:
+                    program['id']=pro['id']
+                    program['name']=pro['program_name']
+                    program['venue']=pro['venue']
+                    program['date']=pro['date']
+                
+                ser=serializer.save(payment_completed=True)
+                data={
+                    "booking_id" : ser_data.data['id'],
+                    "no_of_seats" : ser_data.data['no_of_seats'],
+                    "payment_status" : ser.payment_status,
+                    "userdetails" : user,
+                    "program_details" :program
+                    }
+                qr_image=qrcode.make(data)
+                qr_image.save('media/qrcode/qrimage.png')
+                destination_file = open('media/qrcode/qrimage.png', 'rb')
+                ser.qr_code_image.save('qrimage.png', File(destination_file), save=True)
+        
+            else :
+                serializer.save()
+            return Response({'sucess':'success'},status=status.HTTP_200_OK)
+        return Response({'error':status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
