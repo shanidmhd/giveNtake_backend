@@ -20,22 +20,27 @@ class Program_model(models.Model):
     food = models.TextField(null=True)
     agenda = models.TextField(null=True)
     inauguration_name =  models.CharField(max_length=1024,null=True)
-    schedule = models.JSONField(null=True)
-    time_slot= models.IntegerField(null=True)
+    # schedule = models.JSONField(null=True)
+    # time_slot= models.IntegerField(null=True)
     total_seats = models.IntegerField()
     available_seats = models.IntegerField(null=True)
+    price = models.IntegerField(null=True)
     
     def __str__(self):
         return self.program_name
     
-
 class TicketBooking(models.Model):
     fk_user_id=models.ForeignKey(UserDetails,on_delete=models.CASCADE,related_name='user',null=True)
     fk_program = models.ForeignKey(Program_model,on_delete=models.CASCADE,related_name='program',null=True)
     no_of_seats = models.IntegerField()
+    total_amount=models.IntegerField(null=True)
     payment_status=models.CharField(max_length=50,default='pending')
     payment_completed = models.BooleanField(default=False)
-    qr_code_image =models.ImageField(upload_to='qrcode',null=True)
+    qr_code_image =models.ImageField(upload_to='media/qrcode/',null=True)
+    
+    def __str__(self):
+        return self.fk_program.program_name
+    
     
     
     
