@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('booking', '0004_program_model_price_ticketbooking_total_amount'),
+        ("booking", "0004_program_model_price_ticketbooking_total_amount"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ticketbooking',
-            name='total_amount',
+            model_name="ticketbooking",
+            name="total_amount",
             field=models.IntegerField(null=True),
         ),
     ]

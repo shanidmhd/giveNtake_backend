@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('booking', '0003_alter_ticketbooking_qr_code_image'),
+        ("booking", "0003_alter_ticketbooking_qr_code_image"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='program_model',
-            name='price',
+            model_name="program_model",
+            name="price",
             field=models.IntegerField(null=True),
         ),
         migrations.AddField(
-            model_name='ticketbooking',
-            name='total_amount',
+            model_name="ticketbooking",
+            name="total_amount",
             field=models.IntegerField(default=500),
             preserve_default=False,
         ),

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('booking', '0001_initial'),
+        ("booking", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ticketbooking',
-            name='qr_code_image',
-            field=models.ImageField(null=True, upload_to='qrcode'),
+            model_name="ticketbooking",
+            name="qr_code_image",
+            field=models.ImageField(null=True, upload_to="qrcode"),
         ),
     ]
