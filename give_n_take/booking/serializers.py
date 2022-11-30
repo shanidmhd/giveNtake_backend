@@ -42,7 +42,6 @@ class Ticket_Booking_serializer(serializers.ModelSerializer):
         res["fk_user_id"] = UserDetails.objects.filter(id=res["fk_user_id"]).values(
             "id", "username"
         )
-        print(res["fk_program"],'open')
         res["fk_program"] = Program_model.objects.filter(id=res["fk_program"]).values(
             "id", "program_name", "venue", "date", "available_seats","fk_admin_id__id"
         )
@@ -56,14 +55,14 @@ class ticket_get_serializer(serializers.ModelSerializer):
         model = TicketBooking
         fields = "__all__"
 
-    def create(self, validated_data):
-        ticket = TicketBooking.objects.create(**validated_data)
-        return ticket
-
-
-class qr_vallidate_serialier(serializers.ModelSerializer):
-   
+  
+class ticket_id_serializer(serializers.ModelSerializer):
+    qr_random_num = serializers.CharField(write_only=True)
+    qr_image_scanned = serializers.BooleanField(write_only=True)
     class Meta:
         model = TicketBooking
         fields = "__all__"
+
+  
+
 

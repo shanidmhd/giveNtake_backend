@@ -6,6 +6,7 @@ from .serializers import (
     Ticket_Booking_serializer,
     Program_get_Serializer,
     ticket_get_serializer,
+    ticket_id_serializer,
 )
 from .models import Program_model, TicketBooking
 from rest_framework.response import Response
@@ -36,7 +37,7 @@ class ProgramAPI(viewsets.ModelViewSet):
     serializer_class = Program_Serializer
     queryset = Program_model.objects.all()
     http_method_names = ["get", "post", "put", "delete"]
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -113,7 +114,11 @@ class ProgramAPI(viewsets.ModelViewSet):
         serializer = Program_get_Serializer(appts, many=True)
         return Response({"results": serializer.data})
 
-
+    # def destroy(self, request, *args, **kwargs):
+    #     user_object = self.get_object()
+    #     Program_model.objects.get(id=user_object.id).delete()
+    #     user_object.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 class TicketBooking_API(viewsets.ModelViewSet):
     """
     A viewset for register and edit user instances.
@@ -140,6 +145,7 @@ class TicketBooking_API(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kargs):
         news_id = kargs.get("pk")
+        
         if news_id:
             try:
                 appts = TicketBooking.objects.get(id=int(news_id))
@@ -274,3 +280,57 @@ def invalid_qrcode(req,random):
         return Response(data)
         # id=req.GET['id']
         # TicketBooking.objects.filter(id=id).update(qr_code_image='media/qrcode/error.png')
+
+
+
+@api_view(('GET',))
+def get_ticket_booking_id(req):
+    if req.method == 'GET' :
+        if req.user.is_authenticated :
+            ticket_get=TicketBooking.objects.filter(fk_user_id__id=req.user.id).values('id','fk_user_id','fk_program','no_of_seats','total_amount','payment_status')
+            for ticket in ticket_get :
+                 ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
+                "id", "username")
+                 ticket["fk_program"] = Program_model.objects.filter(id=ticket["fk_program"]).values(
+                "id", "program_name", "venue", "date","start_time","end_time")
+    
+            return Response(ticket_get)
+        else :
+            return Response(status.HTTP_401_UNAUTHORIZED)
+
+@api_view(('GET',))
+def program_based_create_by(req):
+    if req.method == 'GET':
+        if req.user.is_authenticated :
+            user=admin_model.objects.get(user_id__id=req.user.id)
+            program_filter_data=Program_model.objects.filter(fk_admin_id__id=user.id)
+            serializer=Program_get_Serializer(program_filter_data,many=True)
+            return Response(serializer.data)
+        else :
+            return Response(status.HTTP_401_UNAUTHORIZED)
+    else :
+        pass
+
+@api_view(('GET',))
+def program_based_state(req):
+    if req.method == 'GET':
+        if req.user.is_authenticated :
+            program_filter_data=Program_model.objects.filter(fk_state__id=UserDetails.objects.get(id=req.user.id).state.id)
+            serializer=Program_get_Serializer(program_filter_data,many=True)
+            return Response(serializer.data)
+        else :
+            return Response(status.HTTP_401_UNAUTHORIZED)
+    else :
+        pass
+    
+@api_view(('GET',))
+def program_based_district(req):
+    if req.method == 'GET':
+        if req.user.is_authenticated :
+            program_filter_data=Program_model.objects.filter(fk_district__id=UserDetails.objects.get(id=req.user.id).district.id)
+            serializer=Program_get_Serializer(program_filter_data,many=True)
+            return Response(serializer.data)
+        else :
+            return Response(status.HTTP_401_UNAUTHORIZED)
+    else :
+        pass

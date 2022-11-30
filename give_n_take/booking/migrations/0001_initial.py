@@ -9,46 +9,102 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('register', '0001_initial'),
-        ('user_details', '0018_alter_userdetails_user_image'),
+        ("register", "0001_initial"),
+        ("user_details", "0018_alter_userdetails_user_image"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Program_model',
+            name="Program_model",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('program_name', models.CharField(max_length=1024)),
-                ('date', models.DateField(null=True)),
-                ('start_time', models.TimeField(null=True)),
-                ('end_time', models.TimeField(null=True)),
-                ('venue', models.CharField(max_length=1024)),
-                ('address', models.TextField(null=True)),
-                ('contact_no', models.CharField(max_length=12, null=True)),
-                ('latitude', models.FloatField(null=True)),
-                ('longitude', models.FloatField(null=True)),
-                ('food', models.TextField(null=True)),
-                ('agenda', models.TextField(null=True)),
-                ('inauguration_name', models.CharField(max_length=1024, null=True)),
-                ('schedule', models.JSONField(null=True)),
-                ('time_slot', models.IntegerField(null=True)),
-                ('total_seats', models.IntegerField()),
-                ('available_seats', models.IntegerField(null=True)),
-                ('fk_admin_id', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='admin', to='register.admin_model')),
-                ('fk_district', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='district', to='user_details.district')),
-                ('fk_state', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='state', to='user_details.state')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("program_name", models.CharField(max_length=1024)),
+                ("date", models.DateField(null=True)),
+                ("start_time", models.TimeField(null=True)),
+                ("end_time", models.TimeField(null=True)),
+                ("venue", models.CharField(max_length=1024)),
+                ("address", models.TextField(null=True)),
+                ("contact_no", models.CharField(max_length=12, null=True)),
+                ("latitude", models.FloatField(null=True)),
+                ("longitude", models.FloatField(null=True)),
+                ("food", models.TextField(null=True)),
+                ("agenda", models.TextField(null=True)),
+                ("inauguration_name", models.CharField(max_length=1024, null=True)),
+                ("schedule", models.JSONField(null=True)),
+                ("time_slot", models.IntegerField(null=True)),
+                ("total_seats", models.IntegerField()),
+                ("available_seats", models.IntegerField(null=True)),
+                (
+                    "fk_admin_id",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="admin",
+                        to="register.admin_model",
+                    ),
+                ),
+                (
+                    "fk_district",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="district",
+                        to="user_details.district",
+                    ),
+                ),
+                (
+                    "fk_state",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="state",
+                        to="user_details.state",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TicketBooking',
+            name="TicketBooking",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('no_of_seats', models.IntegerField()),
-                ('payment_status', models.CharField(default='pending', max_length=50)),
-                ('payment_completed', models.BooleanField(default=False)),
-                ('qr_code_image', models.ImageField(upload_to='qrcode')),
-                ('fk_program', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='program', to='booking.program_model')),
-                ('fk_user_id', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='user', to='user_details.userdetails')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("no_of_seats", models.IntegerField()),
+                ("payment_status", models.CharField(default="pending", max_length=50)),
+                ("payment_completed", models.BooleanField(default=False)),
+                ("qr_code_image", models.ImageField(upload_to="qrcode")),
+                (
+                    "fk_program",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="program",
+                        to="booking.program_model",
+                    ),
+                ),
+                (
+                    "fk_user_id",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user",
+                        to="user_details.userdetails",
+                    ),
+                ),
             ],
         ),
     ]
