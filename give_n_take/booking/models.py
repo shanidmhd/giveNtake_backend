@@ -17,8 +17,7 @@ class Program_model(models.Model):
     venue = models.CharField(max_length=1024)
     address = models.TextField(null=True)
     contact_no = models.CharField(max_length=12, null=True)
-    latitude = models.FloatField(null=True)
-    longitude = models.FloatField(null=True)
+    map_url = models.URLField(max_length=200,null=True)
     fk_state = models.ForeignKey(
         State, on_delete=models.CASCADE, related_name="state", null=True
     )
@@ -52,6 +51,6 @@ class TicketBooking(models.Model):
     qr_code_image = models.ImageField(upload_to="media/qrcode/", null=True)
     qr_image_scanned= models.BooleanField(default=False)
     qr_random_num=models.CharField(max_length=50,null=True)
-
+    payment_id=models.CharField(max_length=1024,null=True)
     def __str__(self):
         return self.fk_program.program_name

@@ -15,13 +15,9 @@ from register.models import admin_model
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 from user_details.models import UserDetails, District, State
-from register.permission import Iscommitteeadmin
-import pyqrcode
-import png
+from register.permission import Isprogram
 from pyqrcode import QRCode
 import qrcode
-import logging
-import pysnooper
 from rest_framework.decorators import api_view
 import random 
 import string
@@ -37,7 +33,7 @@ class ProgramAPI(viewsets.ModelViewSet):
     serializer_class = Program_Serializer
     queryset = Program_model.objects.all()
     http_method_names = ["get", "post", "put", "delete"]
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,Isprogram]
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
