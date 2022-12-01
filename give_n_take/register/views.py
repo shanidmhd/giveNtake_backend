@@ -350,14 +350,7 @@ class AdminUserViewSet(viewsets.ModelViewSet):
                 appts = admin_model.objects.get(id=int(user_id))
                 serializer = register_ser(appts, many=False)
                 sdata=serializer.data
-                sdata['user_image'] =   ( "http"
-                    + ":"
-                    + "//" 
-                    + settings.IMAGE_URL
-                    # + settings.IMAGE_PATH
-                
-                    + sdata["user_image"]
-                )
+                sdata['user_image'] = settings.HOST_ADDRESS +  sdata['user_image'] 
                 return Response({'results':sdata})
             except:
                 return Response({'message': 'No data found'})
@@ -366,15 +359,7 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         appts = admin_model.objects.all()
         serializer = Registration_Serializer(appts, many=True)
         for s in serializer.data :
-            s['user_image']=      ( "http"
-                    + ":"
-                    + "//" 
-                    + settings.IMAGE_URL
-                    # + settings.IMAGE_PATH
-                
-                    + s["user_image"]
-                )
-            # s['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + s['user_image']
+           s['user_image'] = settings.HOST_ADDRESS +  s['user_image'] 
         return Response({'results':serializer.data})
     
     
