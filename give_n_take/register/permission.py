@@ -81,16 +81,20 @@ class Issettings(BasePermission):
             
 class Isusers(BasePermission):
     def has_permission(self, request, view):
-        if admin_model.objects.filter(user_id__id=request.user.id).first():
+        
+        if request.user.is_superuser:
+                
+                return True
+       
+        
+        elif admin_model.objects.filter(user_id__id=request.user.id).first():
             if 'user' in roles_users(request) :
+                
                 return True
             else :
                 return False
             
-        elif request.user.is_superuser:
-                return True
-        else :
-                return False
+       
             
 class Isstaffrole(BasePermission):
     def has_permission(self, request, view):

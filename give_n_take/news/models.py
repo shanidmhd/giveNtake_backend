@@ -18,7 +18,10 @@ class News(DatedModel,CreatedModel):
       news_image = models.ImageField(upload_to='media/news_images/', max_length=240, blank=True, null=True)
       date_added =  models.DateTimeField(blank=True, null=True)
       date_expired =  models.DateTimeField(blank=True, null=True)
-      region = models.ForeignKey(District,on_delete=models.CASCADE,default=None,null=True,related_name="news_region")
+      district_region = models.ForeignKey(District,on_delete=models.CASCADE,default=None,null=True,related_name="news_region")
+      state_region = models.ForeignKey(State,on_delete=models.CASCADE,default=None,null=True,related_name="news_region")
+      panchayath_region = models.ForeignKey(Panchayath,on_delete=models.CASCADE,default=None,null=True,related_name="news_region")
+      show_all=models.BooleanField(default=False)
       status = models.CharField(max_length=255,null=True)
 
 class MeetingHighligths(DatedModel,CreatedModel):

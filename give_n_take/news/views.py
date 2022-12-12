@@ -17,7 +17,7 @@ from .models import *
 from datetime import datetime
 from .serializers import *
 from django.conf import settings
-
+from register.models import admin_model
 
 
 class NewsTypeViewSet(viewsets.ModelViewSet):
@@ -51,6 +51,7 @@ class NewsViewSet(viewsets.ModelViewSet):
     serializer_class = NewsSerializer
     queryset = News.objects.all()
     http_method_names = ['get', 'post', 'put' , 'delete']
+    permission_classes=[IsAuthenticated]
 
     def retrieve(self, request,*args, **kargs):
         news_id = kargs.get('pk')
@@ -61,35 +62,93 @@ class NewsViewSet(viewsets.ModelViewSet):
                 return Response({'results':serializer.data})
             except:
                 return Response({'message': 'No data found'})
-        else:
-            try:
-                appts = News.objects.all()
-                serializer = self.get_serializer(appts, many=True)
-                return Response({'results':serializer.data})
-            except:
-                return Response({'message': 'No data found'})
+    def list(self,request):
+       
+      
+        district_news = News.objects.filter(district_region=(UserDetails.objects.get(id=request.user.id).district)).values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','district_region__id','district_region__name').order_by('-date_added')
+        state_news = News.objects.filter(state_region=(UserDetails.objects.get(id=request.user.id).state)).values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','state_region__id','state_region__name').order_by('-date_added')
+        panchayath_news = News.objects.filter(panchayath_region=(UserDetails.objects.get(id=request.user.id).panchayath)).values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','panchayath_region__id','panchayath_region__name').order_by('-date_added')
+        all_news = News.objects.filter(show_all=True).values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified').order_by('-date_added')
+            # serializer = self.get_serializer(appts, many=True)
+        response={
+        'district' : district_news,
+        'panchayath' : panchayath_news,
+        'state' : state_news,
+        'all':all_news
+        }
+    
+            
+        return Response({'results':response})
+        
 
     def create(self, request, *args, **kwargs): 
-        user_details=UserDetails.objects.get(id=request.user.id)
-        data={
-       "title" : request.data.get('title',None),   
-       "description": request.data.get('description',None), 
-       "meeting_link" : request.data.get('meeting_link',None), 
-       "news_type": request.data.get('news_type',None), 
-       "committe_type"  : request.data.get('committe_type',None), 
-       "news_image": request.FILES.get('news_image', None), 
-       "date_added": request.data.get('date_added',None), 
-       "date_expired": request.data.get('date_expired',None), 
-       "region": user_details.district.id, 
-       "status": request.data.get('status',None), 
-       "created_by": request.user.id
-        }
-        _serializer = self.serializer_class(data=data)
-        if _serializer.is_valid():
-            _serializer.save()
-            return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer = self.serializer_class(data=request.data)
+            admin = (
+                admin_model.objects.filter(user_id__id=request.user.id)
+                .values("committee_type__name", "state", "district","panchayath")
+                .first()
+            )
+            # fk_admin_id = admin_model.objects.get(user_id__id=request.user.id)
+
+            # Checking the committee type of the admin and then it is saving the program accordingly.
+
+            if admin["committee_type__name"] == "State Committee":
+            
+                if serializer.is_valid():
+                    serializer.save(
+                        state_region=State.objects.get(id=admin["state"]),created_by=UserDetails.objects.get(id=request.user.id)
+                    )
+                    return Response(
+                        {"success": "News succesfully added"},
+                        status=status.HTTP_201_CREATED,
+                    )
+
+                return Response(
+                    {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                )
+            elif admin["committee_type__name"] == "District Committee":
+            
+                if serializer.is_valid():
+                    serializer.save(
+                        district_region=District.objects.get(id=admin["district"]),created_by=UserDetails.objects.get(id=request.user.id)
+                    )
+                    return Response(
+                        {"success": "News succesfully added"},
+                        status=status.HTTP_201_CREATED,
+                    )
+
+                return Response(
+                    {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                )
+                
+            elif admin["committee_type__name"] == "Panchayath Committee":
+            
+                if serializer.is_valid():
+                    serializer.save(
+                        panchayath_region=Panchayath.objects.get(id=admin["panchayath"]),created_by=UserDetails.objects.get(id=request.user.id)
+                    )
+                    return Response(
+                        {"success": "News succesfully added"},
+                        status=status.HTTP_201_CREATED,
+                    )
+
+                return Response(
+                    {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                )
+            else:
+            
+                if serializer.is_valid():
+                    serializer.save(
+                        show_all=True,created_by=UserDetails.objects.get(id=request.user.id)
+                    )
+                    return Response(
+                        {"success": "Program succesfully added"},
+                        status=status.HTTP_201_CREATED,
+                    )
+
+                return Response(
+                    {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                )
       
 class get_news_by_user(APIView): 
     queryset = News.objects.all()
