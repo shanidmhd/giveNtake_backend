@@ -184,7 +184,7 @@ class get_news_by_user_region(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(region_id=user_details.district.id).values()
+            news =News.objects.filter(district_region=user_details.district.id).values()
             for item in news:
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
