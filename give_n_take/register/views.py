@@ -17,7 +17,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 import string
 from rest_framework import generics
-from user_details.models import StaffRole, UserDetails
+from user_details.models import StaffRole, UserDetails,State,District,Panchayath
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from user_details.serializers import RegistrationSerializer, StaffRoleSerializer, register_admin_serializer
 from .permission import IsMeeting, IsNews, IsSuperUser, Iscommittee_admin, Iscommitteeadmin, Isstaffrole, Isusers, roles_users
@@ -116,7 +116,7 @@ class login_api(APIView):
 class admin_register(generics.GenericAPIView):
     
     serializer_class = register_admin_serializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     def post(self,request):
             serializer= register_admin_serializer(data=request.data)
             if serializer.is_valid ():
@@ -171,26 +171,73 @@ class NewsViewSet(viewsets.ModelViewSet):
                 return Response({'message': 'No data found'})
 
     def create(self, request, *args, **kwargs): 
-        user_details=UserDetails.objects.get(id=request.user.id)
-        data={
-       "title" : request.data.get('title',None),   
-       "description": request.data.get('description',None), 
-       "meeting_link" : request.data.get('meeting_link',None), 
-       "news_type": request.data.get('news_type',None), 
-       "committe_type"  : request.data.get('committe_type',None), 
-       "news_image": request.FILES.get('news_image', None), 
-       "date_added": request.data.get('date_added',None), 
-       "date_expired": request.data.get('date_expired',None), 
-       "region": user_details.district.id, 
-       "status": request.data.get('status',None), 
-       "created_by": request.user.id
-        }
-        _serializer = self.serializer_class(data=data)
-        if _serializer.is_valid():
-            _serializer.save()
-            return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(data=_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer = self.serializer_class(data=request.data)
+            admin = (
+                admin_model.objects.filter(user_id__id=request.user.id)
+                .values("committee_type__name", "state", "district","panchayath")
+                .first()
+            )
+            # fk_admin_id = admin_model.objects.get(user_id__id=request.user.id)
+
+            # Checking the committee type of the admin and then it is saving the program accordingly.
+
+            if admin["committee_type__name"] == "State Committee":
+            
+                if serializer.is_valid():
+                    serializer.save(
+                        state_region=State.objects.get(id=admin["state"]),created_by=UserDetails.objects.get(id=request.user.id)
+                    )
+                    return Response(
+                        {"success": "News succesfully added"},
+                        status=status.HTTP_201_CREATED,
+                    )
+
+                return Response(
+                    {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                )
+            elif admin["committee_type__name"] == "District Committee":
+            
+                if serializer.is_valid():
+                    serializer.save(
+                        district_region=District.objects.get(id=admin["district"]),created_by=UserDetails.objects.get(id=request.user.id)
+                    )
+                    return Response(
+                        {"success": "News succesfully added"},
+                        status=status.HTTP_201_CREATED,
+                    )
+
+                return Response(
+                    {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                )
+                
+            elif admin["committee_type__name"] == "Panchayath Committee":
+            
+                if serializer.is_valid():
+                    serializer.save(
+                        panchayath_region=Panchayath.objects.get(id=admin["panchayath"]),created_by=UserDetails.objects.get(id=request.user.id)
+                    )
+                    return Response(
+                        {"success": "News succesfully added"},
+                        status=status.HTTP_201_CREATED,
+                    )
+
+                return Response(
+                    {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                )
+            else:
+            
+                if serializer.is_valid():
+                    serializer.save(
+                        show_all=True,created_by=UserDetails.objects.get(id=request.user.id)
+                    )
+                    return Response(
+                        {"success": "Program succesfully added"},
+                        status=status.HTTP_201_CREATED,
+                    )
+
+                return Response(
+                    {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                )
         
 class roles_type_api(generics.GenericAPIView):
     serializer_class = StaffRoleSerializer
@@ -359,7 +406,8 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         appts = admin_model.objects.all()
         serializer = Registration_Serializer(appts, many=True)
         for s in serializer.data :
-           s['user_image'] = settings.HOST_ADDRESS +  s['user_image'] 
+            if  s['user_image'] is not None :
+                s['user_image'] = settings.HOST_ADDRESS +  s['user_image'] 
         return Response({'results':serializer.data})
     
     
