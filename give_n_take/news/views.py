@@ -65,11 +65,11 @@ class NewsViewSet(viewsets.ModelViewSet):
     def list(self,request):
        
       
-        district_news = News.objects.filter(district_region=(UserDetails.objects.get(id=request.user.id).district)).order_by('-date_added').values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','district_region__id','district_region__name')
+        district_news = News.objects.filter(district_region=(UserDetails.objects.get(id=request.user.id).district)).order_by('date_added').values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','district_region__id','district_region__name')
         for p in district_news :
             if p['news_image'] is not None :
                 p['news_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+p['news_image']
-        state_news = News.objects.filter(state_region=(UserDetails.objects.get(id=request.user.id).state)).order_by('-date_added').values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','state_region__id','state_region__name').order_by('-date_added')
+        state_news = News.objects.filter(state_region=(UserDetails.objects.get(id=request.user.id).state)).order_by('date_added').values('id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','state_region__id','state_region__name')
         for p in state_news :
             if p['news_image'] is not None :
                 p['news_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+p['news_image']
