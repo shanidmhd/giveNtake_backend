@@ -457,7 +457,7 @@ class get_user_by_name(APIView):
     def get(self,request):
         try:
             if request.GET.get('username'):
-                user = UserDetails.objects.filter(username=request.GET.get('username')).values("username","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
+                user = UserDetails.objects.filter(username=request.GET.get('username')).values("username","name","first_name","last_name","phone_number","id","staff_role_id","staff_role__name","user_image","is_details",
                 "state_id","state_id__name","district_id","district_id__name","panchayath_id","panchayath_id__name","ward_id","ward_id__name","committee_type_id","committee_type_id__name")
                 if user:
                     user[0]['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user[0]['user_image']
