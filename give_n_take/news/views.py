@@ -364,3 +364,24 @@ class get_meeting_by_user(APIView):
         except Exception as e:
             return Response({'results':"Failed to get user meetings"})
 
+
+class News_all_ViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for register and edit user instances.
+    """
+    parser_classes = [MultiPartParser, FormParser]
+    serializer_class = NewsSerializer
+    queryset = News.objects.all()
+    http_method_names = ['get']
+    
+    
+    def list(self,request):
+        datas=News.objects.all()
+        serializer=NewsSerializer(datas,many=True)
+        for s in serializer.data :
+            s['district_region']=District.objects.filter(id=  s['district_region']).values('id','name','state__name')
+            s['state_region']=State.objects.filter(id=  s['state_region']).values('id','name')
+            s['panchayath_region']=Panchayath.objects.filter(id=  s['panchayath_region']).values('id','name','district__name')
+            if s['news_image'] is not None :
+                s['news_image']=settings.HOST_ADDRESS +s['news_image']
+        return Response(serializer.data)
