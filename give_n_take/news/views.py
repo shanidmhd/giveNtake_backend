@@ -384,4 +384,4 @@ class News_all_ViewSet(viewsets.ModelViewSet):
             s['panchayath_region']=Panchayath.objects.filter(id=  s['panchayath_region']).values('id','name','district__name')
             if s['news_image'] is not None :
                 s['news_image']=settings.HOST_ADDRESS +s['news_image']
-        return Response(serializer.data)
+        return Response({'results':serializer.data})
