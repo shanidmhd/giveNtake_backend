@@ -713,19 +713,10 @@ class get_committee_members_created(APIView):
     permission_classes = [IsAuthenticated]
    
     def get(self,request):
-        try:
+        
             admin_ =committee_members.objects.filter(created_by=request.user.id)
             admin_list=committee_list_ser(admin_,many=True)
             for item in admin_list.data:
-                # item['user_image']=      ( "http"
-                #     + ":"
-                #     + "//" 
-                #     + settings.IMAGE_URL
-                #     # + settings.IMAGE_PATH
-                
-                #     + item["user_image"]
-                # )
                 item['user_image']=settings.HOST_ADDRESS +item['user_image']
             return Response({'results':admin_list.data},status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'results':"Failed to get admin  list"},status=status.HTTP_400_BAD_REQUEST)
+      
