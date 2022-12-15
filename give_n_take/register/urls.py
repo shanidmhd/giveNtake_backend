@@ -11,6 +11,7 @@ router.register(r'meeting', views.MeetingHighligthsViewSet)
 router.register(r'users', views.UserRegistrationViewSet)
 router.register(r'role', views.StaffRoleViewSet)
 router.register(r'admin', views.AdminUserViewSet)
+router.register(r'members',views.CommiteeMemberViewSet)
 urlpatterns = [
  path('admin/', include(router.urls)),
 #  path('',views.register_api.as_view())   ,

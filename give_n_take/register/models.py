@@ -22,4 +22,20 @@ class admin_model(models.Model):
     
     def __str__(self):
         return self.name
+
+class committee_members(models.Model):
+    user_image = models.ImageField(upload_to='staff/',null=True,default='default.jpeg')
+    name=models.CharField(max_length=1024)
+    phone_number = models.CharField(max_length=12)
+    staff_role=models.ForeignKey(StaffRole,on_delete=models.CASCADE)
+    committee_type=models.ForeignKey(CommitteeType,on_delete=models.CASCADE)
+    state=models.ForeignKey(State,on_delete=models.CASCADE)
+    district=models.ForeignKey(District,on_delete=models.CASCADE)
+    panchayath=models.ForeignKey(Panchayath,on_delete=models.CASCADE)
+    ward=models.ForeignKey(Ward,on_delete=models.CASCADE)
+    login_token = models.CharField(max_length=50,default=0)
+    created_by= models.PositiveBigIntegerField(null=True)
+    updated_by= models.PositiveBigIntegerField(null=True)
     
+    def __str__(self):
+        return self.name

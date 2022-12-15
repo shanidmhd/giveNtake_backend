@@ -3,9 +3,9 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from news.models import MeetingAttendance, MeetingHighligths, MeetingPhoto, News
 from news.serializers import MeetingHighligthsSerializer, NewsSerializer
-from register.models import admin_model
+from register.models import admin_model,committee_members
 from rest_framework.parsers import MultiPartParser, FormParser
-from register.serializers import Registration_Serializer, login_serializers, register_ser, register_serializers
+from register.serializers import Registration_Serializer,committee_list_ser, login_serializers, register_ser, register_serializers,committe_members_serializers
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -671,3 +671,26 @@ class admin_filter_list(generics.ListAPIView):
     serializer_class = Registration_Serializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['state', 'district','committee_type','ward','panchayath']
+    
+    
+class CommiteeMemberViewSet(viewsets.ModelViewSet):
+    
+    serializer_class = committe_members_serializers
+    queryset = committee_members.objects.all()
+    http_method_names = [ 'post','get','put','delete']
+    
+    def create(self,request):
+        serializers=committe_members_serializers(data=request.data)
+        if serializers.is_valid():
+            serializers.save(created_by=request.user.id)
+            return Response({'success':'Committee member added succesfully'},status=status.HTTP_201_CREATED)
+        return Response({'error' : serializers.errors},status=status.HTTP_400_BAD_REQUEST)
+    
+    def list(self,request):
+        committee_data=committee_members.objects.all()
+        serializer=committee_list_ser(committee_data,many=True)
+        for image in serializer.data :
+            if image['user_image'] is not None :
+                image['user_image']=settings.HOST_ADDRESS +  image['user_image']
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
