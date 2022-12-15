@@ -694,6 +694,18 @@ class CommiteeMemberViewSet(viewsets.ModelViewSet):
                 image['user_image']=settings.HOST_ADDRESS +  image['user_image']
         return Response(serializer.data,status=status.HTTP_200_OK)
     
+    def retrieve(self, request,*args, **kargs):
+        cmid = kargs.get('pk')
+        if cmid:
+            try:
+                appts = committee_members.objects.get(id=int(cmid))
+                serializer = committee_list_ser(appts, many=False)
+                sdata=serializer.data
+                sdata['user_image'] = settings.HOST_ADDRESS +  sdata['user_image'] 
+                return Response({'results':sdata})
+            except:
+                return Response({'message': 'No data found'})
+    
     
 class get_committee_members_created(APIView): 
     queryset = committee_members.objects.all()
