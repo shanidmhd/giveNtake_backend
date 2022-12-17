@@ -23,6 +23,7 @@ urlpatterns = [
  path('get_meeting_by_user_id/',views.get_meeting_by_user.as_view()),
  path('admin/update/<int:id>/',views.update_admin.as_view()),
  path('admin/filter/',views.admin_filter_list.as_view()),
+ path('members/filter/',views.committee_members_filter.as_view()),
  path('members/created_by/',views.get_committee_members_created.as_view())
 
 ]
