@@ -719,4 +719,11 @@ class get_committee_members_created(APIView):
             for item in admin_list.data:
                 item['user_image']=settings.HOST_ADDRESS +item['user_image']
             return Response({'results':admin_list.data},status=status.HTTP_200_OK)
-      
+    
+    
+    
+class committee_members_filter(generics.ListAPIView):
+        queryset = committee_members.objects.all()
+        serializer_class = committee_list_ser
+        filter_backends = [DjangoFilterBackend]
+        filterset_fields = ['state', 'district','committee_type','ward','panchayath']
