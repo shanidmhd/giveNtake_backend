@@ -31,9 +31,10 @@ class committee_members(models.Model):
     committee_type=models.ForeignKey(CommitteeType,on_delete=models.CASCADE)
     state=models.ForeignKey(State,on_delete=models.CASCADE)
     district=models.ForeignKey(District,on_delete=models.CASCADE)
-    panchayath=models.ForeignKey(Panchayath,on_delete=models.CASCADE)
-    ward=models.ForeignKey(Ward,on_delete=models.CASCADE)
+    panchayath=models.ForeignKey(Panchayath,on_delete=models.CASCADE,null=True)
+    ward=models.ForeignKey(Ward,on_delete=models.CASCADE,null=True)
     login_token = models.CharField(max_length=50,default=0)
+    username=models.CharField(null=True,max_length=50)
     created_by= models.PositiveBigIntegerField(null=True)
     updated_by= models.PositiveBigIntegerField(null=True)
     

@@ -11,7 +11,7 @@ from .serializers import (
 from .models import Program_model, TicketBooking
 from rest_framework.response import Response
 from rest_framework import status
-from register.models import admin_model
+from register.models import admin_model,committee_members
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 from user_details.models import UserDetails, District, State
@@ -23,7 +23,7 @@ import random
 import string
 # Create your views here.
 from django.core.files import File
-
+from django.shortcuts import get_object_or_404
 
 class ProgramAPI(viewsets.ModelViewSet):
     """
@@ -229,6 +229,7 @@ class TicketBooking_API(viewsets.ModelViewSet):
                 sample=random.sample(digits+lettters,7)
                 result='QR'+''.join(sample)
                 url =settings.HOST_ADDRESS + '/program/qr/'+ str(result) + '/'
+                print(url,'url')
                 qr_image = qrcode.make(url)
                 qr_image.save("media/qrcode/qrimage.png")
                 destination_file = open("media/qrcode/qrimage.png", "rb")
@@ -244,37 +245,48 @@ class TicketBooking_API(viewsets.ModelViewSet):
 
 @api_view(('GET',))
 def invalid_qrcode(req,random):
-    if req.method == 'GET':
-        ser_get = TicketBooking.objects.get(qr_random_num=random)
-        ser_data = Ticket_Booking_serializer(ser_get, many=False)
-        user = {}
-        program = {}
-        for ser in ser_data.data["fk_user_id"]:
-            user["id"] = ser["id"]
-            user["username"] = ser["username"]
-        for pro in ser_data.data["fk_program"]:
-            program["id"] = pro["id"]
-            program["name"] = pro["program_name"]
-            program["venue"] = pro["venue"]
-            program["date"] = pro["date"]
-            program['created_by'] = pro["fk_admin_id__id"]
-        if ser_get.qr_image_scanned == False :
-            data = {
-                        "booking_id": ser_data.data["id"],
-                        "no_of_seats": ser_data.data["no_of_seats"],
-                        "payment_status":ser_data.data['payment_status'],
-                        "userdetails": user,
-                        "program_details": program,
-                    }
-        else :
-            data={
-                "error" : "QR already scanned",
-                "status" : status.HTTP_400_BAD_REQUEST
-            }
-        TicketBooking.objects.filter(qr_random_num=random).update(qr_image_scanned=True)
-        
-        return Response(data)
-        # id=req.GET['id']
+    if req.user.is_authenticated :
+        if req.method == 'GET':
+            get_object_or_404
+            admin_id=get_object_or_404(committee_members,username=req.GET.get('username')).id
+            if admin_id :
+                
+                ticket_random_number=TicketBooking.objects.get(qr_random_num=random).fk_program.id
+                program= Program_model.objects.filter(id=ticket_random_number,qr_permission__id=admin_id)
+                if program :
+                    ser_get = TicketBooking.objects.get(qr_random_num=random)
+                    ser_data = Ticket_Booking_serializer(ser_get, many=False)
+                    user = {}
+                    program = {}
+                    for ser in ser_data.data["fk_user_id"]:
+                        user["id"] = ser["id"]
+                        user["username"] = ser["username"]
+                    for pro in ser_data.data["fk_program"]:
+                        program["id"] = pro["id"]
+                        program["name"] = pro["program_name"]
+                        program["venue"] = pro["venue"]
+                        program["date"] = pro["date"]
+                        program['created_by'] = pro["fk_admin_id__id"]
+                    if ser_get.qr_image_scanned == False :
+                        data = {
+                                    "booking_id": ser_data.data["id"],
+                                    "no_of_seats": ser_data.data["no_of_seats"],
+                                    "payment_status":ser_data.data['payment_status'],
+                                    "userdetails": user,
+                                    "program_details": program,
+                                }
+                    else :
+                        data={
+                            "error" : "QR already scanned",
+                            "status" : status.HTTP_400_BAD_REQUEST
+                        }
+                    TicketBooking.objects.filter(qr_random_num=random).update(qr_image_scanned=True)
+                    
+                    return Response(data)
+                return Response({'error':'You dont have permission to scan qr code'},status=status.HTTP_400_BAD_REQUEST)
+         
+    return Response({"error":"Please login"},status=status.HTTP_401_UNAUTHORIZED)
+            # id=req.GET['id']
         # TicketBooking.objects.filter(id=id).update(qr_code_image='media/qrcode/error.png')
 
 
@@ -288,7 +300,7 @@ def get_ticket_booking_id(req):
                  ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
                 "id", "username")
                  ticket["fk_program"] = Program_model.objects.filter(id=ticket["fk_program"]).values(
-                "id", "program_name", "venue", "date","start_time","end_time")
+                "id", "program_name", "venue", "date","start_time","end_time").count()
     
             return Response(ticket_get)
         else :
@@ -330,3 +342,15 @@ def program_based_district(req):
             return Response(status.HTTP_401_UNAUTHORIZED)
     else :
         pass
+    
+    
+
+class Program_all_API(viewsets.ModelViewSet):
+    """
+    A viewset for register and edit user instances.
+    """
+
+    serializer_class = Program_Serializer
+    queryset = Program_model.objects.all()
+    http_method_names = ["get", "post", "put", "delete"]
+    permission_classes = [IsAuthenticated]

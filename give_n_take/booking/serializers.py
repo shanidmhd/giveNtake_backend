@@ -28,7 +28,7 @@ class Program_Serializer(serializers.ModelSerializer):
 class Ticket_Booking_serializer(serializers.ModelSerializer):
     no_of_seats = serializers.IntegerField(required=True, min_value=5)
     qr_random_num = serializers.CharField(write_only=True,required=False)
-    qr_image_scanned = serializers.BooleanField(write_only=True)
+    qr_image_scanned = serializers.BooleanField(write_only=True,required=False)
     class Meta:
         model = TicketBooking
         fields = "__all__"
