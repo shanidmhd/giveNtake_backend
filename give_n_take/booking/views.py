@@ -24,6 +24,7 @@ import string
 # Create your views here.
 from django.core.files import File
 from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
 
 class ProgramAPI(viewsets.ModelViewSet):
     """
@@ -354,3 +355,10 @@ class Program_all_API(viewsets.ModelViewSet):
     queryset = Program_model.objects.all()
     http_method_names = ["get", "post", "put", "delete"]
     permission_classes = [IsAuthenticated]
+    
+
+
+class Programs_count(APIView):
+    def get(self,request):
+        count=Program_model.objects.count()
+        return Response({'count':count})

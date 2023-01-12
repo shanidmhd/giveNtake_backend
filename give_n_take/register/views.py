@@ -727,3 +727,10 @@ class committee_members_filter(generics.ListAPIView):
         serializer_class = committee_list_ser
         filter_backends = [DjangoFilterBackend]
         filterset_fields = ['state', 'district','committee_type','ward','panchayath']
+        
+        
+class Admin_count(APIView):
+    def get(self,request):
+        count=admin_model.objects.count()
+        return Response({'count':count})
+    

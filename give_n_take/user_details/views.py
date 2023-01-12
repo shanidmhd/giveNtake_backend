@@ -620,3 +620,11 @@ class district_ward_panchayath_created_by(APIView):
         }
     
         return Response({'results':response}) 
+    
+    
+
+class Users_count(APIView):
+    def get(self,request):
+        count=UserDetails.objects.count()
+        return Response({'count':count})
+    
