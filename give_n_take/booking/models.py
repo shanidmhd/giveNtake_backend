@@ -1,5 +1,5 @@
 from django.db import models
-from register.models import admin_model
+from register.models import admin_model,committee_members
 from user_details.models import State, District
 from user_details.models import UserDetails
 
@@ -32,6 +32,7 @@ class Program_model(models.Model):
     total_seats = models.IntegerField()
     available_seats = models.IntegerField(null=True)
     price = models.IntegerField(null=True)
+    qr_permission = models.ManyToManyField(committee_members,blank=True)
 
     def __str__(self):
         return self.program_name

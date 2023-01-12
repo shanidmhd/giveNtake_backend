@@ -5,6 +5,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register("details", ProgramAPI)
 router.register("booking", TicketBooking_API)
+router.register("all",Program_all_API)
 
 
 urlpatterns = [
