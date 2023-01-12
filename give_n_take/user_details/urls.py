@@ -18,6 +18,7 @@ urlpatterns = [
     path('get_state_user/',get_state_by_user.as_view()),
     path('get_district_user/',get_district_by_user.as_view()),
     path('get_area_by_usercommitte/',get_area_by_usercommitte.as_view()),
-    path('get_dist_pan_ward_created/',district_ward_panchayath_created_by.as_view())
+    path('get_dist_pan_ward_created/',district_ward_panchayath_created_by.as_view()),
+    path('count/users/',Users_count.as_view())
 
     ]
