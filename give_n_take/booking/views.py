@@ -306,6 +306,21 @@ def get_ticket_booking_id(req):
             return Response(ticket_get)
         else :
             return Response(status.HTTP_401_UNAUTHORIZED)
+        
+@api_view(('GET',))
+def get_ticket_booking_completed_id(req):
+    if req.method == 'GET' :
+        if req.user.is_authenticated :
+            ticket_get=TicketBooking.objects.filter(fk_user_id__id=req.user.id,payment_completed=True).values('id','fk_user_id','fk_program','no_of_seats','total_amount','payment_status')
+            for ticket in ticket_get :
+                 ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
+                "id", "username")
+                 ticket["fk_program"] = Program_model.objects.filter(id=ticket["fk_program"]).values(
+                "id", "program_name", "venue", "date","start_time","end_time").count()
+    
+            return Response(ticket_get)
+        else :
+            return Response(status.HTTP_401_UNAUTHORIZED)
 
 @api_view(('GET',))
 def program_based_create_by(req):
