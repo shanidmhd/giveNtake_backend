@@ -301,7 +301,7 @@ def get_ticket_booking_id(req):
                  ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
                 "id", "username")
                  ticket["fk_program"] = Program_model.objects.filter(id=ticket["fk_program"]).values(
-                "id", "program_name", "venue", "date","start_time","end_time").count()
+                "id", "program_name", "venue", "date","start_time","end_time")
     
             return Response(ticket_get)
         else :
@@ -316,7 +316,7 @@ def get_ticket_booking_completed_id(req):
                  ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
                 "id", "username")
                  ticket["fk_program"] = Program_model.objects.filter(id=ticket["fk_program"]).values(
-                "id", "program_name", "venue", "date","start_time","end_time").count()
+                "id", "program_name", "venue", "date","start_time","end_time")
     
             return Response(ticket_get)
         else :
