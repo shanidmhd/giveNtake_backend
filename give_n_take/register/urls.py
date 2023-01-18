@@ -24,6 +24,7 @@ urlpatterns = [
  path('admin/update/<int:id>/',views.update_admin.as_view()),
  path('admin/filter/',views.admin_filter_list.as_view()),
  path('members/filter/',views.committee_members_filter.as_view()),
- path('members/created_by/',views.get_committee_members_created.as_view())
+ path('members/created_by/',views.get_committee_members_created.as_view()),
+ path('count/admin/',views.Admin_count.as_view())
 
 ]
