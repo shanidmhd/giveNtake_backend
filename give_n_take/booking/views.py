@@ -235,10 +235,11 @@ class TicketBooking_API(viewsets.ModelViewSet):
                 destination_file = open("media/qrcode/qrimage.png", "rb")
                 ser.qr_code_image.save("qrimage.png", File(destination_file), save=True)
                 TicketBooking.objects.filter(id=int(pk)).update(qr_random_num=result)
+               
 
             else:
                 serializer.save()
-            return Response({"sucess": "success"}, status=status.HTTP_200_OK)
+            return Response({"sucess": 'success','qrcode':settings.HOST_ADDRESS + serializer.data['qr_code_image']}, status=status.HTTP_200_OK)
         return Response(
             {"error": status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST
         )
