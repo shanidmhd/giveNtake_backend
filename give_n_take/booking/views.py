@@ -296,8 +296,9 @@ def invalid_qrcode(req,random):
 def get_ticket_booking_id(req):
     if req.method == 'GET' :
         if req.user.is_authenticated :
-            ticket_get=TicketBooking.objects.filter(fk_user_id__id=req.user.id).values('id','fk_user_id','fk_program','no_of_seats','total_amount','payment_status','date_booked')
+            ticket_get=TicketBooking.objects.filter(fk_user_id__id=req.user.id).values('id','fk_user_id','fk_program','no_of_seats','total_amount','payment_status','date_booked','qr_code_image')
             for ticket in ticket_get :
+                 ticket['qr_code_image']=settings.HOST_ADDRESS+settings.MEDIA_URL  + ticket['qr_code_image']
                  ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
                 "id", "username")
                  ticket["fk_program"] = Program_model.objects.filter(id=ticket["fk_program"]).values(
@@ -311,8 +312,9 @@ def get_ticket_booking_id(req):
 def get_ticket_booking_completed_id(req):
     if req.method == 'GET' :
         if req.user.is_authenticated :
-            ticket_get=TicketBooking.objects.filter(fk_user_id__id=req.user.id,payment_completed=True).values('id','fk_user_id','fk_program','no_of_seats','total_amount','payment_status','date_booked')
+            ticket_get=TicketBooking.objects.filter(fk_user_id__id=req.user.id,payment_completed=True).values('id','fk_user_id','fk_program','no_of_seats','total_amount','payment_status','date_booked','qr_code_image')
             for ticket in ticket_get :
+                 ticket['qr_code_image']=settings.HOST_ADDRESS+settings.MEDIA_URL  + ticket['qr_code_image']
                  ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
                 "id", "username")
                  ticket["fk_program"] = Program_model.objects.filter(id=ticket["fk_program"]).values(
