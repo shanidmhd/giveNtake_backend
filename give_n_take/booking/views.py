@@ -131,7 +131,8 @@ class TicketBooking_API(viewsets.ModelViewSet):
         appts = TicketBooking.objects.all()
         serializer =ticket_get_serializer(appts, many=True)
         for res in serializer.data:
-            res['qr_code_image']=settings.HOST_ADDRESS + str(res['qr_code_image'])
+            if res['qr_code_image'] :
+                res['qr_code_image']=settings.HOST_ADDRESS + str(res['qr_code_image'])
             res["fk_user_id"] = UserDetails.objects.filter(id=res["fk_user_id"]).values(
                 "id", "username"
             )
@@ -182,7 +183,7 @@ class TicketBooking_API(viewsets.ModelViewSet):
                 .first()
             )
      
-            if no_of_seat_r < int(program["available_seats"]):
+            if no_of_seat_r <= int(program["available_seats"]):
                 remaining_seats = program["available_seats"] - no_of_seat_r
                 total_price = no_of_seat_r * int(program["price"])
                 _serializer.save(
@@ -296,12 +297,13 @@ def invalid_qrcode(req,random):
 def get_ticket_booking_id(req):
     if req.method == 'GET' :
         if req.user.is_authenticated :
-            ticket_get=TicketBooking.objects.filter(fk_user_id__id=req.user.id).values('id','fk_user_id','fk_program','no_of_seats','total_amount','payment_status','date_booked','qr_code_image')
+            ticket_get=TicketBooking.objects.filter(fk_user_id__id=req.user.id).values('id','fk_user_id','fk_program','no_of_seats','total_amount','payment_status','date_booked','qr_code_image').order_by('-date_booked')
             for ticket in ticket_get :
-                 ticket['qr_code_image']=settings.HOST_ADDRESS+settings.MEDIA_URL  + ticket['qr_code_image']
-                 ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
+                if ticket['qr_code_image']:
+                    ticket['qr_code_image']=settings.HOST_ADDRESS+settings.MEDIA_URL  + ticket['qr_code_image']
+                ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
                 "id", "username")
-                 ticket["fk_program"] = Program_model.objects.filter(id=ticket["fk_program"]).values(
+                ticket["fk_program"] = Program_model.objects.filter(id=ticket["fk_program"]).values(
             "id", "program_name", "venue", "date",'start_time','end_time','address','contact_no','food','agenda','inauguration_name','total_seats',"available_seats",'price',"fk_admin_id__id",'fk_admin_id__username'
         )
             return Response(ticket_get)
@@ -312,7 +314,7 @@ def get_ticket_booking_id(req):
 def get_ticket_booking_completed_id(req):
     if req.method == 'GET' :
         if req.user.is_authenticated :
-            ticket_get=TicketBooking.objects.filter(fk_user_id__id=req.user.id,payment_completed=True).values('id','fk_user_id','fk_program','no_of_seats','total_amount','payment_status','date_booked','qr_code_image')
+            ticket_get=TicketBooking.objects.filter(fk_user_id__id=req.user.id,payment_completed=True).values('id','fk_user_id','fk_program','no_of_seats','total_amount','payment_status','date_booked','qr_code_image').order_by('-date_booked')
             for ticket in ticket_get :
                  ticket['qr_code_image']=settings.HOST_ADDRESS+settings.MEDIA_URL  + ticket['qr_code_image']
                  ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
