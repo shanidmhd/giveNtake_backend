@@ -47,7 +47,7 @@ class TicketBooking(models.Model):
     )
     no_of_seats = models.IntegerField()
     total_amount = models.IntegerField(null=True)
-    date_booked=models.DateField(auto_now=False, auto_now_add=True, null=True)
+    date_booked=models.DateTimeField(auto_now=False, auto_now_add=True, null=True)
     payment_status = models.CharField(max_length=50, default="pending")
     payment_completed = models.BooleanField(default=False)
     qr_code_image = models.ImageField(upload_to="media/qrcode/", null=True)
