@@ -135,9 +135,9 @@ class TicketBooking_API(viewsets.ModelViewSet):
             res["fk_user_id"] = UserDetails.objects.filter(id=res["fk_user_id"]).values(
                 "id", "username"
             )
-            res["fk_program"] = Program_model.objects.filter(
-                id=res["fk_program"]
-            ).values("id", "program_name", "venue", "available_seats")
+            res["fk_program"] =  Program_model.objects.filter(id=res["fk_program"]).values(
+            "id", "program_name", "venue", "date",'start_time','end_time','address','contact_no','food','agenda','inauguration_name','total_seats',"available_seats",'price',"fk_admin_id__id"
+        )
         return Response({"results": serializer.data})
 
     def retrieve(self, request, *args, **kargs):
@@ -230,7 +230,6 @@ class TicketBooking_API(viewsets.ModelViewSet):
                 sample=random.sample(digits+lettters,7)
                 result='QR'+''.join(sample)
                 url =settings.HOST_ADDRESS + '/program/qr/'+ str(result) + '/'
-                print(url,'url')
                 qr_image = qrcode.make(url)
                 qr_image.save("media/qrcode/qrimage.png")
                 destination_file = open("media/qrcode/qrimage.png", "rb")
@@ -301,8 +300,8 @@ def get_ticket_booking_id(req):
                  ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
                 "id", "username")
                  ticket["fk_program"] = Program_model.objects.filter(id=ticket["fk_program"]).values(
-                "id", "program_name", "venue", "date","start_time","end_time")
-    
+            "id", "program_name", "venue", "date",'start_time','end_time','address','contact_no','food','agenda','inauguration_name','total_seats',"available_seats",'price',"fk_admin_id__id",'fk_admin_id__username'
+        )
             return Response(ticket_get)
         else :
             return Response(status.HTTP_401_UNAUTHORIZED)
@@ -316,7 +315,8 @@ def get_ticket_booking_completed_id(req):
                  ticket["fk_user_id"] = UserDetails.objects.filter(id=ticket["fk_user_id"]).values(
                 "id", "username")
                  ticket["fk_program"] = Program_model.objects.filter(id=ticket["fk_program"]).values(
-                "id", "program_name", "venue", "date","start_time","end_time")
+            "id", "program_name", "venue", "date",'start_time','end_time','address','contact_no','food','agenda','inauguration_name','total_seats',"available_seats",'price',"fk_admin_id__id","fk_admin_id__username"
+        )
     
             return Response(ticket_get)
         else :

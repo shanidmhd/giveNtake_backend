@@ -43,7 +43,7 @@ class Ticket_Booking_serializer(serializers.ModelSerializer):
             "id", "username"
         )
         res["fk_program"] = Program_model.objects.filter(id=res["fk_program"]).values(
-            "id", "program_name", "venue", "date", "available_seats","fk_admin_id__id"
+            "id", "program_name", "venue", "date",'start_time','end_time','address','contact_no','food','agenda','inauguration_name','total_seats',"available_seats",'price',"fk_admin_id__id"
         )
         return res
 
