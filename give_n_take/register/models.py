@@ -17,6 +17,7 @@ class admin_model(models.Model):
     username=models.CharField(max_length=1024,unique=True)
     login_token = models.CharField(max_length=50,default=0)
     user_id=models.ForeignKey(UserDetails,on_delete=models.CASCADE,null=True)
+    is_deleted=models.BooleanField(default=False)
     created_by= models.PositiveBigIntegerField(null=True)
     updated_by= models.PositiveBigIntegerField(null=True)
     
