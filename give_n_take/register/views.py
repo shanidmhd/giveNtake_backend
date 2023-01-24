@@ -410,6 +410,19 @@ class AdminUserViewSet(viewsets.ModelViewSet):
                 s['user_image'] = settings.HOST_ADDRESS +  s['user_image'] 
         return Response({'results':serializer.data})
     
+    def destroy(self, request, pk):
+        doctor = self.get_object()
+        if doctor.user_id.is_superuser == True:
+            response = {"message": "Superadmin can't delete"}
+            return Response(response, status=status.HTTP_403_FORBIDDEN)
+        else :
+            doctor = self.get_object()
+            ad=admin_model.objects.get(id=pk).user_id.id
+            
+            UserDetails.objects.filter(id=ad).delete()
+            doctor.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
     
 class update_admin(APIView):
         def get_object(self, id):
@@ -426,7 +439,6 @@ class update_admin(APIView):
         
             if serializer.is_valid():
                 serializer.save()
-                print(serializer.data,'ser')
                 user_id_r=int(serializer.data['user_id'])
                 us=UserDetails.objects.filter(id=user_id_r).first()
                 reg_ser=register_admins_serializer(us, data=request.data,partial=True)#
@@ -489,7 +501,7 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     """
     # parser_classes = [MultiPartParser, FormParser]
     serializer_class = RegistrationSerializer
-    queryset = UserDetails.objects.all()
+    queryset = UserDetails.objects.filter(is_superuser=False)
     http_method_names = [ 'post','get','delete']
     permission_classes = [IsAuthenticated,Isusers]
     # def retrieve(self, request,*args, **kargs):
