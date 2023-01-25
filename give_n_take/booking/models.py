@@ -9,7 +9,7 @@ from user_details.models import UserDetails
 class Program_model(models.Model):
     program_name = models.CharField(max_length=1024)
     fk_admin_id = models.ForeignKey(
-        admin_model, null=True, on_delete=models.CASCADE, related_name="admin"
+        admin_model, null=True,on_delete=models.SET_NULL, related_name="admin"
     )
     date = models.DateField(auto_now=False, auto_now_add=False, null=True)
     start_time = models.TimeField(auto_now=False, auto_now_add=False, null=True)
@@ -40,10 +40,10 @@ class Program_model(models.Model):
 
 class TicketBooking(models.Model):
     fk_user_id = models.ForeignKey(
-        UserDetails, on_delete=models.CASCADE, related_name="user", null=True
+        UserDetails, on_delete=models.SET_NULL, related_name="user", null=True
     )
     fk_program = models.ForeignKey(
-        Program_model, on_delete=models.CASCADE, related_name="program", null=True
+        Program_model,on_delete=models.CASCADE, related_name="program", null=True
     )
     no_of_seats = models.IntegerField()
     total_amount = models.IntegerField(null=True)
