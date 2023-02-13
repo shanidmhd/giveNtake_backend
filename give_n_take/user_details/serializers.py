@@ -126,7 +126,10 @@ class StateSerializer(serializers.ModelSerializer):
         model = State
         fields = ['id','name','code','created_by','modified_by','date_added','date_modified']
         
-
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['parent_name']='IN'
+        return rep
     def create(self,validated_data):
         state = State.objects.create(**validated_data)
         return state
@@ -138,7 +141,9 @@ class DistrictSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         rep = super().to_representation(instance)
-        rep['parent_name']=State.objects.filter(id=rep['state']).values('name').first()
+        state=State.objects.get(id=rep['state'])
+        ser=StateSerializer(state)
+        rep['parent_name']=ser.data['name']
         return rep
 
     def create(self,validated_data):
@@ -151,7 +156,13 @@ class PanchayathSerializer(serializers.ModelSerializer):
         model = Panchayath
         fields = ['id','name','district','created_by','modified_by','date_added','date_modified']
         
-
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        district=District.objects.get(id=rep['district'])
+        ser=DistrictSerializer(district)
+        rep['parent_name']=ser.data['name']
+        return rep
+    
     def create(self,validated_data):
         panchayath = Panchayath.objects.create(**validated_data)
         return panchayath
@@ -160,7 +171,13 @@ class WardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ward
         fields = ['id','name','panchayath','created_by','modified_by','date_added','date_modified']
-        
+    
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        panchayath=Panchayath.objects.get(id=rep['panchayath'])
+        ser=PanchayathSerializer(panchayath)
+        rep['parent_name']=ser.data['name']
+        return rep
 
     def create(self,validated_data):
         ward = Ward.objects.create(**validated_data)
