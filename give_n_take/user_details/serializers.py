@@ -174,9 +174,10 @@ class WardSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         rep = super().to_representation(instance)
-        panchayath=Panchayath.objects.get(id=rep['panchayath'])
-        ser=PanchayathSerializer(panchayath)
-        rep['parent_name']=ser.data['name']
+        if rep['panchayath']:
+            panchayath=Panchayath.objects.get(id=rep['panchayath'])
+            ser=PanchayathSerializer(panchayath)
+            rep['parent_name']=ser.data['name']
         return rep
 
     def create(self,validated_data):
