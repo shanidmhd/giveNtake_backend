@@ -135,7 +135,11 @@ class DistrictSerializer(serializers.ModelSerializer):
     class Meta:
         model = District
         fields = ['id','name','state','created_by','modified_by','date_added','date_modified']
-        
+    
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['parent_name']=State.objects.filter(id=rep['state']).values('name').first()
+        return rep
 
     def create(self,validated_data):
         district = District.objects.create(**validated_data)
