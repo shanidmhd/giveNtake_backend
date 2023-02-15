@@ -250,7 +250,7 @@ def invalid_qrcode(req,random):
     if req.user.is_authenticated :
         if req.method == 'GET':
             get_object_or_404
-            admin_id=get_object_or_404(committee_members,id=req.GET.get('id')).id
+            admin_id=get_object_or_404(committee_members,username=req.GET.get('username')).id
             if admin_id :
                 
                 ticket_random_number=TicketBooking.objects.get(qr_random_num=random).fk_program.id
