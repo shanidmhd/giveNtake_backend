@@ -231,7 +231,6 @@ class TicketBooking_API(viewsets.ModelViewSet):
                 sample=random.sample(digits+lettters,7)
                 result='QR'+''.join(sample)
                 url =settings.HOST_ADDRESS + '/program/qr/'+ str(result) + '/'
-                print(url,'rrrr')
                 qr_image = qrcode.make(url)
                 qr_image.save("media/qrcode/qrimage.png")
                 destination_file = open("media/qrcode/qrimage.png", "rb")
