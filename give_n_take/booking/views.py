@@ -231,6 +231,7 @@ class TicketBooking_API(viewsets.ModelViewSet):
                 sample=random.sample(digits+lettters,7)
                 result='QR'+''.join(sample)
                 url = '/program/qr/'+ str(result) + '/'
+                print(url,'url')
                 qr_image = qrcode.make(url)
                 qr_image.save("media/qrcode/qrimage.png")
                 destination_file = open("media/qrcode/qrimage.png", "rb")
@@ -276,6 +277,8 @@ def invalid_qrcode(req,random):
                                     "payment_status":ser_data.data['payment_status'],
                                     "userdetails": user,
                                     "program_details": program,
+                                    "status" : status.HTTP_200_OK,
+                                    "success":"success"
                                 }
                     else :
                         data={
