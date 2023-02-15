@@ -1,3 +1,4 @@
+
 from django.conf import settings
 from django.shortcuts import render
 from rest_framework import viewsets
@@ -276,6 +277,8 @@ def invalid_qrcode(req,random):
                                     "payment_status":ser_data.data['payment_status'],
                                     "userdetails": user,
                                     "program_details": program,
+                                    "status" : status.HTTP_200_OK,
+                                    "success":"success"
                                 }
                     else :
                         data={
