@@ -1,3 +1,4 @@
+
 from django.conf import settings
 from django.shortcuts import render
 from rest_framework import viewsets
@@ -231,7 +232,6 @@ class TicketBooking_API(viewsets.ModelViewSet):
                 sample=random.sample(digits+lettters,7)
                 result='QR'+''.join(sample)
                 url = '/program/qr/'+ str(result) + '/'
-                print(url,'url')
                 qr_image = qrcode.make(url)
                 qr_image.save("media/qrcode/qrimage.png")
                 destination_file = open("media/qrcode/qrimage.png", "rb")
