@@ -154,7 +154,7 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(appts, many=True)
         for image in serializer.data :
             if image['user_image'] is not None :
-                image['user_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+image['user_image']
+                image['user_image']=settings.HOST_ADDRESS+image['user_image']
         return Response({'results':serializer.data})
 
 class StaffRoleViewSet(viewsets.ModelViewSet):
