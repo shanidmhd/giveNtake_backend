@@ -138,7 +138,7 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
             try:
                 appts = UserDetails.objects.get(id=int(user_id))
                 serializer = self.get_serializer(appts, many=False)
-                serializer.data['user_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+serializer.data['user_image']
+                serializer.data['user_image']=settings.HOST_ADDRESS++serializer.data['user_image']
                 return Response({'results':serializer.data})
             except:
                 return Response({'message': 'No data found'})
