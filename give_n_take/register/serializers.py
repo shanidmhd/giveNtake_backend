@@ -60,7 +60,7 @@ class Registration_Serializer(WritableNestedModelSerializer):
             rep['str_ward']=user_details['str_ward']
             rep['is_details']=user_details['is_details']
         user=admin_model.objects.filter(id=rep['id']).values('user_image').first()
-        if user:
+        if user['user_image']:
             rep['user_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+user['user_image']
 
             rep['user_image']='null'
