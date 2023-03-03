@@ -37,13 +37,13 @@ class Registration_Serializer(WritableNestedModelSerializer):
     ward =Ward_staff_Serializer()
     class Meta :
         
-        model = UserDetails
+        model = admin_model
         fields = ['id','name','username','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state','district','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details']
         
         
     def to_representation(self, instance):
         rep= super().to_representation(instance)
-        user=UserDetails.objects.filter(id=rep['id']).values('user_image').first()
+        user=admin_model.objects.filter(id=rep['id']).values('user_image').first()
         if user :
             rep['user_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+user['user_image']
         return rep
