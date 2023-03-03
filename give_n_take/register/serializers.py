@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from django.conf import settings
 from user_details.models import UserDetails
 from . models import admin_model,committee_members
 from drf_writable_nested.serializers import WritableNestedModelSerializer
@@ -40,7 +40,13 @@ class Registration_Serializer(WritableNestedModelSerializer):
         model = UserDetails
         fields = ['id','name','username','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state','district','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details']
         
-
+        
+    def to_representation(self, instance):
+        rep= super().to_representation(instance)
+        user=UserDetails.objects.filter(id=rep['id']).values('user_image').first()
+        if user :
+            rep['user_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+user['user_image']
+        return rep
 
 class admin_booking_serializers(serializers.ModelSerializer):
     class Meta :
