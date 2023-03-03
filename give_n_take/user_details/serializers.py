@@ -99,7 +99,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def get_user_by_username(self, obj):
         user = UserDetails.objects.get(username = obj)
         return user
-
+    def to_representation(self, instance):
+        rep= super().to_representation(instance)
+        user=UserDetails.objects.filter(id=rep['id']).values('user_image').first()
+      
+        rep['user_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+user['user_image']
+        return rep
 class StaffRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffRole
