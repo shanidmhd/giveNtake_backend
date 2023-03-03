@@ -38,11 +38,27 @@ class Registration_Serializer(WritableNestedModelSerializer):
     class Meta :
         
         model = admin_model
-        fields = ['id','name','username','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state','district','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details']
+        fields = ['id','name','username','phone_number','staff_role','state','state','district','panchayath','ward','created_by','user_image','committee_type','user_id']
         
         
     def to_representation(self, instance):
         rep= super().to_representation(instance)
+        user_details=UserDetails.objects.filter(id=rep['user_id']).values('first_name','last_name','email','date_joined','designation','bln_staff','date_added','date_modified','pin_code','address','blood_group','str_panchayath','str_ward','is_details').first()
+        if user_details:
+            rep['first_name']=user_details['first_name']
+            rep['last_name']=user_details['last_name']
+            rep['email']=user_details['email']
+            rep['date_joined']=user_details['date_joined']
+            rep['designation']=user_details['designation']
+            rep['bln_staff']=user_details['bln_staff']
+            rep['date_added']=user_details['date_added']
+            rep['date_modified']=user_details['date_modified']
+            rep['pin_code']=user_details['pin_code']
+            rep['address']=user_details['address']
+            rep['blood_group']=user_details['blood_group']
+            rep['str_panchayath']=user_details['str_panchayath']
+            rep['str_ward']=user_details['str_ward']
+            rep['is_details']=user_details['is_details']
         user=admin_model.objects.filter(id=rep['id']).values('user_image').first()
         if user :
             rep['user_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+user['user_image']
