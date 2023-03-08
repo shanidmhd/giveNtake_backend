@@ -15,7 +15,6 @@ class Migration(migrations.Migration):
             model_name="state",
             name="country",
             field=models.ForeignKey(
-                default=1,
                 on_delete=django.db.models.deletion.CASCADE,
                 to="user_details.country",
             ),
