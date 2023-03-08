@@ -450,7 +450,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 return Response({'results':meetings})
             
             elif user["committee_type__name"] == "National Committee":
-                states=State.objects.filter(country__name='India').values('id','name','code')
+                states=State.objects.filter(country_name='India').values('id','name','code')
                 
                 for state in states :
                     meetings=MeetingHighligths.objects.filter(state_region=state['id']).values('id','meeting_minutes','description','meeting_attendance','district_region__id','district_region__name','ward_region__id','ward_region__name','panchayath_region__id','panchayath_region__name','state_region__id','state_region__name')
