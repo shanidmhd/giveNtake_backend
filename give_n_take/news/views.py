@@ -95,7 +95,6 @@ class NewsViewSet(viewsets.ModelViewSet):
         
 
     def create(self, request, *args, **kwargs): 
-            print(request.user.is_superuser)
             serializer = self.serializer_class(data=request.data)
             admin = (
                 admin_model.objects.filter(user_id__id=request.user.id)
@@ -106,10 +105,8 @@ class NewsViewSet(viewsets.ModelViewSet):
 
             # Checking the committee type of the admin and then it is saving the program accordingly.
             if request.user.is_superuser:
-                print(True)
-                print(request.data['committe_type'])
+
                 if int(request.data['committe_type'])==4:
-                    print('state')
                     if serializer.is_valid():
                         serializer.save(
                             state_region=State.objects.get(id=admin["state"]),created_by=UserDetails.objects.get(id=request.user.id)
