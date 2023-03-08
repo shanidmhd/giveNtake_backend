@@ -403,9 +403,15 @@ def program_based_district(req):
 def program_based_panchayath(req):
     if req.method == 'GET':
         if req.user.is_authenticated :
-            program_filter_data=Program_model.objects.filter(fk_panchayath__id=UserDetails.objects.get(id=req.user.id).panchayath.id)
-            serializer=Program_get_Serializer(program_filter_data,many=True)
-            return Response(serializer.data)
+            if UserDetails.objects.get(id=req.user.id).panchayath.id :
+                try :
+                    program_filter_data=Program_model.objects.filter(fk_panchayath__id=UserDetails.objects.get(id=req.user.id).panchayath.id)
+                    serializer=Program_get_Serializer(program_filter_data,many=True)
+                    return Response(serializer.data)
+                except Exception as e :
+                    return Response({'result':[]})
+            else :
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         else :
             return Response(status.HTTP_401_UNAUTHORIZED)
     else :
@@ -415,9 +421,15 @@ def program_based_panchayath(req):
 def program_based_ward(req):
     if req.method == 'GET':
         if req.user.is_authenticated :
-            program_filter_data=Program_model.objects.filter(fk_ward__id=UserDetails.objects.get(id=req.user.id).ward.id)
-            serializer=Program_get_Serializer(program_filter_data,many=True)
-            return Response(serializer.data)
+            if UserDetails.objects.get(id=req.user.id).panchayath.id :
+                try :
+                    program_filter_data=Program_model.objects.filter(fk_ward__id=UserDetails.objects.get(id=req.user.id).ward.id)
+                    serializer=Program_get_Serializer(program_filter_data,many=True)
+                    return Response(serializer.data)
+                except Exception as e :
+                    return Response({'result':[]})
+            else :
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         else :
             return Response(status.HTTP_401_UNAUTHORIZED)
     else :
