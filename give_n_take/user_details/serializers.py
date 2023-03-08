@@ -82,9 +82,11 @@ class UserLoginSerializer(serializers.Serializer):
 class RegistrationSerializer(serializers.ModelSerializer):
     state_name = serializers.CharField(source='state.name', read_only=True)
     district_name = serializers.CharField(source='district.name', read_only=True)
+    panchayath_name = serializers.CharField(source='panchayath.name', read_only=True)
+    ward_name = serializers.CharField(source='ward.name', read_only=True)
     class Meta:
         model = UserDetails
-        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state_name','district','district_name','panchayath','ward','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details','is_superuser']
+        fields = ['id','username','password','first_name', 'last_name', 'email', 'phone_number','date_joined','staff_role','state','state_name','district','district_name','panchayath','panchayath_name','ward','ward_name','designation','bln_staff','created_by','modified_by','date_added','date_modified','user_image','committee_type','pin_code','address','blood_group','str_panchayath','str_ward','is_details','is_superuser']
         extra_kwargs = { 
             'password': {'write_only': True,'required':False},
             'username': {'required':False}, 
