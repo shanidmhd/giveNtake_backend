@@ -1,3 +1,4 @@
+
 from django.conf import settings
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -449,21 +450,24 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 return Response({'results':meetings})
             
             elif user["committee_type__name"] == "National Committee":
-                meetings=MeetingHighligths.objects.filter(national_committee=True).values('id','meeting_minutes','description','meeting_attendance','district_region__id','district_region__name','ward_region__id','ward_region__name','panchayath_region__id','panchayath_region__name','state_region__id','state_region__name')
-                for meeting_highligths in meetings:
-                    lst_attendance = []
-                    lst_photo = []
-                    attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
-                    for att in attendance:
-                        att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
-                        lst_attendance.append(att)
-                    photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
-                    for att in photo:
-                        att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
-                        lst_photo.append(att)
-                    meeting_highligths['attendance']=lst_attendance
-                    meeting_highligths['photo']=lst_photo   
-                return Response({'results':meetings})
+                states=State.objects.filter(country__name='India').values('id','name','code')
+                
+                for state in states :
+                    meetings=MeetingHighligths.objects.filter(state_region=state['id']).values('id','meeting_minutes','description','meeting_attendance','district_region__id','district_region__name','ward_region__id','ward_region__name','panchayath_region__id','panchayath_region__name','state_region__id','state_region__name')
+                    for meeting_highligths in meetings:
+                        lst_attendance = []
+                        lst_photo = []
+                        attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
+                        for att in attendance:
+                            att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                            lst_attendance.append(att)
+                        photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
+                        for att in photo:
+                            att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                            lst_photo.append(att)
+                        meeting_highligths['attendance']=lst_attendance
+                        meeting_highligths['photo']=lst_photo   
+                    return Response({'results':meetings})
             
             else:
                 meetings=MeetingHighligths.objects.filter(show_all=True).values('id','meeting_minutes','description','meeting_attendance','district_region__id','district_region__name','ward_region__id','ward_region__name','panchayath_region__id','panchayath_region__name','state_region__id','state_region__name')
@@ -865,6 +869,7 @@ class admin_filter_list(generics.ListAPIView):
     serializer_class = Registration_Serializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['state', 'district','committee_type','ward','panchayath']
+    
     
 class CommiteeMemberViewSet(viewsets.ModelViewSet):
     
