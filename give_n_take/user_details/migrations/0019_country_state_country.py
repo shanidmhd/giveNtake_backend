@@ -36,4 +36,14 @@ class Migration(migrations.Migration):
                 to="user_details.country",
             ),
         ),
+        migrations.AlterField(
+            model_name="country",
+            name="code",
+            field=models.CharField(default="IN", max_length=255),
+        ),
+        migrations.AlterField(
+            model_name="country",
+            name="name",
+            field=models.CharField(default="India", max_length=255),
+        ),
     ]
