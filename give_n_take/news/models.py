@@ -23,13 +23,20 @@ class News(DatedModel,CreatedModel):
       panchayath_region = models.ForeignKey(Panchayath,on_delete=models.SET_NULL,default=None,null=True,related_name="news_region")
       show_all=models.BooleanField(default=False)
       status = models.CharField(max_length=255,null=True)
+      national_committee=models.BooleanField(default=False)
 
 class MeetingHighligths(DatedModel,CreatedModel):
 
       meeting_minutes = models.TextField(null=True)
       description = models.TextField(null=True)
       meeting_attendance = models.IntegerField(blank=True, null=True)
-      
+      committe_type = models.ForeignKey(CommitteeType,on_delete=models.SET_NULL,default=None,null=True)
+      panchayath_region = models.ForeignKey(Panchayath,on_delete=models.SET_NULL,default=None,null=True,related_name="meeting_region")
+      district_region = models.ForeignKey(District,on_delete=models.SET_NULL,default=None,null=True,related_name="meeting_region")
+      state_region = models.ForeignKey(State,on_delete=models.SET_NULL,default=None,null=True,related_name="meeting_region")
+      ward_region = models.ForeignKey(Ward,on_delete=models.SET_NULL,default=None,null=True,related_name="meeting_region")
+      show_all=models.BooleanField(default=False)
+      national_committee=models.BooleanField(default=False)
 class MeetingAttendance(models.Model):
     meeting_highligths = models.ForeignKey(MeetingHighligths,
                              related_name="meeting_atendance", on_delete=models.CASCADE)  
