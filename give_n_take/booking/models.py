@@ -1,6 +1,6 @@
 from django.db import models
 from register.models import admin_model,committee_members
-from user_details.models import State, District
+from user_details.models import State, District,Panchayath,Ward
 from user_details.models import UserDetails
 
 # Create your models here.
@@ -23,6 +23,12 @@ class Program_model(models.Model):
     )
     fk_district = models.ForeignKey(
         District, on_delete=models.CASCADE, related_name="district", null=True
+    )
+    fk_panchayath = models.ForeignKey(
+        Panchayath, on_delete=models.CASCADE, related_name="panchayath", null=True
+    )
+    fk_ward = models.ForeignKey(
+        Ward, on_delete=models.CASCADE, related_name="ward", null=True
     )
     food = models.TextField(null=True)
     agenda = models.TextField(null=True)

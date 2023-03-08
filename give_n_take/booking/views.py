@@ -15,7 +15,7 @@ from rest_framework import status
 from register.models import admin_model,committee_members
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
-from user_details.models import UserDetails, District, State
+from user_details.models import UserDetails, District, State,Ward,Panchayath
 from register.permission import Isprogram
 from pyqrcode import QRCode
 import qrcode
@@ -41,7 +41,7 @@ class ProgramAPI(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=request.data)
         admin = (
             admin_model.objects.filter(user_id__id=request.user.id)
-            .values("committee_type__name", "state", "district")
+            .values("committee_type__name", "state", "district","panchayath","ward")
             .first()
         )
         fk_admin_id = admin_model.objects.get(user_id__id=request.user.id)
@@ -71,6 +71,38 @@ class ProgramAPI(viewsets.ModelViewSet):
                     fk_admin_id=fk_admin_id,
                     available_seats=request.data["total_seats"],
                     fk_district=District.objects.get(id=admin["district"]),
+                )
+                return Response(
+                    {"success": "Program succesfully added"},
+                    status=status.HTTP_201_CREATED,
+                )
+
+            return Response(
+                {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
+        elif admin["committee_type__name"] == "Panchayath Committee":
+           
+            if serializer.is_valid():
+                serializer.save(
+                    fk_admin_id=fk_admin_id,
+                    available_seats=request.data["total_seats"],
+                    fk_panchayath=Panchayath.objects.get(id=admin["panchayath"]),
+                )
+                return Response(
+                    {"success": "Program succesfully added"},
+                    status=status.HTTP_201_CREATED,
+                )
+
+            return Response(
+                {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
+        elif admin["committee_type__name"] == "Ward Committee":
+           
+            if serializer.is_valid():
+                serializer.save(
+                    fk_admin_id=fk_admin_id,
+                    available_seats=request.data["total_seats"],
+                    fk_ward=Ward.objects.get(id=admin["ward"]),
                 )
                 return Response(
                     {"success": "Program succesfully added"},
@@ -367,8 +399,29 @@ def program_based_district(req):
     else :
         pass
     
-    
+@api_view(('GET',))
+def program_based_panchayath(req):
+    if req.method == 'GET':
+        if req.user.is_authenticated :
+            program_filter_data=Program_model.objects.filter(fk_panchayath__id=UserDetails.objects.get(id=req.user.id).panchayath.id)
+            serializer=Program_get_Serializer(program_filter_data,many=True)
+            return Response(serializer.data)
+        else :
+            return Response(status.HTTP_401_UNAUTHORIZED)
+    else :
+        pass
 
+@api_view(('GET',))
+def program_based_ward(req):
+    if req.method == 'GET':
+        if req.user.is_authenticated :
+            program_filter_data=Program_model.objects.filter(fk_ward__id=UserDetails.objects.get(id=req.user.id).ward.id)
+            serializer=Program_get_Serializer(program_filter_data,many=True)
+            return Response(serializer.data)
+        else :
+            return Response(status.HTTP_401_UNAUTHORIZED)
+    else :
+        pass
 class Program_all_API(viewsets.ModelViewSet):
     """
     A viewset for register and edit user instances.
