@@ -95,17 +95,87 @@ class NewsViewSet(viewsets.ModelViewSet):
         
 
     def create(self, request, *args, **kwargs): 
+            print(request.user.is_superuser)
             serializer = self.serializer_class(data=request.data)
             admin = (
                 admin_model.objects.filter(user_id__id=request.user.id)
-                .values("committee_type__name", "state", "district","panchayath")
+                .values("committee_type__name", "state", "district","panchayath","ward")
                 .first()
             )
             # fk_admin_id = admin_model.objects.get(user_id__id=request.user.id)
 
             # Checking the committee type of the admin and then it is saving the program accordingly.
+            if request.user.is_superuser:
+                print(True)
+                print(request.data['committe_type'])
+                if int(request.data['committe_type'])==4:
+                    print('state')
+                    if serializer.is_valid():
+                        serializer.save(
+                            state_region=State.objects.get(id=admin["state"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        )
+                        return Response(
+                            {"success": "News succesfully added"},
+                            status=status.HTTP_201_CREATED,
+                        )
 
-            if admin["committee_type__name"] == "State Committee":
+                    return Response(
+                        {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+                elif int(request.data['committe_type'])==5:
+                    print('dist')
+                    if serializer.is_valid():
+                        serializer.save(
+                            district_region=District.objects.get(id=admin["district"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        )
+                        return Response(
+                            {"success": "News succesfully added"},
+                            status=status.HTTP_201_CREATED,
+                        )
+
+                    return Response(
+                        {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+                elif int(request.data['committe_type'])==6:
+                    if serializer.is_valid():
+                        serializer.save(
+                            panchayath_region=Panchayath.objects.get(id=admin["panchayath"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        )
+                        return Response(
+                            {"success": "News succesfully added"},
+                            status=status.HTTP_201_CREATED,
+                        )
+
+                    return Response(
+                        {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+                elif int(request.data['committe_type'])==7:
+                    if serializer.is_valid():
+                        serializer.save(
+                            ward_region=Ward.objects.get(id=admin["ward"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        )
+                        return Response(
+                            {"success": "News succesfully added"},
+                            status=status.HTTP_201_CREATED,
+                        )
+
+                    return Response(
+                        {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+                else :
+                    if serializer.is_valid():
+                        serializer.save(
+                        created_by=UserDetails.objects.get(id=request.user.id)
+                        )
+                        return Response(
+                            {"success": "News succesfully added"},
+                            status=status.HTTP_201_CREATED,
+                        )
+
+                    return Response(
+                        {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+            elif admin["committee_type__name"] == "State Committee":
             
                 if serializer.is_valid():
                     serializer.save(
@@ -135,7 +205,6 @@ class NewsViewSet(viewsets.ModelViewSet):
                 )
                 
             elif admin["committee_type__name"] == "Panchayath Committee":
-            
                 if serializer.is_valid():
                     serializer.save(
                         panchayath_region=Panchayath.objects.get(id=admin["panchayath"]),created_by=UserDetails.objects.get(id=request.user.id)
@@ -148,6 +217,21 @@ class NewsViewSet(viewsets.ModelViewSet):
                 return Response(
                     {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
                 )
+            elif admin["committee_type__name"] == "Ward Committee":
+            
+                if serializer.is_valid():
+                    serializer.save(
+                        ward_region=Ward.objects.get(id=admin["ward"]),created_by=UserDetails.objects.get(id=request.user.id)
+                    )
+                    return Response(
+                        {"success": "News succesfully added"},
+                        status=status.HTTP_201_CREATED,
+                    )
+
+                return Response(
+                    {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                )
+            
             else:
             
                 if serializer.is_valid():
@@ -181,9 +265,9 @@ class get_news_by_user(APIView):
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
-            return Response({'results':"Failed to get user news"})
+            return Response({'results':[]})
 
-class get_news_by_user_region(APIView): 
+class get_news_by_user_region_district(APIView): 
     queryset = News.objects.all()
     permission_classes = [AllowAny]
     @swagger_auto_schema(
@@ -202,7 +286,94 @@ class get_news_by_user_region(APIView):
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
-            return Response({'results':"Failed to get user region"})
+            return Response({'results':[]})
+        
+        
+class get_news_by_user_region_state(APIView): 
+    queryset = News.objects.all()
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'username', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            user_details=UserDetails.objects.get(id=request.user.id)
+            news =News.objects.filter(state_region=user_details.state.id).values()
+            for item in news:
+                item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
+            return Response({'results':news})
+        except Exception as e:
+            return Response({'results':[]})
+        
+class get_news_by_user_region_panchayath(APIView): 
+    queryset = News.objects.all()
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'username', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            user_details=UserDetails.objects.get(id=request.user.id)
+            news =News.objects.filter(panchayath_region=user_details.panchayath.id).values()
+            for item in news:
+                item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
+            return Response({'results':news})
+        except Exception as e:
+            return Response({'results':[]})
+        
+        
+class get_news_by_user_region_ward(APIView): 
+    queryset = News.objects.all()
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'username', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            user_details=UserDetails.objects.get(id=request.user.id)
+            news =News.objects.filter(ward_region=user_details.ward.id).values()
+            for item in news:
+                item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
+            return Response({'results':news})
+        except Exception as e:
+            return Response({'results':[]})
+
+class get_news_by_user_region_all(APIView): 
+    queryset = News.objects.all()
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_description="User",
+        manual_parameters=[openapi.Parameter(
+            'username', 
+            openapi.IN_QUERY, 
+            type=openapi.TYPE_STRING
+            )],
+    )
+    def get(self,request):
+        try:
+            user_details=UserDetails.objects.get(id=request.user.id)
+            news =News.objects.filter(show_all=True).values()
+            for item in news:
+                item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
+            return Response({'results':news})
+        except Exception as e:
+            return Response({'results':[]})     
+
 
 class MeetingHighligthsViewSet(viewsets.ModelViewSet):
     queryset = MeetingHighligths.objects.all()

@@ -21,6 +21,7 @@ class News(DatedModel,CreatedModel):
       district_region = models.ForeignKey(District,on_delete=models.SET_NULL,default=None,null=True,related_name="news_region")
       state_region = models.ForeignKey(State,on_delete=models.SET_NULL,default=None,null=True,related_name="news_region")
       panchayath_region = models.ForeignKey(Panchayath,on_delete=models.SET_NULL,default=None,null=True,related_name="news_region")
+      ward_region=models.ForeignKey(Ward,on_delete=models.SET_NULL,default=None,null=True,related_name="news_region")
       show_all=models.BooleanField(default=False)
       status = models.CharField(max_length=255,null=True)
       national_committee=models.BooleanField(default=False)
