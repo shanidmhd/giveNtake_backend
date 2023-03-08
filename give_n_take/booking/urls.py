@@ -15,6 +15,8 @@ urlpatterns = [
     path('created_by/',program_based_create_by),
     path('by_state/',program_based_state),
     path('by_district/',program_based_district),
+    path('by_panchayath/',program_based_panchayath),
+    path('by_ward/',program_based_ward),
     path('count/program/',Programs_count.as_view()),
     path('ticket/booking_completed/',get_ticket_booking_completed_id)
 ]
