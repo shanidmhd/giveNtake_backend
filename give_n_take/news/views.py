@@ -548,8 +548,8 @@ class News_all_ViewSet(viewsets.ModelViewSet):
             s['district_region']=District.objects.filter(id=  s['district_region']).values('id','name','state__name')
             s['state_region']=State.objects.filter(id=  s['state_region']).values('id','name')
             s['panchayath_region']=Panchayath.objects.filter(id=  s['panchayath_region']).values('id','name','district__name')
-            if s['news_image'] is not None :
-                s['news_image']=settings.HOST_ADDRESS +s['news_image']
+            # if s['news_image'] is not None :
+            #     s['news_image']=settings.HOST_ADDRESS +s['news_image']
         return Response({'results':serializer.data})
     
     

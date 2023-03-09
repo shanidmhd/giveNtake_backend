@@ -630,7 +630,7 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         user = get_object_or_404(queryset, pk=pk)
         serializer = register_ser(user)
         # serializer.data['news_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+serializer.data['news_image']
-        return Response(serializer.data)
+        return Response({'results':serializer.data})
     def list(self,request):
         appts = admin_model.objects.all()
         serializer = Registration_Serializer(appts, many=True)
