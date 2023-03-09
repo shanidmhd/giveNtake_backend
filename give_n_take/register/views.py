@@ -413,7 +413,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                         lst_photo.append(att)
                     meeting_highligths['attendance']=lst_attendance
                     meeting_highligths['photo']=lst_photo  
-                    meeting.append(meeting_highligths) 
+                    # meeting.append(meeting_highligths) 
                 return Response({'results':meeting})
             elif user["committee_type__name"] == "State Committee":
                 meetings=[]
