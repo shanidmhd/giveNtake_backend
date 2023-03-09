@@ -18,7 +18,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 import string
 from rest_framework import generics
-from user_details.models import StaffRole, UserDetails,State,District,Panchayath
+from user_details.models import StaffRole, UserDetails,State,District,Panchayath,Ward
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from user_details.serializers import RegistrationSerializer, StaffRoleSerializer, register_admin_serializer
 from .permission import IsMeeting, IsNews, IsSuperUser, Iscommittee_admin, Iscommitteeadmin, Isstaffrole, Isusers, roles_users
@@ -380,10 +380,25 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
             # fk_admin_id = admin_model.objects.get(user_id__id=request.user.id)
 
             # Checking the committee type of the admin and then it is saving the program accordingly.
-
-            if user["committee_type__name"] == "State Committee":
-                #print(True)
-                meeting=MeetingHighligths.objects.filter(state_region__id=user['state']).values('id','meeting_minutes','description','meeting_attendance','district_region','ward_region','state_region__id','state_region__name','panchayath_region','created_by')
+            # if request.user.is_superuser:
+            #     meeting=MeetingHighligths.objects.values('id','meeting_minutes','description','meeting_attendance','district_region','ward_region','state_region__id','state_region__name','panchayath_region','created_by')
+            #     for meeting_highligths in meeting:
+            #         lst_attendance = []
+            #         lst_photo = []
+            #         attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
+            #         for att in attendance:
+            #             att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+            #             lst_attendance.append(att)
+            #         photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
+            #         for att in photo:
+            #             att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+            #             lst_photo.append(att)
+            #         meeting_highligths['attendance']=lst_attendance
+            #         meeting_highligths['photo']=lst_photo   
+            #     return Response({'results':meeting})
+                
+            if request.user.is_superuser :
+                meeting=MeetingHighligths.objects.values('id','meeting_minutes','description','meeting_attendance','district_region','ward_region','state_region__id','state_region__name','panchayath_region','created_by')
                 for meeting_highligths in meeting:
                     lst_attendance = []
                     lst_photo = []
@@ -398,39 +413,46 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                     meeting_highligths['attendance']=lst_attendance
                     meeting_highligths['photo']=lst_photo   
                 return Response({'results':meeting})
+            elif user["committee_type__name"] == "State Committee":
+                #print(True)
+                districts=District.objects.filter(state=user['state']).values('id','name','code')
+             
+                for district in districts :
+                    meeting=MeetingHighligths.objects.filter(district_region__id=district['id']).values('id','meeting_minutes','description','meeting_attendance','district_region','ward_region','state_region__id','state_region__name','panchayath_region','created_by')
+                    for meeting_highligths in meeting:
+                        lst_attendance = []
+                        lst_photo = []
+                        attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
+                        for att in attendance:
+                            att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                            lst_attendance.append(att)
+                        photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
+                        for att in photo:
+                            att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                            lst_photo.append(att)
+                        meeting_highligths['attendance']=lst_attendance
+                        meeting_highligths['photo']=lst_photo   
+                return Response({'results':meeting})
             elif user["committee_type__name"] == "District Committee":
-                meetings=MeetingHighligths.objects.filter(district_region__id=user['district']).values('id','meeting_minutes','description','meeting_attendance','district_region__id','district_region__name','ward_region','panchayath_region','state_region')
-                for meeting_highligths in meetings:
-                    lst_attendance = []
-                    lst_photo = []
-                    attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
-                    for att in attendance:
-                        att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
-                        lst_attendance.append(att)
-                    photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
-                    for att in photo:
-                        att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
-                        lst_photo.append(att)
-                    meeting_highligths['attendance']=lst_attendance
-                    meeting_highligths['photo']=lst_photo   
+                panchayaths=Panchayath.objects.filter(district__id=user['district']).values('id','name','code','district')
+                for panchayath in panchayaths:
+                    meetings=MeetingHighligths.objects.filter(panchayath_region__id=panchayath['id']).values('id','meeting_minutes','description','meeting_attendance','district_region__name','panchayath_region__id','panchayath_region__name','ward_region','state_region__name')
+                    for meeting_highligths in meetings:
+                        lst_attendance = []
+                        lst_photo = []
+                        attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
+                        for att in attendance:
+                            att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                            lst_attendance.append(att)
+                        photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
+                        for att in photo:
+                            att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                            lst_photo.append(att)
+                        meeting_highligths['attendance']=lst_attendance
+                        meeting_highligths['photo']=lst_photo   
                 return Response({'results':meetings})
                
-            elif user["committee_type__name"] == "Panchayath Committee":
-                meetings=MeetingHighligths.objects.filter(panchayath_region__id=user['panchayath']).values('id','meeting_minutes','description','meeting_attendance','district_region','panchayath_region__id','panchayath_region__name','ward_region','state_region')
-                for meeting_highligths in meetings:
-                    lst_attendance = []
-                    lst_photo = []
-                    attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
-                    for att in attendance:
-                        att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
-                        lst_attendance.append(att)
-                    photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
-                    for att in photo:
-                        att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
-                        lst_photo.append(att)
-                    meeting_highligths['attendance']=lst_attendance
-                    meeting_highligths['photo']=lst_photo   
-                return Response({'results':meetings})
+   
          
             elif user["committee_type__name"] == "Ward Committee":
                 meetings=MeetingHighligths.objects.filter(ward_region__id=user['ward']).values('id','meeting_minutes','description','meeting_attendance','district_region','ward_region__id','ward_region__name','panchayath_region','state_region')
@@ -447,6 +469,28 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                         lst_photo.append(att)
                     meeting_highligths['attendance']=lst_attendance
                     meeting_highligths['photo']=lst_photo   
+                return Response({'results':meetings})
+            
+            elif user["committee_type__name"] == "Panchayath Committee":
+                meetings=[]
+                wards=Ward.objects.filter(panchayath__id=user['panchayath']).values('id','name','code','panchayath')
+                for ward in wards:
+                    meetings=MeetingHighligths.objects.filter(ward_region__id=ward['id']).values('id','meeting_minutes','description','meeting_attendance','district_region__name','panchayath_region__id','panchayath_region__name','ward_region','state_region__name')
+                    for meeting_highligths in meetings:
+                        lst_attendance = []
+                        lst_photo = []
+                        attendance = MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('attendance',flat=True)
+                        for att in attendance:
+                            att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                            lst_attendance.append(att)
+                        photo = MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).values_list('photo',flat=True)
+                        for att in photo:
+                            att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
+                            lst_photo.append(att)
+                        meeting_highligths['attendance']=lst_attendance
+                        meeting_highligths['photo']=lst_photo 
+                        meetings.append(meeting_highligths)  
+                    
                 return Response({'results':meetings})
             
             elif user["committee_type__name"] == "National Committee":
@@ -467,7 +511,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                             lst_photo.append(att)
                         meeting_highligths['attendance']=lst_attendance
                         meeting_highligths['photo']=lst_photo   
-                    return Response({'results':meetings})
+                return Response({'results':meetings})
             
             else:
                 meetings=MeetingHighligths.objects.filter(show_all=True).values('id','meeting_minutes','description','meeting_attendance','district_region__id','district_region__name','ward_region__id','ward_region__name','panchayath_region__id','panchayath_region__name','state_region__id','state_region__name')
@@ -931,4 +975,8 @@ class Admin_count(APIView):
     def get(self,request):
         count=admin_model.objects.count()
         return Response({'count':count})
-    
+
+class Members_count(APIView):
+    def get(self,request):
+        count=committee_members.objects.count()
+        return Response({'count':count})
