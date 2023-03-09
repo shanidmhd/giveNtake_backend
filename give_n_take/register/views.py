@@ -623,24 +623,15 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     queryset = admin_model.objects.all()
     http_method_names = ['get', 'post', 'delete']
     permission_classes = [IsAuthenticated,Iscommittee_admin]
-    def retrieve(self, request,*args, **kargs):
-        user_id = kargs.get('pk')
-        if user_id:
-            try:
-                appts = admin_model.objects.get(id=int(user_id))
-                serializer = register_ser(appts, many=False)
-                sdata=serializer.data
-                sdata['user_image'] = settings.HOST_ADDRESS +  sdata['user_image'] 
-                return Response({'results':sdata})
-            except:
-                return Response({'message': 'No data found'})
-            
+    def retrieve(self, request, pk=None):
+        queryset = admin_model.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = register_ser(user)
+        # serializer.data['news_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+serializer.data['news_image']
+        return Response(serializer.data)
     def list(self,request):
         appts = admin_model.objects.all()
         serializer = Registration_Serializer(appts, many=True)
-        for s in serializer.data :
-            if  s['user_image'] is not None :
-                s['user_image'] = settings.HOST_ADDRESS +  s['user_image'] 
         return Response({'results':serializer.data})
     
     def destroy(self, request, pk):

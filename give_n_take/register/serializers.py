@@ -9,6 +9,12 @@ class register_serializers(serializers.ModelSerializer):
     class Meta :
         model = admin_model
         fields ='__all__'
+    def to_representation(self, instance):
+        rep= super().to_representation(instance)
+        if rep['user_image']:
+            rep['user_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+rep['user_image']
+        return rep
+    
 
 class login_serializers(serializers.ModelSerializer):
     class Meta :
@@ -26,7 +32,11 @@ class register_ser(WritableNestedModelSerializer):
     class Meta :
         model = admin_model
         exclude =['login_token']
-        
+    def to_representation(self, instance):
+        rep= super().to_representation(instance)
+        if rep['user_image']:
+            rep['user_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+rep['user_image']
+        return rep
 
 class Registration_Serializer(WritableNestedModelSerializer):
     staff_role = StaffRole_Serializer()
