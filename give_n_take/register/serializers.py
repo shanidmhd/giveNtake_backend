@@ -35,7 +35,7 @@ class register_ser(WritableNestedModelSerializer):
     def to_representation(self, instance):
         rep= super().to_representation(instance)
         if rep['user_image']:
-            rep['user_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+rep['user_image']
+            rep['user_image']=settings.HOST_ADDRESS+rep['user_image']
         return rep
 
 class Registration_Serializer(WritableNestedModelSerializer):
