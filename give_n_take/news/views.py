@@ -18,7 +18,7 @@ from datetime import datetime
 from .serializers import *
 from django.conf import settings
 from register.models import admin_model
-
+from django.shortcuts import get_object_or_404
 
 class NewsTypeViewSet(viewsets.ModelViewSet):
     """
@@ -53,17 +53,13 @@ class NewsViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'put' , 'delete']
     permission_classes=[IsAuthenticated]
 
-    def retrieve(self, request,*args, **kargs):
-        news_id = kargs.get('pk')
-        if news_id:
-            try:
-                appts = News.objects.get(id=int(news_id))
-                serializer = self.get_serializer(appts, many=False)
-                for s in serializer.data :
-                    s['news_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+s['news_image']
-                return Response({'results':serializer.data})
-            except:
-                return Response({'message': 'No data found'})
+    def retrieve(self, request, pk=None):
+        queryset = News.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = NewsSerializer(user)
+        # serializer.data['news_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+serializer.data['news_image']
+        return Response(serializer.data)
+    
     def list(self,request):
        
       
@@ -99,7 +95,7 @@ class NewsViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs): 
             serializer = self.serializer_class(data=request.data)
             admin = (
-                admin_model.objects.filter(user_id__id=request.user.id)
+                 UserDetails.objects.filter(id=request.user.id)
                 .values("committee_type__name", "state", "district","panchayath","ward")
                 .first()
             )
