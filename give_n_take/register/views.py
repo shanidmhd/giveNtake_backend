@@ -275,7 +275,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                         state_region=State.objects.get(id=admin["state"]),created_by=UserDetails.objects.get(id=request.user.id)
                     )
                     return Response(
-                        {"success": "Meetings succesfully added"},
+                        {"success": serializer.data},
                         status=status.HTTP_201_CREATED,
                     )
 
@@ -289,7 +289,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                         district_region=District.objects.get(id=admin["district"]),created_by=UserDetails.objects.get(id=request.user.id)
                     )
                     return Response(
-                        {"success": "Meetings succesfully added"},
+                        {"success" : serializer.data},
                         status=status.HTTP_201_CREATED,
                     )
 
@@ -304,7 +304,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                         panchayath_region=Panchayath.objects.get(id=admin["panchayath"]),created_by=UserDetails.objects.get(id=request.user.id)
                     )
                     return Response(
-                        {"success": "Meetings succesfully added"},
+                        {"success":  serializer.data},
                         status=status.HTTP_201_CREATED,
                     )
 
@@ -318,7 +318,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                         panchayath_region=Panchayath.objects.get(id=admin["ward"]),created_by=UserDetails.objects.get(id=request.user.id)
                     )
                     return Response(
-                        {"success": "News succesfully added"},
+                        {"success":  serializer.data},
                         status=status.HTTP_201_CREATED,
                     )
 
@@ -333,7 +333,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                         national_committee=True,created_by=UserDetails.objects.get(id=request.user.id)
                     )
                     return Response(
-                        {"success": "Meetings succesfully added"},
+                        {"success": serializer.data},
                         status=status.HTTP_201_CREATED,
                     )
 
@@ -349,7 +349,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                         show_all=True,created_by=UserDetails.objects.get(id=request.user.id)
                     )
                     return Response(
-                        {"success": "Meetings succesfully added"},
+                        {"success":  serializer.data},
                         status=status.HTTP_201_CREATED,
                     )
 
@@ -415,7 +415,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 return Response({'results':meeting})
             elif user["committee_type__name"] == "State Committee":
                 #print(True)
-                districts=District.objects.filter(state=user['state']).values('id','name','code')
+                districts=District.objects.filter(state=request.user.state.id).values('id','name','code')
              
                 for district in districts :
                     meeting=MeetingHighligths.objects.filter(district_region__id=district['id']).values('id','meeting_minutes','description','meeting_attendance','district_region','ward_region','state_region__id','state_region__name','panchayath_region','created_by')
@@ -434,7 +434,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                         meeting_highligths['photo']=lst_photo   
                 return Response({'results':meeting})
             elif user["committee_type__name"] == "District Committee":
-                panchayaths=Panchayath.objects.filter(district__id=user['district']).values('id','name','code','district')
+                panchayaths=Panchayath.objects.filter(district=request.user.district.id).values('id','name','code','district')
                 for panchayath in panchayaths:
                     meetings=MeetingHighligths.objects.filter(panchayath_region__id=panchayath['id']).values('id','meeting_minutes','description','meeting_attendance','district_region__name','panchayath_region__id','panchayath_region__name','ward_region','state_region__name')
                     for meeting_highligths in meetings:
@@ -473,7 +473,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
             
             elif user["committee_type__name"] == "Panchayath Committee":
                 meetings=[]
-                wards=Ward.objects.filter(panchayath__id=user['panchayath']).values('id','name','code','panchayath')
+                wards=Ward.objects.filter(panchayath__id=request.user.panchayath.id).values('id','name','code','panchayath')
                 for ward in wards:
                     meetings=MeetingHighligths.objects.filter(ward_region__id=ward['id']).values('id','meeting_minutes','description','meeting_attendance','district_region__name','panchayath_region__id','panchayath_region__name','ward_region','state_region__name')
                     for meeting_highligths in meetings:
