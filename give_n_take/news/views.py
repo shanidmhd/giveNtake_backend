@@ -257,7 +257,7 @@ class get_news_by_user(APIView):
     )
     def get(self,request):
         try:
-            news =News.objects.filter(created_by_id=request.user.id).values()
+            news =News.objects.filter(created_by_id=request.user.id).order_by('date_added').values()
             for item in news:
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
@@ -278,7 +278,7 @@ class get_news_by_user_region_district(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(district_region=user_details.district.id).values()
+            news =News.objects.filter(district_region=user_details.district.id).order_by('date_added').values()
             for item in news:
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
@@ -300,7 +300,7 @@ class get_news_by_user_region_state(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(state_region=user_details.state.id).values()
+            news =News.objects.filter(state_region=user_details.state.id).order_by('date_added').values()
             for item in news:
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
@@ -321,7 +321,7 @@ class get_news_by_user_region_panchayath(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(panchayath_region=user_details.panchayath.id).values()
+            news =News.objects.filter(panchayath_region=user_details.panchayath.id).order_by('date_added').values()
             for item in news:
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
@@ -343,7 +343,7 @@ class get_news_by_user_region_ward(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(ward_region=user_details.ward.id).values()
+            news =News.objects.filter(ward_region=user_details.ward.id).order_by('date_added').values()
             for item in news:
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
@@ -364,7 +364,7 @@ class get_news_by_user_region_all(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(show_all=True).values()
+            news =News.objects.filter(show_all=True).order_by('date_added').values()
             for item in news:
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
@@ -404,7 +404,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
     # )
 
     def list(self, request):
-        appts = MeetingHighligths.objects.values()
+        appts =MeetingHighligths.objects.values('id','meeting_minutes','description','meeting_attendance','district_region','district_region__name','ward_region','ward_region__name','state_region__id','state_region__name','panchayath_region','created_by')
         for meeting_highligths in appts:
             lst_attendance = []
             lst_photo = []
@@ -442,7 +442,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 return Response({'message': 'No data found'})
             
         else:
-            appts = MeetingHighligths.objects.values()
+            appts =MeetingHighligths.objects.values('id','meeting_minutes','description','meeting_attendance','district_region','district_region__name','ward_region','ward_region__name','state_region__id','state_region__name','panchayath_region','created_by')
             for meeting_highligths in appts:
                 lst_attendance = []
                 lst_photo = []
