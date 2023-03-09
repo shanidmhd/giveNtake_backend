@@ -59,6 +59,8 @@ class NewsViewSet(viewsets.ModelViewSet):
             try:
                 appts = News.objects.get(id=int(news_id))
                 serializer = self.get_serializer(appts, many=False)
+                for s in serializer.data :
+                    s['news_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+s['news_image']
                 return Response({'results':serializer.data})
             except:
                 return Response({'message': 'No data found'})
