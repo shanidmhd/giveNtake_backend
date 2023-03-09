@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import *
 from django.conf import settings
-
+from register.models import admin_model,committee_members
 
 class UserLoginSerializer(serializers.Serializer):
     """
@@ -74,6 +74,11 @@ class UserLoginSerializer(serializers.Serializer):
             response_data['bln_staff'] = user_details.bln_staff
             if user_details.user_image:
                 response_data['user_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + user_details.user_image.name
+            
+            if committee_members.objects.filter(username=user_details.username).exists():
+                response_data['committee_member']=True
+            else:
+                response_data['committee_member']=False
         except:
             pass
         return response_data
