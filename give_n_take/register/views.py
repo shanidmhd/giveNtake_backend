@@ -398,6 +398,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
             #     return Response({'results':meeting})
                 
             if request.user.is_superuser :
+                meeting=[]
                 meeting=MeetingHighligths.objects.values('id','meeting_minutes','description','meeting_attendance','district_region','ward_region','state_region__id','state_region__name','panchayath_region','created_by')
                 for meeting_highligths in meeting:
                     lst_attendance = []
@@ -411,7 +412,8 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                         att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
                         lst_photo.append(att)
                     meeting_highligths['attendance']=lst_attendance
-                    meeting_highligths['photo']=lst_photo   
+                    meeting_highligths['photo']=lst_photo  
+                    meeting.append(meeting_highligths) 
                 return Response({'results':meeting})
             elif user["committee_type__name"] == "State Committee":
                 meetings=[]
