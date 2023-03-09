@@ -414,8 +414,8 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                     meeting_highligths['photo']=lst_photo   
                 return Response({'results':meeting})
             elif user["committee_type__name"] == "State Committee":
-                #print(True)
-                districts=District.objects.filter(state=request.user.state.id).values('id','name','code')
+                meetings=[]
+                districts=District.objects.filter(state=UserDetails.objects.get(id=request.user.id).state.id).values('id','name','code')
              
                 for district in districts :
                     meeting=MeetingHighligths.objects.filter(district_region__id=district['id']).values('id','meeting_minutes','description','meeting_attendance','district_region','ward_region','state_region__id','state_region__name','panchayath_region','created_by')
@@ -431,10 +431,12 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                             att = settings.HOST_ADDRESS + settings.MEDIA_URL + att
                             lst_photo.append(att)
                         meeting_highligths['attendance']=lst_attendance
-                        meeting_highligths['photo']=lst_photo   
-                return Response({'results':meeting})
+                        meeting_highligths['photo']=lst_photo  
+                        meetings.append(meeting_highligths) 
+                return Response({'results':meetings})
             elif user["committee_type__name"] == "District Committee":
-                panchayaths=Panchayath.objects.filter(district=request.user.district.id).values('id','name','code','district')
+                meeting=[]
+                panchayaths=Panchayath.objects.filter(district=UserDetails.objects.get(id=request.user.id).district.id).values('id','name','code','district')
                 for panchayath in panchayaths:
                     meetings=MeetingHighligths.objects.filter(panchayath_region__id=panchayath['id']).values('id','meeting_minutes','description','meeting_attendance','district_region__name','panchayath_region__id','panchayath_region__name','ward_region','state_region__name')
                     for meeting_highligths in meetings:
@@ -450,7 +452,8 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                             lst_photo.append(att)
                         meeting_highligths['attendance']=lst_attendance
                         meeting_highligths['photo']=lst_photo   
-                return Response({'results':meetings})
+                        meeting.append(meeting_highligths)
+                return Response({'results':meeting})
                
    
          
@@ -473,7 +476,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
             
             elif user["committee_type__name"] == "Panchayath Committee":
                 meetings=[]
-                wards=Ward.objects.filter(panchayath__id=request.user.panchayath.id).values('id','name','code','panchayath')
+                wards=Ward.objects.filter(panchayath__id=UserDetails.objects.get(id=request.user.id).panchayath.id).values('id','name','code','panchayath')
                 for ward in wards:
                     meetings=MeetingHighligths.objects.filter(ward_region__id=ward['id']).values('id','meeting_minutes','description','meeting_attendance','district_region__name','panchayath_region__id','panchayath_region__name','ward_region','state_region__name')
                     for meeting_highligths in meetings:
