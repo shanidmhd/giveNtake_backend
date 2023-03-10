@@ -47,8 +47,22 @@ class ProgramAPI(viewsets.ModelViewSet):
         fk_admin_id = admin_model.objects.get(user_id__id=request.user.id)
 
         # Checking the committee type of the admin and then it is saving the program accordingly.
+        if request.user.is_superuser:
+            if serializer.is_valid():
+                serializer.save(
+                    fk_admin_id=fk_admin_id, available_seats=request.data["total_seats"]
+                )
+                return Response(
+                    {"success": "Program succesfully added"},
+                    status=status.HTTP_201_CREATED,
+                )
 
-        if admin["committee_type__name"] == "State Committee":
+            return Response(
+                {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+        elif admin["committee_type__name"] == "State Committee":
            
             if serializer.is_valid():
                 serializer.save(
