@@ -1,0 +1,47 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="JsonSchemaCompliance" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="1">
+            <item index="0" class="java.lang.String" itemvalue="django-health-check" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="candidates.models.CandidateJob.objects" />
+          <option value="jobs.models.Job.objects" />
+          <option value="candidates.models.Candidate.objects" />
+          <option value="django.db.models.fields.related.ForeignKey.id" />
+          <option value="feedbacks.models.DuplicateCandidateFeedback.id" />
+          <option value="feedbacks.models.SimilarCandidateFeedback.id" />
+          <option value="audit_records.models.HistoricalRecords.objects" />
+          <option value="resourcerequirements.models.ResourceRequirement.objects" />
+          <option value="companies.models.Designation.objects" />
+          <option value="zappy_report.models.Report.objects" />
+          <option value="zusers.models.OrganizationUser.objects" />
+          <option value="jobs.models.JobAgency.objects" />
+          <option value="jobs.models.JobSector.objects" />
+          <option value="locations.models.Location.objects" />
+          <option value="jobfairs.models.JobFair.objects" />
+          <option value="zusers.models.HR.objects" />
+          <option value="schedules.models.Schedule.objects" />
+          <option value="custom_users.models.UserLogin.objects" />
+          <option value="candidates.models.Academic.objects" />
+          <option value="jobs.models.RTD.objects" />
+          <option value="zusers.models.JobAggregatorUser.objects" />
+          <option value="colleges.models.SkillExpressPartnerCollege.objects" />
+          <option value="organizations.models.Entity.objects" />
+          <option value="jobs.models.SalarySlab.objects" />
+          <option value="candidates.models.CandidateJobStageTelephonicInterview.objects" />
+          <option value="candidates.models.CandidateJobStage.objects" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
