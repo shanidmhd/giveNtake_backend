@@ -180,9 +180,80 @@ class NewsViewSet(viewsets.ModelViewSet):
             )
             # fk_admin_id = admin_model.objects.get(user_id__id=request.user.id)
 
+            # The first check is for superuser and if it qualifies actions specific to superuser is processed else
+            # the remaining part of the code is executed.
+            if request.user.is_superuser:
+
+                if int(request.data['committe_type'])==4:
+                    if serializer.is_valid():
+                        serializer.save(
+                            state_region=State.objects.get(id=admin["state"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        )
+                        return Response(
+                            {"success": "Meeting succesfully added"},
+                            status=status.HTTP_201_CREATED,
+                        )
+
+                    return Response(
+                        {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+                elif int(request.data['committe_type'])==5:
+                    print('dist')
+                    if serializer.is_valid():
+                        serializer.save(
+                            district_region=District.objects.get(id=admin["district"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        )
+                        return Response(
+                            {"success": "Meeting succesfully added"},
+                            status=status.HTTP_201_CREATED,
+                        )
+
+                    return Response(
+                        {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+                elif int(request.data['committe_type'])==6:
+                    if serializer.is_valid():
+                        serializer.save(
+                            panchayath_region=Panchayath.objects.get(id=admin["panchayath"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        )
+                        return Response(
+                            {"success": "Meeting succesfully added"},
+                            status=status.HTTP_201_CREATED,
+                        )
+
+                    return Response(
+                        {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+                elif int(request.data['committe_type'])==7:
+                    if serializer.is_valid():
+                        serializer.save(
+                            ward_region=Ward.objects.get(id=admin["ward"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        )
+                        return Response(
+                            {"success": "Meeting succesfully added"},
+                            status=status.HTTP_201_CREATED,
+                        )
+
+                    return Response(
+                        {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+                else :
+                    if serializer.is_valid():
+                        serializer.save(
+                        created_by=UserDetails.objects.get(id=request.user.id)
+                        )
+                        return Response(
+                            {"success": "Meeting succesfully added"},
+                            status=status.HTTP_201_CREATED,
+                        )
+
+                    return Response(
+                        {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+
             # Checking the committee type of the admin and then it is saving the program accordingly.
 
-            if admin["committee_type__name"] == "State Committee":
+            elif admin["committee_type__name"] == "State Committee":
             
                 if serializer.is_valid():
                     serializer.save(
