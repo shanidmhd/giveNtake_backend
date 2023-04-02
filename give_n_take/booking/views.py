@@ -53,7 +53,7 @@ class ProgramAPI(viewsets.ModelViewSet):
             if int(request.data['committe_type']) == 4:
                 if serializer.is_valid():
                     serializer.save(
-                        state_region=State.objects.get(id=admin["state"]),
+                        state_region=State.objects.get(id=request.data["state"]),
                         created_by=UserDetails.objects.get(id=request.user.id)
                     )
                     return Response(
@@ -68,7 +68,7 @@ class ProgramAPI(viewsets.ModelViewSet):
                 print('dist')
                 if serializer.is_valid():
                     serializer.save(
-                        district_region=District.objects.get(id=admin["district"]),
+                        district_region=District.objects.get(id=request.data["district"]),
                         created_by=UserDetails.objects.get(id=request.user.id)
                     )
                     return Response(
@@ -82,7 +82,7 @@ class ProgramAPI(viewsets.ModelViewSet):
             elif int(request.data['committe_type']) == 6:
                 if serializer.is_valid():
                     serializer.save(
-                        panchayath_region=Panchayath.objects.get(id=admin["panchayath"]),
+                        panchayath_region=Panchayath.objects.get(id=request.data["panchayath"]),
                         created_by=UserDetails.objects.get(id=request.user.id)
                     )
                     return Response(
@@ -96,7 +96,7 @@ class ProgramAPI(viewsets.ModelViewSet):
             elif int(request.data['committe_type']) == 7:
                 if serializer.is_valid():
                     serializer.save(
-                        ward_region=Ward.objects.get(id=admin["ward"]),
+                        ward_region=Ward.objects.get(id=request.data["ward"]),
                         created_by=UserDetails.objects.get(id=request.user.id)
                     )
                     return Response(
@@ -110,7 +110,7 @@ class ProgramAPI(viewsets.ModelViewSet):
             else:
                 if serializer.is_valid():
                     serializer.save(
-                        created_by=UserDetails.objects.get(id=request.user.id)
+                        created_by=UserDetails.objects.get(id=request.user.id), 
                     )
                     return Response(
                         {"success": "Program succesfully added"},
