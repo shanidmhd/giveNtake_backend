@@ -131,9 +131,9 @@ WSGI_APPLICATION = 'give_n_take.wsgi.application'
 DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'giv_n_take_prod_dump',
-                'USER': 'postgres',
-                'PASSWORD':'postgres',
+                'NAME': 'give_take',
+                'USER': 'admin',
+                'PASSWORD': 'et46OLfvg@h2144sf',
                 'HOST': '127.0.0.1',
                 'PORT': '5432',
             
