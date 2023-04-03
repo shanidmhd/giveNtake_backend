@@ -548,7 +548,7 @@ class get_meeting_by_user(APIView):
         admin = admin_model.objects.filter(
             user_id__id=request.user.id
         ).values("committee_type_id", 'state_id', 'district_id', 'panchayath_id', 'ward_id')[0]
-        filter_id_list = [request.user.id]
+        filter_id_list = []
         if admin['committee_type_id'] == 4:
             district_id_list = District.objects.filter(state_id=admin['state_id']).values_list('id', flat=True)
             filter_id_list.extend(
@@ -570,7 +570,7 @@ class get_meeting_by_user(APIView):
             filter_id_list.extend(
                 list(admin_model.objects.filter(ward_id=ward_id_list).values_list("user_id_id", flat=True))
             )
-        elif admin['committee_type_id'] == 2:
+        elif admin['committee_type_id'] == 3:
             state_id_list = State.objects.values_list('id', flat=True)
             filter_id_list.extend(
                 list(admin_model.objects.filter(state_id__in=state_id_list).values_list("user_id_id", flat=True))
