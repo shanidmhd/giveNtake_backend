@@ -342,7 +342,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 if int(request.data['committe_type']) == 4:
                     if serializer.is_valid():
                         serializer.save(
-                            state_region=State.objects.get(id=request.data["state"]),
+                            state_region=State.objects.get(id=request.data["state_region"]),
                             created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
@@ -357,7 +357,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                     print('dist')
                     if serializer.is_valid():
                         serializer.save(
-                            district_region=District.objects.get(id=request.data["district"]),
+                            district_region=District.objects.get(id=request.data["district_region"]),
                             created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
@@ -371,7 +371,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 elif int(request.data['committe_type']) == 6:
                     if serializer.is_valid():
                         serializer.save(
-                            panchayath_region=Panchayath.objects.get(id=request.data["panchayath"]),
+                            panchayath_region=Panchayath.objects.get(id=request.data["panchayath_region"]),
                             created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
@@ -385,7 +385,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 elif int(request.data['committe_type']) == 7:
                     if serializer.is_valid():
                         serializer.save(
-                            ward_region=Ward.objects.get(id=request.data["ward"]),
+                            ward_region=Ward.objects.get(id=request.data["ward_region"]),
                             created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
