@@ -3,7 +3,6 @@ import json
 from optparse import Values
 import sys
 import requests
-from django.db.models import Q
 from django.shortcuts import render
 from django.shortcuts import render
 from rest_framework.response import Response
@@ -20,9 +19,6 @@ from .serializers import *
 from django.conf import settings
 from register.models import admin_model
 from django.shortcuts import get_object_or_404
-
-from user_details.models import State, District, Panchayath, Ward
-
 
 class NewsTypeViewSet(viewsets.ModelViewSet):
     """
@@ -111,7 +107,7 @@ class NewsViewSet(viewsets.ModelViewSet):
                 if int(request.data['committe_type'])==4:
                     if serializer.is_valid():
                         serializer.save(
-                            state_region=State.objects.get(id=request.data['state_region']),created_by=UserDetails.objects.get(id=request.user.id)
+                            state_region=State.objects.get(id=admin["state"]),created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
                             {"success": "News succesfully added"},
@@ -125,7 +121,7 @@ class NewsViewSet(viewsets.ModelViewSet):
                     print('dist')
                     if serializer.is_valid():
                         serializer.save(
-                            district_region=District.objects.get(id=request.data["district_region"]),created_by=UserDetails.objects.get(id=request.user.id)
+                            district_region=District.objects.get(id=admin["district"]),created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
                             {"success": "News succesfully added"},
@@ -138,7 +134,7 @@ class NewsViewSet(viewsets.ModelViewSet):
                 elif int(request.data['committe_type'])==6:
                     if serializer.is_valid():
                         serializer.save(
-                            panchayath_region=Panchayath.objects.get(id=request.data["panchayath_region"]),created_by=UserDetails.objects.get(id=request.user.id)
+                            panchayath_region=Panchayath.objects.get(id=admin["panchayath"]),created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
                             {"success": "News succesfully added"},
@@ -151,7 +147,7 @@ class NewsViewSet(viewsets.ModelViewSet):
                 elif int(request.data['committe_type'])==7:
                     if serializer.is_valid():
                         serializer.save(
-                            ward_region=Ward.objects.get(id=request.data["ward_region"]),created_by=UserDetails.objects.get(id=request.user.id)
+                            ward_region=Ward.objects.get(id=admin["ward"]),created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
                             {"success": "News succesfully added"},
@@ -164,7 +160,7 @@ class NewsViewSet(viewsets.ModelViewSet):
                 else :
                     if serializer.is_valid():
                         serializer.save(
-                        created_by=UserDetails.objects.get(id=request.user.id), show_all=True
+                        created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
                             {"success": "News succesfully added"},
@@ -469,7 +465,6 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
         meeting_highligths_id = kargs.get('pk')
         if meeting_highligths_id:
             try:
-                self.update_region(meeting_highligths_id)
                 meeting_highligths = MeetingHighligths.objects.filter(id=int(meeting_highligths_id)).values().first()
                 if not meeting_minutes:
                     meeting_minutes =  meeting_highligths['meeting_minutes']
@@ -503,35 +498,6 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
             except:
                 return Response({'message': 'No data found'})
 
-    def update_region(self, meeting_highligths_id):
-        try:
-            committe_type = int(self.request.data.get('committe_type'))
-        except TypeError:
-            committe_type = None
-        if self.request.user.is_superuser:
-            instance = MeetingHighligths.objects.filter(id=meeting_highligths_id)
-            region_data = {
-                'state_region': None,
-                'district_region': None,
-                'panchayath_region': None,
-                'ward_region': None,
-                'committe_type_id': committe_type
-            }
-            if committe_type == 4:
-                region_data['state_region'] = State.objects.get(id=self.request.data.get('state_region'))
-            elif committe_type == 5:
-                print('dist')
-                region_data['district_region'] = District.objects.get(id=self.request.data.get('district_region'))
-            elif committe_type == 6:
-                region_data['panchayath_region'] = Panchayath.objects.get(id=self.request.data.get('panchayath_region'))
-            elif committe_type == 7:
-                region_data['ward_region'] = Ward.objects.get(id=self.request.data.get('ward_region'))
-            else:
-                pass
-            instance.update(**region_data)
-
-
-
 
 class get_meeting_by_user(APIView): 
     queryset = News.objects.all()
@@ -545,51 +511,6 @@ class get_meeting_by_user(APIView):
             )],
     )
     def get(self,request):
-        # admin = admin_model.objects.filter(
-        #     user_id__id=request.user.id
-        # ).values("committee_type_id", 'state_id', 'district_id', 'panchayath_id', 'ward_id')[0]
-        # filter_id_list = []
-        # if admin['committee_type_id'] == 4:
-        #     district_id_list = District.objects.filter(state_id=admin['state_id']).values_list('id', flat=True)
-        #     filter_id_list.extend(
-        #         list(
-        #             admin_model.objects.filter(
-        #                 district_id__in=district_id_list, committee_type_id=4
-        #             ).values_list("user_id_id", flat=True)
-        #         )
-        #     )
-        # elif admin['committee_type_id'] == 5:
-        #     panchayath_id_list = Panchayath.objects.filter(district_id=admin['district_id']).values_list(
-        #         'id', flat=True
-        #     )
-        #     filter_id_list.extend(
-        #         list(
-        #             admin_model.objects.filter(
-        #                 panchayath_id__in=panchayath_id_list, committee_type_id=5
-        #             ).values_list("user_id_id", flat=True)
-        #         )
-        #     )
-        # elif admin['committee_type_id'] == 6:
-        #     ward_id_list = Ward.objects.filter(panchayath_id=admin['panchayath_id']).values_list('id', flat=True)
-        #     filter_id_list.extend(
-        #         list(
-        #             admin_model.objects.filter(
-        #                 ward_id=ward_id_list, committee_type_id=6
-        #             ).values_list("user_id_id", flat=True)
-        #         )
-        #     )
-        # elif admin['committee_type_id'] == 3:
-        #     state_id_list = State.objects.values_list('id', flat=True)
-        #     filter_id_list.extend(
-        #         list(
-        #             admin_model.objects.filter(
-        #                 state_id__in=state_id_list, committee_type_id=3
-        #             ).values_list("user_id_id", flat=True)
-        #         )
-        #     )
-        # else:
-        #     pass
-
         try:
             appts = MeetingHighligths.objects.filter(created_by_id=request.user.id).values()
             for meeting_highligths in appts:
@@ -607,7 +528,7 @@ class get_meeting_by_user(APIView):
                 meeting_highligths['photo']=lst_photo
             return Response({'results':appts})
         except Exception as e:
-            return Response({'results': "Failed to get user meetings"})
+            return Response({'results':"Failed to get user meetings"})
 
 
 class News_all_ViewSet(viewsets.ModelViewSet):
