@@ -508,27 +508,27 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
             committe_type = int(self.request.data.get('committe_type'))
         except TypeError:
             committe_type = None
-        print(type(committe_type))
-        instance = MeetingHighligths.objects.filter(id=meeting_highligths_id)
-        region_data = {
-            'state_region': None,
-            'district_region': None,
-            'panchayath_region': None,
-            'ward_region': None,
-            'committe_type_id': committe_type
-        }
-        if committe_type == 4:
-            region_data['state_region'] = State.objects.get(id=self.request.data.get('state_region'))
-        elif committe_type == 5:
-            print('dist')
-            region_data['district_region'] = District.objects.get(id=self.request.data.get('district_region'))
-        elif committe_type == 6:
-            region_data['panchayath_region'] = Panchayath.objects.get(id=self.request.data.get('panchayath_region'))
-        elif committe_type == 7:
-            region_data['ward_region'] = Ward.objects.get(id=self.request.data.get('ward_region'))
-        else:
-            pass
-        instance.update(**region_data)
+        if self.request.user.is_superuser:
+            instance = MeetingHighligths.objects.filter(id=meeting_highligths_id)
+            region_data = {
+                'state_region': None,
+                'district_region': None,
+                'panchayath_region': None,
+                'ward_region': None,
+                'committe_type_id': committe_type
+            }
+            if committe_type == 4:
+                region_data['state_region'] = State.objects.get(id=self.request.data.get('state_region'))
+            elif committe_type == 5:
+                print('dist')
+                region_data['district_region'] = District.objects.get(id=self.request.data.get('district_region'))
+            elif committe_type == 6:
+                region_data['panchayath_region'] = Panchayath.objects.get(id=self.request.data.get('panchayath_region'))
+            elif committe_type == 7:
+                region_data['ward_region'] = Ward.objects.get(id=self.request.data.get('ward_region'))
+            else:
+                pass
+            instance.update(**region_data)
 
 
 
@@ -545,41 +545,53 @@ class get_meeting_by_user(APIView):
             )],
     )
     def get(self,request):
-        admin = admin_model.objects.filter(
-            user_id__id=request.user.id
-        ).values("committee_type_id", 'state_id', 'district_id', 'panchayath_id', 'ward_id')[0]
-        filter_id_list = []
-        if admin['committee_type_id'] == 4:
-            district_id_list = District.objects.filter(state_id=admin['state_id']).values_list('id', flat=True)
-            filter_id_list.extend(
-                list(admin_model.objects.filter(district_id__in=district_id_list).values_list("user_id_id", flat=True))
-            )
-        elif admin['committee_type_id'] == 5:
-            panchayath_id_list = Panchayath.objects.filter(district_id=admin['district_id']).values_list(
-                'id', flat=True
-            )
-            filter_id_list.extend(
-                list(
-                    admin_model.objects.filter(
-                        panchayath_id__in=panchayath_id_list
-                    ).values_list("user_id_id", flat=True)
-                )
-            )
-        elif admin['committee_type_id'] == 6:
-            ward_id_list = Ward.objects.filter(panchayath_id=admin['panchayath_id']).values_list('id', flat=True)
-            filter_id_list.extend(
-                list(admin_model.objects.filter(ward_id=ward_id_list).values_list("user_id_id", flat=True))
-            )
-        elif admin['committee_type_id'] == 3:
-            state_id_list = State.objects.values_list('id', flat=True)
-            filter_id_list.extend(
-                list(admin_model.objects.filter(state_id__in=state_id_list).values_list("user_id_id", flat=True))
-            )
-        else:
-            pass
+        # admin = admin_model.objects.filter(
+        #     user_id__id=request.user.id
+        # ).values("committee_type_id", 'state_id', 'district_id', 'panchayath_id', 'ward_id')[0]
+        # filter_id_list = []
+        # if admin['committee_type_id'] == 4:
+        #     district_id_list = District.objects.filter(state_id=admin['state_id']).values_list('id', flat=True)
+        #     filter_id_list.extend(
+        #         list(
+        #             admin_model.objects.filter(
+        #                 district_id__in=district_id_list, committee_type_id=4
+        #             ).values_list("user_id_id", flat=True)
+        #         )
+        #     )
+        # elif admin['committee_type_id'] == 5:
+        #     panchayath_id_list = Panchayath.objects.filter(district_id=admin['district_id']).values_list(
+        #         'id', flat=True
+        #     )
+        #     filter_id_list.extend(
+        #         list(
+        #             admin_model.objects.filter(
+        #                 panchayath_id__in=panchayath_id_list, committee_type_id=5
+        #             ).values_list("user_id_id", flat=True)
+        #         )
+        #     )
+        # elif admin['committee_type_id'] == 6:
+        #     ward_id_list = Ward.objects.filter(panchayath_id=admin['panchayath_id']).values_list('id', flat=True)
+        #     filter_id_list.extend(
+        #         list(
+        #             admin_model.objects.filter(
+        #                 ward_id=ward_id_list, committee_type_id=6
+        #             ).values_list("user_id_id", flat=True)
+        #         )
+        #     )
+        # elif admin['committee_type_id'] == 3:
+        #     state_id_list = State.objects.values_list('id', flat=True)
+        #     filter_id_list.extend(
+        #         list(
+        #             admin_model.objects.filter(
+        #                 state_id__in=state_id_list, committee_type_id=3
+        #             ).values_list("user_id_id", flat=True)
+        #         )
+        #     )
+        # else:
+        #     pass
 
         try:
-            appts = MeetingHighligths.objects.filter(created_by_id__in=filter_id_list).values()
+            appts = MeetingHighligths.objects.filter(created_by_id=request.user.id).values()
             for meeting_highligths in appts:
                 lst_attendance = []
                 lst_photo = []
@@ -595,7 +607,7 @@ class get_meeting_by_user(APIView):
                 meeting_highligths['photo']=lst_photo
             return Response({'results':appts})
         except Exception as e:
-            return Response({'results':"Failed to get user meetings"})
+            return Response({'results': "Failed to get user meetings"})
 
 
 class News_all_ViewSet(viewsets.ModelViewSet):
