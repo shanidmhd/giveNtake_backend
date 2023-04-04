@@ -53,8 +53,9 @@ class ProgramAPI(viewsets.ModelViewSet):
             if int(request.data['committe_type']) == 4:
                 if serializer.is_valid():
                     serializer.save(
-                        state_region=State.objects.get(id=admin["state"]),
-                        created_by=UserDetails.objects.get(id=request.user.id)
+                        fk_admin_id=fk_admin_id,
+                        available_seats=request.data["total_seats"],
+                        fk_state=State.objects.get(id=request.data["state_region"]),
                     )
                     return Response(
                         {"success": "Program succesfully added"},
@@ -65,11 +66,11 @@ class ProgramAPI(viewsets.ModelViewSet):
                     {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
                 )
             elif int(request.data['committe_type']) == 5:
-                print('dist')
                 if serializer.is_valid():
                     serializer.save(
-                        district_region=District.objects.get(id=admin["district"]),
-                        created_by=UserDetails.objects.get(id=request.user.id)
+                        fk_admin_id=fk_admin_id,
+                        available_seats=request.data["total_seats"],
+                        fk_district=District.objects.get(id=request.data["district_region"]),
                     )
                     return Response(
                         {"success": "Program succesfully added"},
@@ -82,8 +83,9 @@ class ProgramAPI(viewsets.ModelViewSet):
             elif int(request.data['committe_type']) == 6:
                 if serializer.is_valid():
                     serializer.save(
-                        panchayath_region=Panchayath.objects.get(id=admin["panchayath"]),
-                        created_by=UserDetails.objects.get(id=request.user.id)
+                        fk_admin_id=fk_admin_id,
+                        available_seats=request.data["total_seats"],
+                        fk_panchayath=Panchayath.objects.get(id=request.data["panchayath_region"]),
                     )
                     return Response(
                         {"success": "Program succesfully added"},
@@ -96,8 +98,9 @@ class ProgramAPI(viewsets.ModelViewSet):
             elif int(request.data['committe_type']) == 7:
                 if serializer.is_valid():
                     serializer.save(
-                        ward_region=Ward.objects.get(id=admin["ward"]),
-                        created_by=UserDetails.objects.get(id=request.user.id)
+                        fk_admin_id=fk_admin_id,
+                        available_seats=request.data["total_seats"],
+                        fk_ward=Ward.objects.get(id=request.data["ward_region"]),
                     )
                     return Response(
                         {"success": "Program succesfully added"},
@@ -110,7 +113,8 @@ class ProgramAPI(viewsets.ModelViewSet):
             else:
                 if serializer.is_valid():
                     serializer.save(
-                        created_by=UserDetails.objects.get(id=request.user.id)
+                        fk_admin_id=fk_admin_id,
+                        available_seats=request.data["total_seats"]
                     )
                     return Response(
                         {"success": "Program succesfully added"},

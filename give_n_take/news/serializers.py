@@ -28,6 +28,36 @@ class NewsSerializer(serializers.ModelSerializer):
         news = News.objects.create(**validated_data)
         return news
 
+    def update(self, instance, validated_data):
+        super().update(instance=instance, validated_data=validated_data)
+        if getattr(validated_data.get('committe_type'), 'id') == 4:
+            instance.state_region = validated_data.get('state_region')
+            instance.district_region = None
+            instance.panchayath_region = None
+            instance.ward_region = None
+        elif getattr(validated_data.get('committe_type'), 'id') == 5:
+            instance.state_region = None
+            instance.district_region = validated_data.get('district_region')
+            instance.panchayath_region = None
+            instance.ward_region = None
+        elif getattr(validated_data.get('committe_type'), 'id') == 6:
+            instance.state_region = None
+            instance.district_region = None
+            instance.panchayath_region = validated_data.get('panchayath_region')
+            instance.ward_region = None
+        elif getattr(validated_data.get('committe_type'), 'id') == 7:
+            instance.state_region = None
+            instance.district_region = None
+            instance.panchayath_region = None
+            instance.ward_region = validated_data.get('ward_region')
+        else:
+            instance.state_region = None
+            instance.district_region = None
+            instance.panchayath_region = None
+            instance.ward_region = None
+        instance.save()
+        return instance
+
 class MeetingHighligthsSerializer(serializers.ModelSerializer):
 
     class Meta:
