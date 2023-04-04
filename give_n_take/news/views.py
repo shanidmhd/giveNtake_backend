@@ -261,6 +261,8 @@ class get_news_by_user(APIView):
         try:
             news =News.objects.filter(created_by_id=request.user.id).order_by('date_added').values()
             for item in news:
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
@@ -282,8 +284,10 @@ class get_news_by_user_region_district(APIView):
             user_details=UserDetails.objects.get(id=request.user.id)
             news =News.objects.filter(district_region=user_details.district.id).order_by('date_added').values()
             for item in news:
-                item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
-            return Response({'results':news})
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
+                item['news_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + item['news_image']
+            return Response({'results': news})
         except Exception as e:
             return Response({'results':[]})
         
@@ -304,6 +308,8 @@ class get_news_by_user_region_state(APIView):
             user_details=UserDetails.objects.get(id=request.user.id)
             news =News.objects.filter(state_region=user_details.state.id).order_by('date_added').values()
             for item in news:
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
@@ -325,6 +331,8 @@ class get_news_by_user_region_panchayath(APIView):
             user_details=UserDetails.objects.get(id=request.user.id)
             news =News.objects.filter(panchayath_region=user_details.panchayath.id).order_by('date_added').values()
             for item in news:
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
@@ -347,6 +355,8 @@ class get_news_by_user_region_ward(APIView):
             user_details=UserDetails.objects.get(id=request.user.id)
             news =News.objects.filter(ward_region=user_details.ward.id).order_by('date_added').values()
             for item in news:
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
@@ -368,7 +378,9 @@ class get_news_by_user_region_all(APIView):
             user_details=UserDetails.objects.get(id=request.user.id)
             news =News.objects.filter(show_all=True).order_by('date_added').values()
             for item in news:
-                item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
+                item['news_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + item['news_image']
             return Response({'results':news})
         except Exception as e:
             return Response({'results':[]})     

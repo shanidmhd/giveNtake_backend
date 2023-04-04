@@ -471,7 +471,7 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
             
                 if serializer.is_valid():
                     serializer.save(
-                        panchayath_region=Panchayath.objects.get(id=admin["ward"]),
+                        ward_region=Ward.objects.get(id=admin["ward"]),
                         created_by=UserDetails.objects.get(id=request.user.id),
                         committe_type_id=admin['committee_type_id']
                     )
