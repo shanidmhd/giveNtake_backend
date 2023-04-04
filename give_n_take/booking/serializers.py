@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from booking.models import Program_model, TicketBooking
-from user_details.models import State, District, UserDetails, Ward, Panchayath
+from .models import Program_model, TicketBooking
+from user_details.models import State, District, UserDetails
 from user_details.serializers import StateSerializer, DistrictSerializer
 from register.serializers import admin_booking_serializers
 from drf_writable_nested.serializers import WritableNestedModelSerializer
@@ -19,61 +19,10 @@ class Program_get_Serializer(WritableNestedModelSerializer):
 
 class Program_Serializer(serializers.ModelSerializer):
     price = serializers.IntegerField(required=True)
-    committe_type = serializers.IntegerField(required=False)
-    state_region = serializers.IntegerField(required=False)
-    district_region = serializers.IntegerField(required=False)
-    panchayath_region = serializers.IntegerField(required=False)
-    ward_region = serializers.IntegerField(required=False)
 
     class Meta:
         model = Program_model
-        fields = (
-            'address', 'agenda', 'committe_type', 'contact_no', 'date', 'end_time', 'food', 'inauguration_name',
-            'map_url', 'price', 'program_name', 'qr_permission', 'start_time', 'state_region', 'total_seats', 'venue',
-            'state_region', 'district_region', 'panchayath_region', 'ward_region'
-        )
-
-    def create(self, validated_data):
-        new_data = {
-            key: val for key, val in validated_data.items() if key not in [
-                'committe_type','state_region', 'district_region', 'panchayath_region', 'ward_region', 'qr_permission'
-            ]
-        }
-        program_model_obj = Program_model.objects.create(**new_data)
-        program_model_obj.qr_permission.set(validated_data.get('qr_permission'))
-        program_model_obj.save()
-        return program_model_obj
-
-    def update(self, instance, validated_data):
-        super().update(instance=instance, validated_data=validated_data)
-        print(validated_data)
-        if validated_data.get('committe_type') == 4:
-            instance.fk_state = State.objects.get(id=validated_data.get('state_region'))
-            instance.fk_district = None
-            instance.fk_panchayath = None
-            instance.fk_ward = None
-        elif validated_data.get('committe_type') == 5:
-            instance.fk_state = None
-            instance.fk_district = District.objects.get(id=validated_data.get('district_region'))
-            instance.fk_panchayath = None
-            instance.fk_ward = None
-        elif validated_data.get('committe_type') == 6:
-            instance.fk_state = None
-            instance.fk_district = None
-            instance.fk_panchayath = Panchayath.objects.get(id=validated_data.get('panchayath_region'))
-            instance.fk_ward = None
-        elif validated_data.get('committe_type') == 7:
-            instance.fk_state = None
-            instance.fk_district = None
-            instance.fk_panchayath = None
-            instance.fk_ward = Ward.objects.get(id=validated_data.get('ward_region'))
-        else:
-            instance.fk_state = None
-            instance.fk_district = None
-            instance.fk_panchayath = None
-            instance.fk_ward = None
-        instance.save()
-        return instance
+        fields = "__all__"
 
 
 class Ticket_Booking_serializer(serializers.ModelSerializer):
