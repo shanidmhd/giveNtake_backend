@@ -46,33 +46,33 @@ class Program_Serializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         super().update(instance=instance, validated_data=validated_data)
-        print(validated_data)
-        if validated_data.get('committe_type') == 4:
-            instance.fk_state = State.objects.get(id=validated_data.get('state_region'))
-            instance.fk_district = None
-            instance.fk_panchayath = None
-            instance.fk_ward = None
-        elif validated_data.get('committe_type') == 5:
-            instance.fk_state = None
-            instance.fk_district = District.objects.get(id=validated_data.get('district_region'))
-            instance.fk_panchayath = None
-            instance.fk_ward = None
-        elif validated_data.get('committe_type') == 6:
-            instance.fk_state = None
-            instance.fk_district = None
-            instance.fk_panchayath = Panchayath.objects.get(id=validated_data.get('panchayath_region'))
-            instance.fk_ward = None
-        elif validated_data.get('committe_type') == 7:
-            instance.fk_state = None
-            instance.fk_district = None
-            instance.fk_panchayath = None
-            instance.fk_ward = Ward.objects.get(id=validated_data.get('ward_region'))
-        else:
-            instance.fk_state = None
-            instance.fk_district = None
-            instance.fk_panchayath = None
-            instance.fk_ward = None
-        instance.save()
+        if 'committe_type' in validated_data:
+            if validated_data.get('committe_type') == 4:
+                instance.fk_state = State.objects.get(id=validated_data.get('state_region'))
+                instance.fk_district = None
+                instance.fk_panchayath = None
+                instance.fk_ward = None
+            elif validated_data.get('committe_type') == 5:
+                instance.fk_state = None
+                instance.fk_district = District.objects.get(id=validated_data.get('district_region'))
+                instance.fk_panchayath = None
+                instance.fk_ward = None
+            elif validated_data.get('committe_type') == 6:
+                instance.fk_state = None
+                instance.fk_district = None
+                instance.fk_panchayath = Panchayath.objects.get(id=validated_data.get('panchayath_region'))
+                instance.fk_ward = None
+            elif validated_data.get('committe_type') == 7:
+                instance.fk_state = None
+                instance.fk_district = None
+                instance.fk_panchayath = None
+                instance.fk_ward = Ward.objects.get(id=validated_data.get('ward_region'))
+            else:
+                instance.fk_state = None
+                instance.fk_district = None
+                instance.fk_panchayath = None
+                instance.fk_ward = None
+            instance.save()
         return instance
 
 

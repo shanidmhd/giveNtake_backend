@@ -99,9 +99,9 @@ class NewsViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs): 
             serializer = self.serializer_class(data=request.data)
             admin = (
-                 UserDetails.objects.filter(id=request.user.id)
-                .values("committee_type__name", "state", "district","panchayath","ward")
-                .first()
+                 UserDetails.objects.filter(id=request.user.id).values(
+                     "committee_type__name", "state", "district", "panchayath", "ward", 'committee_type_id'
+                 ).first()
             )
             # fk_admin_id = admin_model.objects.get(user_id__id=request.user.id)
 
@@ -111,7 +111,9 @@ class NewsViewSet(viewsets.ModelViewSet):
                 if int(request.data['committe_type'])==4:
                     if serializer.is_valid():
                         serializer.save(
-                            state_region=State.objects.get(id=request.data['state_region']),created_by=UserDetails.objects.get(id=request.user.id)
+                            state_region=State.objects.get(id=request.data['state_region']),
+                            created_by=UserDetails.objects.get(id=request.user.id),
+
                         )
                         return Response(
                             {"success": "News succesfully added"},
@@ -178,7 +180,9 @@ class NewsViewSet(viewsets.ModelViewSet):
             
                 if serializer.is_valid():
                     serializer.save(
-                        state_region=State.objects.get(id=admin["state"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        state_region=State.objects.get(id=admin["state"]),
+                        created_by=UserDetails.objects.get(id=request.user.id,),
+                        committe_type_id=admin['committee_type_id']
                     )
                     return Response(
                         {"success": "News succesfully added"},
@@ -192,7 +196,9 @@ class NewsViewSet(viewsets.ModelViewSet):
             
                 if serializer.is_valid():
                     serializer.save(
-                        district_region=District.objects.get(id=admin["district"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        district_region=District.objects.get(id=admin["district"]),
+                        created_by=UserDetails.objects.get(id=request.user.id),
+                        committe_type_id=admin['committee_type_id']
                     )
                     return Response(
                         {"success": "News succesfully added"},
@@ -206,7 +212,9 @@ class NewsViewSet(viewsets.ModelViewSet):
             elif admin["committee_type__name"] == "Panchayath Committee":
                 if serializer.is_valid():
                     serializer.save(
-                        panchayath_region=Panchayath.objects.get(id=admin["panchayath"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        panchayath_region=Panchayath.objects.get(id=admin["panchayath"]),
+                        created_by=UserDetails.objects.get(id=request.user.id),
+                        committe_type_id=admin['committee_type_id']
                     )
                     return Response(
                         {"success": "News succesfully added"},
@@ -220,7 +228,9 @@ class NewsViewSet(viewsets.ModelViewSet):
             
                 if serializer.is_valid():
                     serializer.save(
-                        ward_region=Ward.objects.get(id=admin["ward"]),created_by=UserDetails.objects.get(id=request.user.id)
+                        ward_region=Ward.objects.get(id=admin["ward"]),
+                        created_by=UserDetails.objects.get(id=request.user.id),
+                        committe_type_id=admin['committee_type_id']
                     )
                     return Response(
                         {"success": "News succesfully added"},
@@ -235,7 +245,8 @@ class NewsViewSet(viewsets.ModelViewSet):
             
                 if serializer.is_valid():
                     serializer.save(
-                        show_all=True,created_by=UserDetails.objects.get(id=request.user.id)
+                        show_all=True,
+                        created_by=UserDetails.objects.get(id=request.user.id)
                     )
                     return Response(
                         {"success": "Program succesfully added"},
@@ -261,6 +272,8 @@ class get_news_by_user(APIView):
         try:
             news =News.objects.filter(created_by_id=request.user.id).order_by('date_added').values()
             for item in news:
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
@@ -282,8 +295,10 @@ class get_news_by_user_region_district(APIView):
             user_details=UserDetails.objects.get(id=request.user.id)
             news =News.objects.filter(district_region=user_details.district.id).order_by('date_added').values()
             for item in news:
-                item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
-            return Response({'results':news})
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
+                item['news_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + item['news_image']
+            return Response({'results': news})
         except Exception as e:
             return Response({'results':[]})
         
@@ -304,6 +319,8 @@ class get_news_by_user_region_state(APIView):
             user_details=UserDetails.objects.get(id=request.user.id)
             news =News.objects.filter(state_region=user_details.state.id).order_by('date_added').values()
             for item in news:
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
@@ -325,6 +342,8 @@ class get_news_by_user_region_panchayath(APIView):
             user_details=UserDetails.objects.get(id=request.user.id)
             news =News.objects.filter(panchayath_region=user_details.panchayath.id).order_by('date_added').values()
             for item in news:
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
@@ -347,6 +366,8 @@ class get_news_by_user_region_ward(APIView):
             user_details=UserDetails.objects.get(id=request.user.id)
             news =News.objects.filter(ward_region=user_details.ward.id).order_by('date_added').values()
             for item in news:
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
                 item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
             return Response({'results':news})
         except Exception as e:
@@ -368,7 +389,9 @@ class get_news_by_user_region_all(APIView):
             user_details=UserDetails.objects.get(id=request.user.id)
             news =News.objects.filter(show_all=True).order_by('date_added').values()
             for item in news:
-                item['news_image']=settings.HOST_ADDRESS + settings.MEDIA_URL +item['news_image']
+                item['meeting_link'] = item['meeting_link'] \
+                    if item['meeting_link'] not in ['undefined', None] else "N/A"
+                item['news_image'] = settings.HOST_ADDRESS + settings.MEDIA_URL + item['news_image']
             return Response({'results':news})
         except Exception as e:
             return Response({'results':[]})     
