@@ -270,7 +270,7 @@ class get_news_by_user(APIView):
     )
     def get(self,request):
         try:
-            news =News.objects.filter(created_by_id=request.user.id).order_by('date_added').values()
+            news =News.objects.filter(created_by_id=request.user.id).order_by('-date_added').values()
             for item in news:
                 item['meeting_link'] = item['meeting_link'] \
                     if item['meeting_link'] not in ['undefined', None] else "N/A"
@@ -293,7 +293,7 @@ class get_news_by_user_region_district(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(district_region=user_details.district.id).order_by('date_added').values()
+            news =News.objects.filter(district_region=user_details.district.id).order_by('-date_added').values()
             for item in news:
                 item['meeting_link'] = item['meeting_link'] \
                     if item['meeting_link'] not in ['undefined', None] else "N/A"
@@ -317,7 +317,7 @@ class get_news_by_user_region_state(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(state_region=user_details.state.id).order_by('date_added').values()
+            news =News.objects.filter(state_region=user_details.state.id).order_by('-date_added').values()
             for item in news:
                 item['meeting_link'] = item['meeting_link'] \
                     if item['meeting_link'] not in ['undefined', None] else "N/A"
@@ -340,7 +340,7 @@ class get_news_by_user_region_panchayath(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(panchayath_region=user_details.panchayath.id).order_by('date_added').values()
+            news =News.objects.filter(panchayath_region=user_details.panchayath.id).order_by('-date_added').values()
             for item in news:
                 item['meeting_link'] = item['meeting_link'] \
                     if item['meeting_link'] not in ['undefined', None] else "N/A"
@@ -364,7 +364,7 @@ class get_news_by_user_region_ward(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(ward_region=user_details.ward.id).order_by('date_added').values()
+            news =News.objects.filter(ward_region=user_details.ward.id).order_by('-date_added').values()
             for item in news:
                 item['meeting_link'] = item['meeting_link'] \
                     if item['meeting_link'] not in ['undefined', None] else "N/A"
@@ -387,7 +387,7 @@ class get_news_by_user_region_all(APIView):
     def get(self,request):
         try:
             user_details=UserDetails.objects.get(id=request.user.id)
-            news =News.objects.filter(show_all=True).order_by('date_added').values()
+            news =News.objects.filter(show_all=True).order_by('-date_added').values()
             for item in news:
                 item['meeting_link'] = item['meeting_link'] \
                     if item['meeting_link'] not in ['undefined', None] else "N/A"
@@ -650,6 +650,7 @@ class News_all_ViewSet(viewsets.ModelViewSet):
             s['district_region']=District.objects.filter(id=  s['district_region']).values('id','name','state__name')
             s['state_region']=State.objects.filter(id=  s['state_region']).values('id','name')
             s['panchayath_region']=Panchayath.objects.filter(id=  s['panchayath_region']).values('id','name','district__name')
+            s['meeting_link'] = s['meeting_link'] if s['meeting_link'] not in ['undefined', None] else "N/A"
             # if s['news_image'] is not None :
             #     s['news_image']=settings.HOST_ADDRESS +s['news_image']
         return Response({'results':serializer.data})

@@ -457,7 +457,9 @@ def program_based_create_by(req):
 def program_based_state(req):
     if req.method == 'GET':
         if req.user.is_authenticated :
-            program_filter_data=Program_model.objects.filter(fk_state__id=UserDetails.objects.get(id=req.user.id).state.id)
+            program_filter_data=Program_model.objects.filter(
+                fk_state__id=UserDetails.objects.get(id=req.user.id).state.id
+            ).order_by('-date')
             serializer=Program_get_Serializer(program_filter_data,many=True)
             return Response(serializer.data)
         else :
@@ -469,7 +471,9 @@ def program_based_state(req):
 def program_based_district(req):
     if req.method == 'GET':
         if req.user.is_authenticated :
-            program_filter_data=Program_model.objects.filter(fk_district__id=UserDetails.objects.get(id=req.user.id).district.id)
+            program_filter_data=Program_model.objects.filter(
+                fk_district__id=UserDetails.objects.get(id=req.user.id).district.id
+            ).order_by('-date')
             serializer=Program_get_Serializer(program_filter_data,many=True)
             return Response(serializer.data)
         else :
@@ -483,7 +487,9 @@ def program_based_panchayath(req):
         if req.user.is_authenticated :
             if UserDetails.objects.get(id=req.user.id).panchayath.id :
                 try :
-                    program_filter_data=Program_model.objects.filter(fk_panchayath__id=UserDetails.objects.get(id=req.user.id).panchayath.id)
+                    program_filter_data=Program_model.objects.filter(
+                        fk_panchayath__id=UserDetails.objects.get(id=req.user.id).panchayath.id
+                    ).order_by('-date')
                     serializer=Program_get_Serializer(program_filter_data,many=True)
                     return Response(serializer.data)
                 except Exception as e :
@@ -501,7 +507,9 @@ def program_based_ward(req):
         if req.user.is_authenticated :
             if UserDetails.objects.get(id=req.user.id).panchayath.id :
                 try :
-                    program_filter_data=Program_model.objects.filter(fk_ward__id=UserDetails.objects.get(id=req.user.id).ward.id)
+                    program_filter_data=Program_model.objects.filter(
+                        fk_ward__id=UserDetails.objects.get(id=req.user.id).ward.id
+                    ).order_by('-date')
                     serializer=Program_get_Serializer(program_filter_data,many=True)
                     return Response(serializer.data)
                 except Exception as e :
