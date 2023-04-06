@@ -492,7 +492,6 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
         meeting_highligths_id = kargs.get('pk')
         if meeting_highligths_id:
             try:
-                self.update_region(meeting_highligths_id)
                 meeting_highligths = MeetingHighligths.objects.filter(id=int(meeting_highligths_id)).values().first()
                 if not meeting_minutes:
                     meeting_minutes =  meeting_highligths['meeting_minutes']
@@ -525,33 +524,6 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 return Response({'results':meeting_highligths})
             except:
                 return Response({'message': 'No data found'})
-
-    def update_region(self, meeting_highligths_id):
-        try:
-            committe_type = int(self.request.data.get('committe_type'))
-        except TypeError:
-            committe_type = None
-        if self.request.user.is_superuser:
-            instance = MeetingHighligths.objects.filter(id=meeting_highligths_id)
-            region_data = {
-                'state_region': None,
-                'district_region': None,
-                'panchayath_region': None,
-                'ward_region': None,
-                'committe_type_id': committe_type
-            }
-            if committe_type == 4:
-                region_data['state_region'] = State.objects.get(id=self.request.data.get('state_region'))
-            elif committe_type == 5:
-                print('dist')
-                region_data['district_region'] = District.objects.get(id=self.request.data.get('district_region'))
-            elif committe_type == 6:
-                region_data['panchayath_region'] = Panchayath.objects.get(id=self.request.data.get('panchayath_region'))
-            elif committe_type == 7:
-                region_data['ward_region'] = Ward.objects.get(id=self.request.data.get('ward_region'))
-            else:
-                pass
-            instance.update(**region_data)
 
 
 
