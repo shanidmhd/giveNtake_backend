@@ -13,19 +13,19 @@ router.register(r'role', views.StaffRoleViewSet)
 router.register(r'admin', views.AdminUserViewSet)
 router.register(r'members',views.CommiteeMemberViewSet)
 urlpatterns = [
- path('admin/', include(router.urls)),
-#  path('',views.register_api.as_view())   ,
-# #  path('login/',views.login_api.as_view()),
- path('list/',views.list_api.as_view()),
- path('',views.admin_register.as_view()),
- path('get_news_user_id/',views.get_news_by_user.as_view()),
- path('get_committee_admin_created/',views.get_committee_admin_created.as_view()),
- path('get_meeting_by_user_id/',views.get_meeting_by_user.as_view()),
- path('admin/update/<int:id>/',views.update_admin.as_view()),
- path('admin/filter/',views.admin_filter_list.as_view()),
- path('members/filter/',views.committee_members_filter.as_view()),
- path('members/created_by/',views.get_committee_members_created.as_view()),
- path('count/admin/',views.Admin_count.as_view()),
- path('count/members/',views.Members_count.as_view())
-
+     path('admin/', include(router.urls)),
+    #  path('',views.register_api.as_view())   ,
+    # #  path('login/',views.login_api.as_view()),
+     path('list/',views.list_api.as_view()),
+     path('',views.admin_register.as_view()),
+     path('get_news_user_id/',views.get_news_by_user.as_view()),
+     path('get_committee_admin_created/',views.get_committee_admin_created.as_view()),
+     path('get_meeting_by_user_id/',views.get_meeting_by_user.as_view()),
+     path('admin/update/<int:id>/',views.update_admin.as_view()),
+     path('admin/filter/',views.admin_filter_list.as_view()),
+     path('members/filter/',views.committee_members_filter.as_view()),
+     path('members/created_by/',views.get_committee_members_created.as_view()),
+     path('count/admin/',views.Admin_count.as_view()),
+     path('count/members/',views.Members_count.as_view()),
+     path('members-with-username/', views.MembersWithUsername.as_view())
 ]

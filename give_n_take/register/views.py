@@ -803,11 +803,12 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
         meeting_minutes = request.data.get('meeting_minutes')
         description = request.data.get('description')
         meeting_attendance = request.data.get('meeting_attendance')
-        attendances = request.data.get('attendance')
-        photos = request.data.get('photo')
+        attendances = request.FILES.get('attendance')
+        photos = request.FILES.get('photo')
         meeting_highligths_id = kargs.get('pk')
         if meeting_highligths_id:
             try:
+                self.update_region(meeting_highligths_id)
                 meeting_highligths = MeetingHighligths.objects.filter(id=int(meeting_highligths_id)).values().first()
                 if not meeting_minutes:
                     meeting_minutes =  meeting_highligths['meeting_minutes']
@@ -818,12 +819,12 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 MeetingHighligths.objects.filter(id=int(meeting_highligths_id)).update(meeting_minutes=meeting_minutes,description=description,meeting_attendance=meeting_attendance)
                 if attendances:
                     MeetingAttendance.objects.filter(meeting_highligths_id = meeting_highligths['id']).delete()
-                    for attendance in attendances:
-                        MeetingAttendance.objects.create(meeting_highligths_id=meeting_highligths['id'],attendance=attendance)
+                    MeetingAttendance.objects.create(
+                        meeting_highligths_id=meeting_highligths['id'], attendance=attendances
+                    )
                 if photos:
                     MeetingPhoto.objects.filter(meeting_highligths_id = meeting_highligths['id']).delete()
-                    for photo in photos:
-                        MeetingPhoto.objects.create(meeting_highligths_id=meeting_highligths['id'],photo=photo)
+                    MeetingPhoto.objects.create(meeting_highligths_id=meeting_highligths['id'],photo=photos)
                 meeting_highligths = MeetingHighligths.objects.filter(id=int(meeting_highligths_id)).values().first()
                 lst_attendance = []
                 lst_photo = []
@@ -840,6 +841,33 @@ class MeetingHighligthsViewSet(viewsets.ModelViewSet):
                 return Response({'results':meeting_highligths})
             except:
                 return Response({'message': 'No data found'})
+
+    def update_region(self, meeting_highligths_id):
+        try:
+            committe_type = int(self.request.data.get('committe_type'))
+        except TypeError:
+            committe_type = None
+        if self.request.user.is_superuser:
+            instance = MeetingHighligths.objects.filter(id=meeting_highligths_id)
+            region_data = {
+                'state_region': None,
+                'district_region': None,
+                'panchayath_region': None,
+                'ward_region': None,
+                'committe_type_id': committe_type
+            }
+            if committe_type == 4:
+                region_data['state_region'] = State.objects.get(id=self.request.data.get('state_region'))
+            elif committe_type == 5:
+                region_data['district_region'] = District.objects.get(id=self.request.data.get('district_region'))
+            elif committe_type == 6:
+                region_data['panchayath_region'] = Panchayath.objects.get(id=self.request.data.get('panchayath_region'))
+            elif committe_type == 7:
+                region_data['ward_region'] = Ward.objects.get(id=self.request.data.get('ward_region'))
+            else:
+                pass
+            instance.update(**region_data)
+
 
 class AdminUserViewSet(viewsets.ModelViewSet):
     """
@@ -1153,8 +1181,8 @@ class CommiteeMemberViewSet(viewsets.ModelViewSet):
         committee_data=committee_members.objects.all()
         serializer=committee_list_ser(committee_data,many=True)
         for image in serializer.data :
-            if image['user_image'] is not None :
-                image['user_image']=settings.HOST_ADDRESS +  image['user_image']
+            if image['user_image'] is not None:
+                image['user_image']=settings.HOST_ADDRESS + image['user_image']
         return Response(serializer.data,status=status.HTTP_200_OK)
     
     def retrieve(self, request,*args, **kargs):
@@ -1180,7 +1208,7 @@ class get_committee_members_created(APIView):
             admin_ =committee_members.objects.filter(created_by=request.user.id)
             admin_list=committee_list_ser(admin_,many=True)
             for item in admin_list.data:
-                item['user_image']=settings.HOST_ADDRESS +item['user_image']
+                item['user_image'] = settings.HOST_ADDRESS + item['user_image']
             return Response({'results':admin_list.data},status=status.HTTP_200_OK)
     
     
@@ -1201,3 +1229,23 @@ class Members_count(APIView):
     def get(self,request):
         count=committee_members.objects.count()
         return Response({'count':count})
+
+
+class MembersWithUsername(APIView):
+    """
+    Hit this API to get a list of members with non-null username field. Non-superusers are restricted to have the data
+    of members created by them only.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        committee_members_qs = committee_members.objects.filter(username__isnull=False).exclude(
+            username__in=['null', 'undefined']
+        )
+        if request.user.is_superuser:
+            data = committee_list_ser(committee_members_qs, many=True).data
+        else:
+            data = committee_list_ser(committee_members_qs.filter(created_by=request.user.id), many=True).data
+        for item in data:
+            item['user_image'] = settings.HOST_ADDRESS + item['user_image']
+        return Response(data, status=status.HTTP_200_OK)
