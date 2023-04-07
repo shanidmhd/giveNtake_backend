@@ -1,6 +1,7 @@
 
 from django.conf import settings
 from django.shortcuts import render
+from django.utils import timezone
 from rest_framework import viewsets
 from .serializers import (
     Program_Serializer,
@@ -343,9 +344,10 @@ class TicketBooking_API(viewsets.ModelViewSet):
                 result='QR'+''.join(sample)
                 url = '/program/qr/'+ str(result) + '/'
                 qr_image = qrcode.make(url)
-                qr_image.save("media/qrcode/qrimage.png")
-                destination_file = open("media/qrcode/qrimage.png", "rb")
-                ser.qr_code_image.save("qrimage.png", File(destination_file), save=True)
+                filename = f"media/qrcode/qrimage{timezone.now()}.png"
+                qr_image.save(filename)
+                destination_file = open(filename, "rb")
+                ser.qr_code_image.save(filename, File(destination_file), save=True)
                 TicketBooking.objects.filter(id=int(pk)).update(qr_random_num=result)
                
 
