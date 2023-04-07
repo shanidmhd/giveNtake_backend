@@ -344,9 +344,9 @@ class TicketBooking_API(viewsets.ModelViewSet):
                 result='QR'+''.join(sample)
                 url = '/program/qr/'+ str(result) + '/'
                 qr_image = qrcode.make(url)
-                filename = f"media/qrcode/qrimage{timezone.now()}.png"
-                qr_image.save(filename)
-                destination_file = open(filename, "rb")
+                filename = f"qrimage{timezone.now()}.png"
+                qr_image.save(f'media/qrcode/{filename}')
+                destination_file = open(f'media/qrcode/{filename}', "rb")
                 ser.qr_code_image.save(filename, File(destination_file), save=True)
                 TicketBooking.objects.filter(id=int(pk)).update(qr_random_num=result)
                
