@@ -18,6 +18,25 @@ class Program_get_Serializer(WritableNestedModelSerializer):
         model = Program_model
         fields = "__all__"
 
+    def to_representation(self, instance):
+        read_data = super().to_representation(instance)
+        read_data['created_by'] = {
+            'id': instance.fk_admin_id_id,
+            'name': instance.fk_admin_id.username if instance.fk_admin_id_id else None
+        }
+        if instance.fk_state_id:
+            committee_type = {'id': 4, 'name': 'State Committee'}
+        elif instance.fk_district_id:
+            committee_type = {'id': 5, 'name': 'District Committee'}
+        elif instance.fk_panchayath_id:
+            committee_type = {'id': 6, 'name': 'Panchayath Committee'}
+        elif instance.fk_ward_id:
+            committee_type = {'id': 7, 'name': 'Ward Committee'}
+        else:
+            committee_type = None
+        read_data['committee_type'] = committee_type
+        return read_data
+
 
 class Program_Serializer(serializers.ModelSerializer):
     price = serializers.IntegerField(required=True)

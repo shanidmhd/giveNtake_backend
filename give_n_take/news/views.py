@@ -127,7 +127,8 @@ class NewsViewSet(viewsets.ModelViewSet):
                     print('dist')
                     if serializer.is_valid():
                         serializer.save(
-                            district_region=District.objects.get(id=request.data["district_region"]),created_by=UserDetails.objects.get(id=request.user.id)
+                            district_region=District.objects.get(id=request.data["district_region"]),
+                            created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
                             {"success": "News succesfully added"},
@@ -140,7 +141,8 @@ class NewsViewSet(viewsets.ModelViewSet):
                 elif int(request.data['committe_type'])==6:
                     if serializer.is_valid():
                         serializer.save(
-                            panchayath_region=Panchayath.objects.get(id=request.data["panchayath_region"]),created_by=UserDetails.objects.get(id=request.user.id)
+                            panchayath_region=Panchayath.objects.get(id=request.data["panchayath_region"]),
+                            created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
                             {"success": "News succesfully added"},
@@ -153,7 +155,8 @@ class NewsViewSet(viewsets.ModelViewSet):
                 elif int(request.data['committe_type'])==7:
                     if serializer.is_valid():
                         serializer.save(
-                            ward_region=Ward.objects.get(id=request.data["ward_region"]),created_by=UserDetails.objects.get(id=request.user.id)
+                            ward_region=Ward.objects.get(id=request.data["ward_region"]),
+                            created_by=UserDetails.objects.get(id=request.user.id)
                         )
                         return Response(
                             {"success": "News succesfully added"},
@@ -163,10 +166,10 @@ class NewsViewSet(viewsets.ModelViewSet):
                     return Response(
                         {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
                     )
-                else :
+                else:
                     if serializer.is_valid():
                         serializer.save(
-                        created_by=UserDetails.objects.get(id=request.user.id), show_all=True
+                            created_by=UserDetails.objects.get(id=request.user.id), show_all=True
                         )
                         return Response(
                             {"success": "News succesfully added"},
@@ -246,7 +249,8 @@ class NewsViewSet(viewsets.ModelViewSet):
                 if serializer.is_valid():
                     serializer.save(
                         show_all=True,
-                        created_by=UserDetails.objects.get(id=request.user.id)
+                        created_by=UserDetails.objects.get(id=request.user.id),
+                        committe_type_id=admin['committee_type_id']
                     )
                     return Response(
                         {"success": "Program succesfully added"},
@@ -619,10 +623,16 @@ class News_all_ViewSet(viewsets.ModelViewSet):
         datas=News.objects.all()
         serializer=NewsSerializer(datas,many=True)
         for s in serializer.data :
-            s['district_region']=District.objects.filter(id=  s['district_region']).values('id','name','state__name')
-            s['state_region']=State.objects.filter(id=  s['state_region']).values('id','name')
-            s['panchayath_region']=Panchayath.objects.filter(id=  s['panchayath_region']).values('id','name','district__name')
+            s['district_region']=District.objects.filter(
+                id=  s['district_region']
+            ).values('id','name','state__name').first()
+            s['state_region']=State.objects.filter(id=  s['state_region']).values('id','name').first()
+            s['panchayath_region'] = Panchayath.objects.filter(
+                id=s['panchayath_region']
+            ).values('id','name','district__name').first()
+            s['ward_region'] = Ward.objects.filter(id=s['ward_region']).values('id', 'name', 'panchayath__name').first()
             s['meeting_link'] = s['meeting_link'] if s['meeting_link'] not in ['undefined', None] else "N/A"
+            s['committe_type'] = CommitteeType.objects.filter(id=s['committe_type']).values('id', 'name').first()
             # if s['news_image'] is not None :
             #     s['news_image']=settings.HOST_ADDRESS +s['news_image']
         return Response({'results':serializer.data})
