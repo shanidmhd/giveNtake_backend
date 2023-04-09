@@ -15,12 +15,19 @@ class NewsTypeSerializer(serializers.ModelSerializer):
 class NewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = News
-        fields = ['id','title','description','meeting_link','news_type','committe_type','news_image','date_added','date_expired','status','created_by','modified_by','date_modified','district_region','state_region','panchayath_region']
+        fields = [
+            'id', 'title', 'description', 'meeting_link', 'news_type', 'committe_type', 'news_image',
+            'date_added', 'date_expired', 'status', 'created_by', 'modified_by', 'date_modified',
+            'district_region', 'state_region', 'panchayath_region', 'ward_region'
+        ]
         
     def to_representation(self, instance):
         rep= super().to_representation(instance)
         if rep['news_image']:
             rep['news_image']=settings.HOST_ADDRESS+rep['news_image']
+        rep['created_by'] = {
+            'id': instance.created_by_id, 'name': instance.created_by.username if instance.created_by_id else None
+        }
         return rep
         
 

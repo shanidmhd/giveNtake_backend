@@ -1,5 +1,6 @@
 
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import viewsets
@@ -42,14 +43,14 @@ class ProgramAPI(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=request.data)
         admin = (
             admin_model.objects.filter(user_id__id=request.user.id)
-            .values("committee_type__name", "state", "district","panchayath","ward")
+            .values("committee_type__name", "state", "district", "panchayath", "ward", "committee_type_id")
             .first()
         )
         fk_admin_id = admin_model.objects.get(user_id__id=request.user.id)
 
         # The first check is for superuser and if it qualifies actions specific to superuser is processed else
         # the remaining part of the code is executed.
-        if request.user.is_superuser:
+        if request.user.is_superuser or admin["committee_type_id"] in [1, 2, 3]:
 
             if int(request.data['committe_type']) == 4:
                 if serializer.is_valid():
@@ -195,7 +196,8 @@ class ProgramAPI(viewsets.ModelViewSet):
            
             if serializer.is_valid():
                 serializer.save(
-                    fk_admin_id=fk_admin_id, available_seats=request.data["total_seats"]
+                    fk_admin_id=fk_admin_id,
+                    available_seats=request.data["total_seats"]
                 )
                 return Response(
                     {"success": "Program succesfully added"},
@@ -338,9 +340,7 @@ class TicketBooking_API(viewsets.ModelViewSet):
                     program['created_by'] = pro["fk_admin_id__id"]
 
                 ser = serializer.save(payment_completed=True)
-                digits = random.choices(string.digits,k=2)
-                lettters = random.choices(string.ascii_lowercase,k=9)
-                sample=random.sample(digits+lettters,7)
+                sample = self.generate_random_code()
                 result='QR'+''.join(sample)
                 url = '/program/qr/'+ str(result) + '/'
                 qr_image = qrcode.make(url)
@@ -357,6 +357,18 @@ class TicketBooking_API(viewsets.ModelViewSet):
         return Response(
             {"error": status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST
         )
+
+    def generate_random_code(self):
+        digits = random.choices(string.digits, k=2)
+        letters = random.choices(string.ascii_lowercase, k=9)
+        sample = random.sample(digits + letters, 7)
+        try:
+            TicketBooking.objects.get(qr_random_num=sample)
+        except ObjectDoesNotExist:
+            return sample
+        else:
+            self.generate_random_code()
+
 
 @api_view(('GET',))
 def invalid_qrcode(req,random):

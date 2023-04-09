@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from django.conf import settings
 from user_details.models import UserDetails
@@ -72,8 +73,9 @@ class Registration_Serializer(WritableNestedModelSerializer):
         user=admin_model.objects.filter(id=rep['id']).values('user_image').first()
         if user['user_image']:
             rep['user_image']=settings.HOST_ADDRESS+settings.MEDIA_URL+user['user_image']
-
+        else:
             rep['user_image']='null'
+        rep['created_by'] = get_user_model().objects.filter(id=instance.created_by).values('id', 'username').first()
         return rep
 
 class admin_booking_serializers(serializers.ModelSerializer):
@@ -98,4 +100,11 @@ class committee_list_ser(WritableNestedModelSerializer):
     class Meta :
         model = committee_members
         exclude =['login_token']
+
+    def to_representation(self, instance):
+        read_data = super().to_representation(instance)
+        read_data['created_by'] = get_user_model().objects.filter(
+            id=instance.created_by
+        ).values('id', 'username').first()
+        return read_data
         
