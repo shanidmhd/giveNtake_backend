@@ -1,5 +1,6 @@
 
 from django.conf import settings
+from django.db.models import F
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.utils import timezone
@@ -214,10 +215,16 @@ class ProgramAPI(viewsets.ModelViewSet):
         if prog_id:
             try:
                 appts = Program_model.objects.get(id=int(prog_id))
-                serializer = Program_get_Serializer(appts, many=False)
-                return Response({"results": serializer.data})
             except Program_model.DoesNotExist:
                 raise Http404
+            else:
+                serializer = Program_get_Serializer(appts, many=False)
+                booked_tickets = TicketBooking.objects.filter(fk_program_id=int(prog_id)).values(
+                    'no_of_seats', 'date_booked', 'payment_status', 'contact_name', 'contact_phone_number'
+                )
+                data = serializer.data
+                data['tickets_booked'] = booked_tickets
+                return Response({"results": data})
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request):
@@ -280,16 +287,21 @@ class TicketBooking_API(viewsets.ModelViewSet):
         :param request: The request object
         :return: The response is a JSON object.
         """
-       
-        _serializer = self.serializer_class(data=request.data)
+        data = request.data
+        contact_name = data.pop('name')
+        contact_phone_number = data.pop('phone')
+        data['contact_name'] = contact_name
+        data['contact_phone_number'] = contact_phone_number
+        _serializer = self.serializer_class(data=data)
         if _serializer.is_valid():
             # Getting the program id and the number of seats from the request data and then it is
             # getting the program object from the database and then it is calculating the remaining
             # seats and then it is saving the serializer and then it is updating the program object
             # with the remaining seats.
-            program_id = request.data["fk_program"]
+            program_id = data["fk_program"]
+            print(program_id)
            
-            no_of_seat_r = int(request.data["no_of_seats"])
+            no_of_seat_r = int(data["no_of_seats"])
            
             program = (
                 Program_model.objects.filter(id=program_id)
