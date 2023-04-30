@@ -60,5 +60,8 @@ class TicketBooking(models.Model):
     qr_image_scanned= models.BooleanField(default=False)
     qr_random_num=models.CharField(max_length=50,null=True)
     payment_id=models.CharField(max_length=1024,null=True)
+    contact_name = models.CharField(max_length=150, null=True)
+    contact_phone_number = models.CharField(max_length=16, null=True)
+
     def __str__(self):
         return self.fk_program.program_name
